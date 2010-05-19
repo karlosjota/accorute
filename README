@@ -1,0 +1,31 @@
+AcCoRuTe - Access Control Rules Tester
+========================================================================================
+This project aims to create tool that automates the process of finding 
+access control flaws in web applications.
+
+
+HISTORY
+========================================================================================
+The first version of the tool was created by Andrew Petukhov <petand@lvk.cs.msu.su> 
+as his GSoC'08 work for OWASP project. 
+See http://www.owasp.org/index.php/Category:OWASP_Access_Control_Rules_Tester_Project
+
+
+THEORY
+========================================================================================
+The underlying theory was first proposed by Andrew Petukhov <petand@lvk.cs.msu.su> 
+and then reviewed and improved by George Noseevich as the part of a term paper.
+Detailed explaination should appear within the project documentation once the codebase 
+grows mature enough.
+
+
+PROJECT STRUCTURE
+========================================================================================
+The current version under development is being built from scratch (though borrowing some
+code and ideas from the first version) and aims to overcome drawbacks of the first 
+version.
+
+The tool consists of 2 major parts: 
+
+ * Web application markup helper, written as a FireFox extension.
+ * Web application Access Control engine tester, a standalone Java application.
