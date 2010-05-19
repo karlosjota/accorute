@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<wizard id="theWizard" title="Web Application Analysis"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" onwizardfinish = "return saveToFile();" >
+  <script type="application/javascript" src="chrome://webappmapper/content/usecaseui.js" />
+  
+
+  <wizardpage description="Create Roles">
+    <caption label="New role"/>
+    <grid>
+		<rows>
+			<row align="center">
+				<label value="Name:"/>
+				<textbox id="roleName"/>
+                <label value="Parent role:"/>
+                <menulist id = "parentRoleSelect">
+                    <menupopup >
+                        <menuitem label="public" id="publicRole"/>
+                    </menupopup>
+                </menulist>
+                <button id="addRoleButton" oncommand = "addRole();" label="add role" />
+			</row>
+		</rows>
+	</grid>
+
+    <caption label="Existing roles" />
+	<listbox id = "roleList">
+		<listhead>
+			<listheader label="Role Name" />
+			<listheader label="Parent role" />
+		</listhead>
+        <listitem label = "public">
+            <listcell label="public" />
+            <listcell label="N/A" />
+        </listitem>
+
+	</listbox>
+      
+  </wizardpage>
+
+  <wizardpage description="Create Users" onpageshow = "enumerateRoles();">
+    <caption label="New user"/>
+    <grid>
+		<rows>
+			<row align="center">
+				<label value="Name:"/>
+				<textbox id="userName"/>
+                <label value="User role:"/>
+                <menulist id = "userRoleSelect">
+                    <menupopup >
+                        <menuitem label="public" />
+                    </menupopup>
+                </menulist>
+                <button id="addUserButton" oncommand = "addUser();" label="add user" />
+			</row>
+		</rows>
+	</grid>
+
+    <caption label="Existing users" />
+	<listbox id = "userList">
+		<listhead>
+			<listheader label="User Name" />
+			<listheader label="User role" />
+		</listhead>
+	</listbox>
+  </wizardpage>
+  <wizardpage description="Record UseCases" onpageshow = "enumerateUsers();" >
+    <script type="application/javascript" src="chrome://capture/content/capturer.js"/>
+    <hbox>
+	<grid>
+		<columns>
+			<column/>
+			<column flex="1"/>
+		</columns>
+		<rows>
+			<row align="center">
+				<label value="Session name:"/>
+				<textbox id="sessName"/>
+			</row>
+			<row align="center">
+				<label value="User:"/>
+				<menulist id = "userSelect">
+                    <menupopup >
+                    </menupopup>
+                </menulist>
+			</row>
+		</rows>
+	</grid>
+	<button id="start-stop-button" onclick = "startUC();" label="Start session capture" />
+	</hbox>
+
+	<groupbox>
+    <caption label="Recorded Sessions (select some of them to create a dependency)" />
+	<listbox id = "sessList" seltype="multiple">
+		<listhead>
+			<listheader label="Session Name" />
+			<listheader label="User" />
+			<listheader label="Depends on" />
+		</listhead>
+	</listbox>
+	</groupbox>
+  </wizardpage>
+
+
+</wizard>

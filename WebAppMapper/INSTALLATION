@@ -1,0 +1,12 @@
+The is WebAppMapper - a firefox extension that helps to map 
+web application functionality during the first phase of
+access control flaws discovery.
+
+To now, the only way to install the extension is as follows:
+ * Locate your FF profile folder (~/.mozilla/firefox/<profile name> in linux)
+ * Create the folder named webappmapper@lvk.cs.msu.su at the "extensions" subfolder
+ * Copy the files from src directory to the newly created folder
+ * Start firefox
+
+WARNING: It is highly recommended not install this experimental extension into your
+working profile. Create another one instead!

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<overlay id="webappmapper" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script type="application/javascript" src="chrome://webappmapper/content/starter.js"/>
+  <toolbar id="nav-bar">
+    <button id="openCapWin"
+	label="open capconsole" tooltiptext="start"
+	oncommand="openCapWin();"/>
+  </toolbar>
+  <!-- <popup id="contentAreaContextMenu">
+      <menuitem
+              id="my_option"
+              label="Start new session and activate"
+              oncommand="addevt();"/>
+    </popup> -->
+</overlay>
