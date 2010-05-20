@@ -1,0 +1,121 @@
+package su.msu.cs.lvk.accorute.taskmanager;
+
+import org.apache.log4j.Logger;
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: george
+ * Date: 02.04.2010
+ * Time: 1:54:52
+ * To change this template use File | Settings | File Templates.
+ */
+
+/**
+ * Abstract class for a task that is run by {@link TaskManager}
+ */
+public abstract class Task implements Runnable{
+    final public TaskManager taskManager;
+    
+    public enum TaskStatus {
+        NOT_STARTED,RUNNING, BLOCKED, FINISHED
+    }
+
+    private Logger logger = Logger.getLogger(this.getClass().getName());
+
+    private TaskStatus status = TaskStatus.NOT_STARTED;
+    private boolean successful = false;
+
+    public boolean isSuccessful() {
+        return successful;
+    }
+
+    synchronized public void setSuccessful(boolean successful) {
+        this.successful = successful;
+    }
+
+    /**
+     * Get current status
+     * @return current status
+     */
+    public TaskStatus getStatus(){
+        return status;
+    }
+
+    /**
+     * Concurrent way to set current status.
+     * @param stat
+     */
+    synchronized protected void setStatus(TaskStatus stat){
+        status = stat;
+        logger.trace("Task STATUS CHANGED to " + stat.name() +" at thread "
+                + Thread.currentThread().getId());
+    }
+
+    /**
+     * @param t - TaskManager that invoked this task.
+     */
+    Task(TaskManager t){
+        taskManager = t;
+    }
+
+    /**
+     * This blocks until the specified task will be executed and successfully finished.
+     * Relies on the {@link TaskManager}, that should explicitly resume this task when
+     * the target task is finished.
+     * @param tsk -
+     */
+    synchronized protected void waitForTask(Task tsk){
+        logger.trace("Task  WILL WAIT for other task at thread " + Thread.currentThread().getId());
+        while(true){
+            setStatus(TaskStatus.BLOCKED);
+            taskManager.addWaitedTask(this,tsk);
+            while (getStatus() == TaskStatus.BLOCKED){
+                try{
+                    wait();
+                }catch (InterruptedException e){}
+            }
+            if(tsk.getStatus() == TaskStatus.FINISHED){
+                return;//return only if task was actually finished
+            }else{
+                logger.warn("Task WAS RESUMED FROM WAITING THAT DIDN'T FINISH YET, at thread " + Thread.currentThread().getId());
+            }
+        }
+    }
+
+    /**
+     * This should be called by {@link TaskManager} instance responsible for this task
+     * to notify that the requested task was finished. If the task was not started, start it.
+     * This should only be called if this task execution was previously started by {@link super.run()}
+     */
+    public void resume(){
+        if(getStatus() == TaskStatus.NOT_STARTED){
+            run();
+            return;
+        }
+        synchronized (this){
+            if(getStatus() != TaskStatus.NOT_STARTED){
+                logger.trace("Task was RESUMED at thread " + Thread.currentThread().getId());
+                setStatus(TaskStatus.RUNNING);
+                notify();
+            }
+        }
+    }
+
+    /**
+     * Used to retrieve the result of the task.
+     * Warning! do not forget to make it thread-safe!
+     * @return returns the result of the task or null if it is not finished.
+     */
+    abstract public Object getResult();
+
+
+    abstract protected void start();
+
+    public void run(){
+        logger.trace("Task was STARTED at thread " + Thread.currentThread().getId());
+        setStatus(TaskStatus.RUNNING);
+        start();
+        setStatus(TaskStatus.FINISHED);
+        taskManager.taskFinished();
+    }
+}

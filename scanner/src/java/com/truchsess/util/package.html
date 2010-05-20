@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+    <title>com.truchsess.util package</title>
+</head>
+<body bgcolor="white">
+<p>Provides classes and interfaces for handling trees of objects</p>
+
+<p>The design is inspired by the java.util.Collections API. It gives
+    access to the topology of a tree and allows to store elements of a given
+    runtime type at each position. The nodes themself and their
+    implementation-specific datamodel are not exposed.</p>
+
+<p>The API is composed of
+<ul>
+    <li>interfaces describing the various flavors of trees:</li>
+    <li>
+        <ul>
+            <li>{@link com.truchsess.util.Tree}</li>
+            <li>{@link com.truchsess.util.SortedTree}</li>
+            <li>{@link com.truchsess.util.MutableTree}</li>
+            <li>{@link com.truchsess.util.ListTree}</li>
+            <li>{@link com.truchsess.util.MapTree}</li>
+            <li>{@link com.truchsess.util.MutableListTree}</li>
+            <li>{@link com.truchsess.util.MutableMapTree}</li>
+        </ul>
+    </li>
+    <li>interfaces used to navigate through the tree:</li>
+    <li>
+        <ul>
+            <li>{@link com.truchsess.util.TreeCursor}</li>
+            <li>{@link com.truchsess.util.SortedTreeCursor}</li>
+            <li>{@link com.truchsess.util.MutableTreeCursor}</li>
+            <li>{@link com.truchsess.util.ListTreeCursor}</li>
+            <li>{@link com.truchsess.util.MapTreeCursor}</li>
+            <li>{@link com.truchsess.util.MutableListTreeCursor}</li>
+            <li>{@link com.truchsess.util.MutableMapTreeCursor}</li>
+        </ul>
+    </li>
+    <li>concrete implementation classes of tree:</li>
+    <li>
+        <ul>
+            <li>{@link com.truchsess.util.ArrayListTree}</li>
+            <li>{@link com.truchsess.util.HashMapTree}</li>
+        </ul>
+    </li>
+    <li>models that help building tree for UIs supporting
+        'selectable' or 'expandable/collapseable' nodes:
+    </li>
+    <li>
+        <ul>
+            <li>{@link com.truchsess.util.SelectableNode}</li>
+            <li>{@link com.truchsess.util.SelectableListTreeModel}</li>
+            <li>{@link com.truchsess.util.SelectableMapTreeModel}</li>
+            <li>{@link com.truchsess.util.ExpandableNode}</li>
+            <li>{@link com.truchsess.util.ExpandableListTreeModel}</li>
+            <li>{@link com.truchsess.util.ExpandableMapTreeModel}</li>
+        </ul>
+    </li>
+    <li>and finally utility classes that allow to walk a tree:</li>
+    <li>
+        <ul>
+            <li>{@link com.truchsess.util.TreeWalker}</li>
+            <li>{@link com.truchsess.util.MapTreeWalker}</li>
+        </ul>
+    </li>
+</ul>
+</p>
+</body>
+</html>
