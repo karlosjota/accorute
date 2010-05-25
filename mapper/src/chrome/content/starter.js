@@ -12,7 +12,7 @@ function openCapWin(){
 		}
 	}
 	if(win==null){
-		var win = window.open("chrome://webappmapper/content/wizard.xul","Capturer main window", "chrome,width=600,height=300");
+		var win = window.open("chrome://webappmapper/content/wizard.xul","Capturer main window", "chrome,width=400,height=300");
 	}
 	win.focus();
 }

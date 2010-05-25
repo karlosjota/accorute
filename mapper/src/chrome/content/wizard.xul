@@ -3,104 +3,205 @@
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 
 <wizard id="theWizard" title="Web Application Analysis"
-  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" onwizardfinish = "return saveToFile();" >
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" onwizardfinish = "return saveToFile();" >
   <script type="application/javascript" src="chrome://webappmapper/content/usecaseui.js" />
+  <script type="application/javascript" src="chrome://webappmapper/content/capturer.js" />
   
+  <wizardpage description="Enter basic Web Application Settings">
+    <grid>
+      <rows>
+	<row align="center">
+	  <label value="Scope regexp:"/>
+	  <textbox id="webappScopeRegexp" value=".*"/>
+	</row>
+	<row align="center">
+	  <label value="Session token location:"/>
+	  <menulist id = "webappSessTokenLocSelect">
+	    <menupopup >
+	      <menuitem label="query" id="sessTokenLocQuery"/>
+	      <menuitem label="body" id="sessTokenLocBody"/>
+	      <menuitem label="cookie" id="sessTokenLocCookie"/>
+	    </menupopup>
+	  </menulist>	  
+	</row>
+	<row align="center">
+	  <label value="Session token name:"/>
+	  <textbox id="webappSessTokenName"/>
+	</row>
+      </rows>
+    </grid>
+  </wizardpage>  
 
   <wizardpage description="Create Roles">
     <caption label="New role"/>
     <grid>
-		<rows>
-			<row align="center">
-				<label value="Name:"/>
-				<textbox id="roleName"/>
-                <label value="Parent role:"/>
-                <menulist id = "parentRoleSelect">
-                    <menupopup >
-                        <menuitem label="public" id="publicRole"/>
-                    </menupopup>
-                </menulist>
-                <button id="addRoleButton" oncommand = "addRole();" label="add role" />
-			</row>
-		</rows>
-	</grid>
+      <rows>
+	<row align="center">
+	  <label value="Name:"/>
+	  <textbox id="roleName"/>
+	  <label value="Parent role:"/>
+	  <menulist id = "parentRoleSelect">
+	    <menupopup >
+	      <menuitem label="public" id="publicRole"/>
+	    </menupopup>
+	  </menulist>
+	  <button id="addRoleButton" oncommand = "addRole();" label="add role" />
+	</row>
+      </rows>
+    </grid>
 
     <caption label="Existing roles" />
-	<listbox id = "roleList">
-		<listhead>
-			<listheader label="Role Name" />
-			<listheader label="Parent role" />
-		</listhead>
-        <listitem label = "public">
-            <listcell label="public" />
-            <listcell label="N/A" />
-        </listitem>
+    <listbox id = "roleList">
+      <listhead>
+	<listheader label="Role Name" />
+	<listheader label="Parent role" />
+      </listhead>
+      <listitem label = "public">
+	<listcell label="public" />
+	<listcell label="N/A" />
+      </listitem>
 
-	</listbox>
-      
+    </listbox>
   </wizardpage>
 
   <wizardpage description="Create Users" onpageshow = "enumerateRoles();">
     <caption label="New user"/>
     <grid>
-		<rows>
-			<row align="center">
-				<label value="Name:"/>
-				<textbox id="userName"/>
-                <label value="User role:"/>
-                <menulist id = "userRoleSelect">
-                    <menupopup >
-                        <menuitem label="public" />
-                    </menupopup>
-                </menulist>
-                <button id="addUserButton" oncommand = "addUser();" label="add user" />
-			</row>
-		</rows>
-	</grid>
-
+      <columns>
+	<column flex="" />
+	<column flex="1" />
+      </columns>      
+      <rows>
+	<row align="center">
+	  <label value="Name:"/>
+	  <textbox id="userName"/>
+	</row>
+	<row>
+	  <label value="Role:"/>
+	  <menulist id = "userRoleSelect">
+	    <menupopup >
+	      <menuitem label="public" />
+	    </menupopup>
+	  </menulist>
+	</row>
+	<row>
+	  <label value="password:"/>
+	  <textbox id="userPassword"/>
+	</row>
+      </rows>      
+    </grid>
+    <button id="addUserButton" oncommand = "addUser();" label="add user"/>
     <caption label="Existing users" />
-	<listbox id = "userList">
-		<listhead>
-			<listheader label="User Name" />
-			<listheader label="User role" />
-		</listhead>
-	</listbox>
+    <listbox id = "userList">
+      <listhead>
+	<listheader label="Name" />
+	<listheader label="Role" />
+	<listheader label="Password" />
+      </listhead>
+    </listbox>
   </wizardpage>
   <wizardpage description="Record UseCases" onpageshow = "enumerateUsers();" >
-    <script type="application/javascript" src="chrome://capture/content/capturer.js"/>
     <hbox>
-	<grid>
-		<columns>
-			<column/>
-			<column flex="1"/>
-		</columns>
-		<rows>
-			<row align="center">
-				<label value="Session name:"/>
-				<textbox id="sessName"/>
-			</row>
-			<row align="center">
-				<label value="User:"/>
-				<menulist id = "userSelect">
-                    <menupopup >
-                    </menupopup>
-                </menulist>
-			</row>
-		</rows>
-	</grid>
-	<button id="start-stop-button" onclick = "startUC();" label="Start session capture" />
-	</hbox>
+      <grid>
+	<columns>
+	  <column/>
+	  <column flex="1"/>
+	</columns>
+	<rows>
+	  <row align="center">
+	    <label value="Session name:"/>
+	    <textbox id="sessName"/>
+	  </row>
+	  <row align="center">
+	    <label value="User:"/>
+	    <menulist id = "userSelect">
+	      <menupopup >
+	      </menupopup>
+	    </menulist>
+	  </row>
+	</rows>
+      </grid>
+      <button id="start-stop-button" onclick = "startUC();" label="Start session capture" />
+    </hbox>
+    <groupbox>
+      <caption label="Recorded Sessions" />
+      <listbox id = "sessList">
+	<listhead>
+	  <listheader label="Session Name" />
+	  <listheader label="User" />
+	</listhead>
+      </listbox>
+    </groupbox>
+  </wizardpage>
 
-	<groupbox>
-    <caption label="Recorded Sessions (select some of them to create a dependency)" />
-	<listbox id = "sessList" seltype="multiple">
-		<listhead>
-			<listheader label="Session Name" />
-			<listheader label="User" />
-			<listheader label="Depends on" />
-		</listhead>
-	</listbox>
-	</groupbox>
+  <wizardpage description="Specify dependencies" onpageshow = "enumerateUCForDeps();" >
+    <hbox pack="center">
+      <grid>
+	<columns>
+	  <column/>
+	  <column flex="1"/>
+	  <column />
+	</columns>
+	<rows>
+	  <row>
+	    <menulist id = "UCFromSelect">
+	      <menupopup >
+	      </menupopup>
+	    </menulist>
+	    <label value="depends on" align="center"/>
+	    <menulist id = "UCToSelect">
+	      <menupopup >
+	      </menupopup>
+	    </menulist>
+	  </row>
+	</rows>
+      </grid>
+    </hbox>
+    <button id="depButton" onclick = "formDependency();" label="form dependency" />
+    <groupbox>
+      <caption label="Dependencies" />
+      <listbox id = "depList" >
+	<listhead>
+	  <listheader label="Dependent UC" />
+	  <listheader label="Dependency UC" />
+	</listhead>
+      </listbox>
+    </groupbox>
+  </wizardpage>
+
+  <wizardpage description="Specify cancellations" onpageshow = "enumerateUCForCanc();" >
+    <hbox pack="center">
+      <grid >
+	<columns>
+	  <column/>
+	  <column flex = "1"/>
+	  <column />
+	</columns>
+	<rows>
+	  <row>
+	    <menulist id = "UCFromSelect2">
+	      <menupopup >
+	      </menupopup>
+	    </menulist>
+	    <label value="cancels" align="center"/>
+	    <menulist id = "UCToSelect2">
+	      <menupopup >
+	      </menupopup>
+	    </menulist>
+	  </row>
+	</rows>
+      </grid>      
+    </hbox>
+    <button id="cancelButton" onclick = "formCancellation();" label="form cancellation" />
+    <groupbox>
+      <caption label="Cancellations" />
+      <listbox id = "cancelList" >
+	<listhead>
+	  <listheader label="Cancelling UC" />
+	  <listheader label="Cancelled UC" />
+	</listhead>
+      </listbox>
+    </groupbox>
   </wizardpage>
 
 

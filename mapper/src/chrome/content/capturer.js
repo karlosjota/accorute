@@ -20,7 +20,7 @@ Capturer.prototype = {
         }
     },
 
-    newSession :function(sname, user, deps){
+    newSession :function(sname, user){
         this.clicks_count = 0;
         this.pageload_count = 0;
         this.submits_count = 0;
@@ -33,8 +33,7 @@ Capturer.prototype = {
             type: "SessionCreated",
             name : sname,
             user: user,
-            time: now.getTime(),
-            dependencies: deps
+            time: now.getTime()
         };
         cur_sess[cur_sess.length] = {type: "UCCreated", time: now.getTime()};
 
