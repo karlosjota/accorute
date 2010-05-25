@@ -9,9 +9,17 @@
     </appender>
 
     <!-- Root Logger -->
+
     <root>
-        <priority value="trace" />
+        <priority value="error" />
         <appender-ref ref="console" />
     </root>
+    <logger name="su.msu.cs.lvk.accorute">
+        <level value="trace"/>
+    </logger>
+    <logger name="su.msu.cs.lvk.accorute.taskmanager">
+        <level value="error"/> 
+    </logger>
+
 </log4j:configuration>
 

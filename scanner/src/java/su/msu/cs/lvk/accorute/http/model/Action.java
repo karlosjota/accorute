@@ -21,6 +21,15 @@ public class Action {
         this.name = name;
     }
 
+    @Override
+    public String toString() {
+        return "Action{" +
+                "name='" + name + '\'' +
+                ", actionParameters=" + actionParameters +
+                ", actionID=" + actionID +
+                '}';
+    }
+
     public EntityID getActionID() {
         return actionID;
     }
@@ -49,4 +58,5 @@ public class Action {
     boolean equals(Action other){
         return actionID == other.getActionID();
     }
+
 }

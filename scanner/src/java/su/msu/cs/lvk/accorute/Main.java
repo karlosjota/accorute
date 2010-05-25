@@ -13,6 +13,7 @@ import su.msu.cs.lvk.accorute.storage.UserService;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.tasks.JSONConfigurationTask;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -72,7 +73,7 @@ public class Main {
         logger.trace(WebAppProperties.getInstance().getRoles().isEmpty());
 
         JSONConfigurationTask configTask = new JSONConfigurationTask(WebAppProperties.getInstance().getTaskManager(),
-                "/home/george/development/workspace/AcCoRuTe/capture@ngo.develop/sample.txt");
+                "src/resources/django-test1.txt");
         WebAppProperties.getInstance().getTaskManager().addTask(configTask);
         new Thread(WebAppProperties.getInstance().getTaskManager()).start();
         WebAppProperties.getInstance().getTaskManager().terminate();
@@ -81,6 +82,14 @@ public class Main {
         }
         if(!configTask.isSuccessful()){
             logger.trace("smth went wrong!");
+        }
+        TestChain testChain = WebAppProperties.getInstance().getTestChain();
+        for(int i=0; i < testChain.size(); i++){
+            logger.trace("UC: " + testChain.get(i).action + " by role " +testChain.get(i).user.getUserRole().getRoleName());
+            logger.trace(WebAppProperties.getInstance().getRcd().compose(
+                    testChain.get(i).action.getActionParameters(),
+                    testChain.get(i).user).toString()
+            );
         }
     }
 }

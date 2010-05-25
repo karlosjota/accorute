@@ -11,6 +11,7 @@ import su.msu.cs.lvk.accorute.RBAC.Role;
 import su.msu.cs.lvk.accorute.RBAC.SimpleRBACRole;
 import su.msu.cs.lvk.accorute.decisions.ParameterValueDecision;
 import su.msu.cs.lvk.accorute.decisions.RequestComposerDecomposer;
+import su.msu.cs.lvk.accorute.http.constants.ActionParameterLocation;
 import su.msu.cs.lvk.accorute.http.model.Action;
 import su.msu.cs.lvk.accorute.http.model.TestChain;
 import su.msu.cs.lvk.accorute.storage.*;
@@ -28,6 +29,9 @@ public class WebAppProperties {
 
     private final List<Pattern> scope = new ArrayList<Pattern>();
 
+    private String sessionTokenName;
+    private ActionParameterLocation sessionTokenLocation;
+
     private URL startPage = null;
     private TestChain testChain;
     private final Collection<Action> stateChangingActions = new ArrayList<Action>();
@@ -40,6 +44,22 @@ public class WebAppProperties {
     private UserService userService;
     private ContextService contextService;
     private TaskManager taskManager;
+
+    public String getSessionTokenName() {
+        return sessionTokenName;
+    }
+
+    public void setSessionTokenName(String sessionTokenName) {
+        this.sessionTokenName = sessionTokenName;
+    }
+
+    public ActionParameterLocation getSessionTokenLocation() {
+        return sessionTokenLocation;
+    }
+
+    public void setSessionTokenLocation(ActionParameterLocation sessionTokenLocation) {
+        this.sessionTokenLocation = sessionTokenLocation;
+    }
 
     public URL getStartPage() {
         return startPage;

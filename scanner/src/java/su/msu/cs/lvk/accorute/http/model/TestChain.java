@@ -30,6 +30,10 @@ public class TestChain {
         return acts.get(i);
     }
 
+    public int size(){
+        return acts.size();
+    }
+
     public void clear(){
         acts.clear();
     }

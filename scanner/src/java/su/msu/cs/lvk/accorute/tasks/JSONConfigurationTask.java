@@ -1,17 +1,22 @@
 package su.msu.cs.lvk.accorute.tasks;
 
+import org.apache.commons.httpclient.cookie.MalformedCookieException;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import su.msu.cs.lvk.accorute.RBAC.Role;
 import su.msu.cs.lvk.accorute.RBAC.SimpleRBACRole;
 import su.msu.cs.lvk.accorute.WebAppProperties;
+import su.msu.cs.lvk.accorute.http.constants.ActionParameterDatatype;
+import su.msu.cs.lvk.accorute.http.constants.ActionParameterLocation;
+import su.msu.cs.lvk.accorute.http.constants.ActionParameterMeaning;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.SerialTask;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 
 import java.io.*;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -34,7 +39,7 @@ public class JSONConfigurationTask extends SerialTask{
         }
     }
     private static class JSONEventParser{
-        public static Action parse(JSONObject event) throws JSONException, MalformedURLException, UnsupportedDOMEventTypeException {
+        public static Action parse(JSONObject event) throws JSONException, MalformedURLException, MalformedCookieException,UnsupportedDOMEventTypeException {
             String type = event.getString("type");
             Action act;
             if(type.equals("pageLoaded")){
@@ -47,17 +52,39 @@ public class JSONConfigurationTask extends SerialTask{
                 }
                 act = new Action("",params);
             }else if(type.equals("formSubmitted")){
-                //TODO: implement
-                throw new JSONException("Not an event record!");
-            }else if(type.equals("linkClicked")){
-                //TODO: cookies!!!
-                String URL = event.getJSONObject("document").getString("location");
-                List<ActionParameter> params;
-                try {
-                    params = WebAppProperties.getInstance().getRcd().decomposeURL(URL);
-                } catch (java.net.MalformedURLException e) {
-                    throw e;
+                String method = event.getString("method");
+                String action = event.getString("action");
+                if(action.equals("")){
+                    action = event.getJSONObject("document").getString("location");
                 }
+                String cookies = event.getString("cookie");
+                List<ActionParameter> params = WebAppProperties.getInstance().getRcd().decomposeCookies(cookies);
+
+                JSONArray elements = event.getJSONArray("elements");
+                for(int i=0; i< elements.length();i++){
+                    String name = elements.getJSONObject(i).getString("name");
+                    String value = elements.getJSONObject(i).getString("value");
+                    String eltype = elements.getJSONObject(i).getString("type");
+                    if(eltype.equalsIgnoreCase("submit") && name.equals("")){
+                        name = eltype;
+                    }
+                    params.add(new ActionParameter(
+                        name,
+                        value,
+                        method.equalsIgnoreCase("GET") ? ActionParameterLocation.QUERY : ActionParameterLocation.BODY,
+                        (eltype.equalsIgnoreCase("hidden") || eltype.equalsIgnoreCase("submit")) ?
+                                ActionParameterMeaning.AUTOMATIC : ActionParameterMeaning.USERCONTROLLABLE,
+                        ActionParameterDatatype.STRING)
+                    );//TODO: be more specific here!!!
+                }
+                params.addAll(WebAppProperties.getInstance().getRcd().decomposeURL(action));
+                act = new Action("",params);
+
+            }else if(type.equals("linkClicked")){
+                String URL = event.getString("href");
+                String cookies = event.getString("cookie");
+                List<ActionParameter> params = WebAppProperties.getInstance().getRcd().decomposeCookies(cookies);
+                params.addAll(WebAppProperties.getInstance().getRcd().decomposeURL(URL));
                 act = new Action("",params);
             }else{
                 throw new UnsupportedDOMEventTypeException(type);
@@ -85,6 +112,16 @@ public class JSONConfigurationTask extends SerialTask{
                 f.read(buffer);
                 String contents = new String(buffer);
                 JSONObject obj = new JSONObject(contents);
+                String loc = obj.getString("sessTokenLocation");
+                if(loc.equalsIgnoreCase("query")){
+                   WebAppProperties.getInstance().setSessionTokenLocation(ActionParameterLocation.QUERY);
+                }else if(loc.equalsIgnoreCase("body")){
+                   WebAppProperties.getInstance().setSessionTokenLocation(ActionParameterLocation.BODY);
+                }else if(loc.equalsIgnoreCase("cookie")){
+                   WebAppProperties.getInstance().setSessionTokenLocation(ActionParameterLocation.COOKIE);
+                }
+                WebAppProperties.getInstance().setSessionTokenName(obj.getString("sessTokenName"));
+
                 JSONArray roles = obj.getJSONArray("roles");
                 for(int i=0;i < roles.length();i++){
                     JSONObject user = roles.getJSONObject(i);
@@ -116,7 +153,12 @@ public class JSONConfigurationTask extends SerialTask{
                         }
                     }
                     WebAppUser u = new WebAppUser();
-                    //this will be changed
+                    JSONObject creds = user.getJSONObject("credentials");
+                    while(creds.keys().hasNext()){
+                        String key = (String)creds.keys().next();
+                        String val = creds.getString(key);
+                        u.getStaticCredentials().add(new NamedValue(key, val));                                                    
+                    }
                     u.getStaticCredentials().add(new NamedValue("username", userName ));
                     u.setRole(r);
                     WebAppProperties.getInstance().getUserService().addOrModifyUser(u);
@@ -131,6 +173,7 @@ public class JSONConfigurationTask extends SerialTask{
                     JSONArray evts = sessions.getJSONArray(i);
                     JSONObject sessionCreatedEvt = evts.getJSONObject(0);
                     String uname = sessionCreatedEvt.getString("user");
+                    String sessname = sessionCreatedEvt.getString("name");
                     WebAppUser u = WebAppProperties.getInstance().getUserService().getUsersByCredential("username", uname).get(0);
                     logger.trace("Parsing session " + i + " of user " + uname + ". The session contains " + evts.length() + " events");
                     for(int j=1; j < evts.length(); j++){
@@ -142,9 +185,12 @@ public class JSONConfigurationTask extends SerialTask{
                             JSONObject firstAction = evts.getJSONObject(j+1);
                             try{
                                 Action act = JSONEventParser.parse(firstAction);
-                                act.setName(new Integer(counter++).toString() );
+                                if(act.getName().equals("")){
+                                    act.setName("#" + new Integer(counter++).toString()+"("+sessname  +")" ) ;
+                                }
                                 WebAppProperties.getInstance().getActionService().addOrUpdateAction(act);
                                 WebAppProperties.getInstance().addStateChangingAction(act);
+
                                 t.add(act, u);
                                 j++;
                             }

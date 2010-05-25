@@ -164,7 +164,7 @@ public class Request extends Message {
         }
         StringBuffer buff = new StringBuffer();
         buff.append(method).append(" ");
-        buff.append(url).append(" ");
+        buff.append(url.getFile()).append(" ");//TODO: temporary fix
         buff.append(version).append(crlf);
         buff.append(super.toString(crlf));
         return buff.toString();

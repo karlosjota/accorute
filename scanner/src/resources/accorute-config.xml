@@ -25,12 +25,10 @@
     <bean id="userService" scope="prototype" class="su.msu.cs.lvk.accorute.storage.dao.RAM.CollectionUserService">
     </bean>
 
-    <bean id="taskman" class="su.msu.cs.lvk.accorute.taskmanager.TaskManager" scope="prototype">
-    </bean>
+    <bean id="taskman" class="su.msu.cs.lvk.accorute.taskmanager.TaskManager" scope="prototype" />
 
-    <bean id="simpleRCD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimpleRCD">
-
-    </bean>
+    <bean id="simpleRCD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimpleRCD"/>
+    <bean id="simplePVD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimplePVD"/>
 
     <bean id="Properties" class="su.msu.cs.lvk.accorute.WebAppProperties" factory-method="getInstance">
         <property name="actionService" ref="actionService"/>
@@ -45,6 +43,7 @@
             </list>
         </property>
         <property name="rcd" ref="simpleRCD"/>
+        <property name="pvd" ref="simplePVD"/>
 
     </bean>
 

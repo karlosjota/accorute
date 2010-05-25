@@ -18,6 +18,11 @@ public class ActionParameter extends NamedValue {
     private ActionParameterMeaning meaning;
     private ActionParameterDatatype datatype;
 
+    @Override
+    public String toString() {
+        return super.toString();
+    }
+
     public boolean isDefined() {
         return defined;
     }

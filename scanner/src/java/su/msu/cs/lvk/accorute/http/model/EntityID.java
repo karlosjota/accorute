@@ -71,8 +71,11 @@ public class EntityID implements Comparable, Serializable {
      *
      * @return a string representation
      */
+    @Override
     public String toString() {
-        return Long.toString(id);
+        return "EntityID{" +
+                "id=" + id +
+                '}';
     }
 
     /**

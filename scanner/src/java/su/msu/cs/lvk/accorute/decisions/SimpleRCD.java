@@ -1,18 +1,23 @@
 package su.msu.cs.lvk.accorute.decisions;
 
 import org.apache.commons.httpclient.Cookie;
+import org.apache.commons.httpclient.cookie.CookieOrigin;
 import org.apache.commons.httpclient.cookie.MalformedCookieException;
 import org.apache.commons.httpclient.cookie.RFC2965Spec;
 import org.apache.commons.lang.NotImplementedException;
+import su.msu.cs.lvk.accorute.WebAppProperties;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterDatatype;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterLocation;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterMeaning;
 import su.msu.cs.lvk.accorute.http.model.ActionParameter;
+import su.msu.cs.lvk.accorute.http.model.CookieDescriptor;
 import su.msu.cs.lvk.accorute.http.model.Request;
 import su.msu.cs.lvk.accorute.http.model.WebAppUser;
 
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,8 +32,62 @@ public class SimpleRCD extends  RequestComposerDecomposer{
     public List<ActionParameter> decompose(Request r){
         throw new NotImplementedException();
     }
+    private static ActionParameter getParamByName(List<ActionParameter> params, String name){
+        for(ActionParameter param: params ){
+            if(param.getName().equals(name))
+                return param;
+        }
+        return null;
+    }
+
     public Request compose(List<ActionParameter> params, WebAppUser user){
-        throw new NotImplementedException();        
+        WebAppProperties.getInstance().getPvd().resolve(params,user);
+        Request req = new Request();
+        String Query = "";
+        String Body = "";
+        String proto = "http";
+        String host = getParamByName(params,"host").getValue();
+        int port = new Integer(getParamByName(params,"port").getValue());
+        String path = getParamByName(params,"path").getValue();
+        List<Cookie> cookies = new ArrayList<Cookie>();
+        for(ActionParameter param: params){
+            try{
+                if(param.getLocation() == ActionParameterLocation.QUERY){
+                    Query +=(URLEncoder.encode(param.getName(),"UTF-8")
+                            + "="
+                            + URLEncoder.encode(param.getValue(),"UTF-8")
+                            + "&"
+                    );
+                }else if(param.getLocation() == ActionParameterLocation.BODY){
+                    Body +=(URLEncoder.encode(param.getName(),"UTF-8")
+                            + "="
+                            + URLEncoder.encode(param.getValue(),"UTF-8")
+                            + "&"
+                    );
+                } else if(param.getLocation() == ActionParameterLocation.HEADER){
+                    req.addHeader(param);
+                } else if(param.getLocation() == ActionParameterLocation.COOKIE){
+                    cookies.add (new Cookie(host,param.getName(), param.getValue()));//TODO: "host" here is a stub!
+                }
+            }catch(UnsupportedEncodingException ueex){}
+        }
+        try{
+            req.setURL(new URL(
+                    proto,
+                    host,
+                    port,
+                    path + ((Query.equals("")) ? "":("?"+Query.substring(0,Query.length()-1)))
+                )
+            );
+        }catch(MalformedURLException muex){
+            //TODO: Smth here!!!
+        }
+        if(!Body.equals("")){
+            req.setMethod("POST");
+            req.setContent(Body.substring(0,Body.length()-1).getBytes());
+        }
+        req.setCookies(new CookieDescriptor(cookies,new CookieOrigin(host,port,"",false), "Cookie")); //TODO: CookieOrigin() params are a stub!
+        return req;
     }
     public List<ActionParameter> decomposeURL(String u) throws MalformedURLException {
         URL url = new URL(u);
@@ -73,9 +132,19 @@ public class SimpleRCD extends  RequestComposerDecomposer{
     }
 
     public List<ActionParameter> decomposeCookies(String cookies) throws MalformedCookieException {
-        Cookie cookie = new Cookie();
         ArrayList<ActionParameter> params = new ArrayList<ActionParameter>();
-        // TODO: implement
+        String [] cooks = cookies.split("[,;]");
+        for(String cook: cooks){
+            String [] namevalue = cook.split("=");
+            params.add(new ActionParameter(
+                    namevalue[0].trim(),
+                    namevalue[1].trim(),
+                    ActionParameterLocation.COOKIE,
+                    ActionParameterMeaning.AUTOMATIC,
+                    ActionParameterDatatype.STRING)
+            );
+        }
+        // TODO: $Version, $Path etc. are not supported yet!
         return params;
         
     }
