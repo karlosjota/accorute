@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<table border="1">
+<tr>
+  <th>From</th>
+  <th>Message (truncated)</th>
+</tr>
+{% for warn in warns %}
+<tr>
+  <td>{{ warn.fromUser }} </td> <td><a href="/test1/warning/{{warn.id}}/">{{ warn.message|truncatewords:2 }}</a> </td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}

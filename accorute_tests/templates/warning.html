@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+FROM: {{ warn.fromUser }} <br />
+TO: {{ warn.toUser }} <br />
+MESSAGE <br/>
+{{ warn.message }}
+{% endblock %}

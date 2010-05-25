@@ -1,0 +1,23 @@
+<html>
+<body>
+  {% block page %}
+    <h2>Hello!</h2>
+    <ul>
+    {% for action in actions %}
+      <li><a href="{{action.link}}">{{action.name}}</a>
+    {% endfor %}
+    </ul>
+  {% endblock %}
+  <hr>
+    {% block content %}{% endblock %}
+  <hr>
+  {% block footer %}
+  <p>
+    {% if user.is_authenticated %}
+      You're logged in as {{ user }}. <a href="/accounts/logout/">Logout</a>
+    {% else %}
+      You're not logged in. <a href="/accounts/login/?next=/test1/">Login here</a>
+    {% endif %}
+  {% endblock %}
+</body>
+</html>

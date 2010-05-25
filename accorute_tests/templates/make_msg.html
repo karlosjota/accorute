@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="POST">
+Кому:
+<select name="to">
+{% for user in users %}
+<option value="{{user.username}}">{{user.username}}
+{% endfor %}
+</select>
+<input name="from" type="hidden" value="{{user}}">
+<br>
+Message:
+<input name="message" type="text">
+<br>
+<input type="submit" value="submit!">
+</form>
+{% endblock %}
+
