@@ -15,9 +15,9 @@ import java.util.List;
  * Time: 12:33:04
  * To change this template use File | Settings | File Templates.
  */
-public abstract class RequestComposerDecomposer {
-    public abstract List<ActionParameter> decompose(Request r);
-    public abstract Request compose(List<ActionParameter> params, WebAppUser user);
-    public abstract List<ActionParameter> decomposeURL(String u) throws MalformedURLException;
-    public abstract List<ActionParameter> decomposeCookies(String cookies) throws MalformedCookieException;
+public interface RequestComposerDecomposer {
+    public List<ActionParameter> decompose(Request r);
+    public Request compose(List<ActionParameter> params, WebAppUser user);
+    public List<ActionParameter> decomposeURL(String u) throws MalformedURLException;
+    public List<ActionParameter> decomposeCookies(String cookies) throws MalformedCookieException;
 }

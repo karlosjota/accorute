@@ -8,14 +8,11 @@
 package su.msu.cs.lvk.accorute;
 
 import su.msu.cs.lvk.accorute.RBAC.Role;
-import su.msu.cs.lvk.accorute.RBAC.SimpleRBACRole;
-import su.msu.cs.lvk.accorute.decisions.ParameterValueDecision;
-import su.msu.cs.lvk.accorute.decisions.RequestComposerDecomposer;
+import su.msu.cs.lvk.accorute.decisions.*;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterLocation;
 import su.msu.cs.lvk.accorute.http.model.Action;
 import su.msu.cs.lvk.accorute.http.model.TestChain;
 import su.msu.cs.lvk.accorute.storage.*;
-import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 
 import java.net.URL;
@@ -37,6 +34,32 @@ public class WebAppProperties {
     private final Collection<Action> stateChangingActions = new ArrayList<Action>();
     private ParameterValueDecision pvd;
     private RequestComposerDecomposer rcd;
+
+    public ResponseClassificator getRespClassificator() {
+        return respClassificator;
+    }
+
+    private ResponseClassificator respClassificator;
+
+    public ActionChangesStateDecision getChStateDec() {
+        return chStateDec;
+    }
+
+    public void setChStateDec(ActionChangesStateDecision chStateDec) {
+        this.chStateDec = chStateDec;
+    }
+
+    private ActionChangesStateDecision chStateDec;
+
+    public MessageEqualityDecision getrEqD() {
+        return rEqD;
+    }
+
+    public void setrEqD(MessageEqualityDecision rEqD) {
+        this.rEqD = rEqD;
+    }
+
+    private MessageEqualityDecision rEqD;
     private CookieService cookieService;
     private ActionService actionService;
     private ConversationService conversationService;

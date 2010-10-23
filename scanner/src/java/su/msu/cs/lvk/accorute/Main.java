@@ -1,24 +1,12 @@
 package su.msu.cs.lvk.accorute;
 
-import org.apache.commons.httpclient.Cookie;
-import org.apache.commons.httpclient.cookie.CookieOrigin;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import su.msu.cs.lvk.accorute.http.model.*;
-import su.msu.cs.lvk.accorute.storage.CookieService;
-import su.msu.cs.lvk.accorute.storage.UserService;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
-import su.msu.cs.lvk.accorute.tasks.JSONConfigurationTask;
-
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import su.msu.cs.lvk.accorute.tasks.JSONConfigurator;
 
 /**
  * Created by IntelliJ IDEA.
@@ -32,10 +20,7 @@ public class Main {
     public static void main(String[] args){
         ApplicationContext ctx;
         try {
-            ctx = new ClassPathXmlApplicationContext(
-                    (String[]) ArrayUtils.addAll(new String[] {"accorute-config.xml"},
-                                    new String[0])
-                    );
+            ctx = new ClassPathXmlApplicationContext("accorute-config.xml");
         } catch (BeanDefinitionStoreException ex) {
             System.err.println("Error loading evaluation contexts: " + ex.getMessage());
             return;
@@ -72,7 +57,7 @@ public class Main {
         }catch(MalformedURLException muex){}   */
         logger.trace(WebAppProperties.getInstance().getRoles().isEmpty());
 
-        JSONConfigurationTask configTask = new JSONConfigurationTask(WebAppProperties.getInstance().getTaskManager(),
+        JSONConfigurator configTask = new JSONConfigurator(WebAppProperties.getInstance().getTaskManager(),
                 "src/resources/django-test1.txt");
         WebAppProperties.getInstance().getTaskManager().addTask(configTask);
         new Thread(WebAppProperties.getInstance().getTaskManager()).start();
@@ -86,9 +71,9 @@ public class Main {
         TestChain testChain = WebAppProperties.getInstance().getTestChain();
         for(int i=0; i < testChain.size(); i++){
             logger.trace("UC: " + testChain.get(i).action + " by role " +testChain.get(i).user.getUserRole().getRoleName());
-            logger.trace(WebAppProperties.getInstance().getRcd().compose(
+            logger.trace("\n==========\n" + WebAppProperties.getInstance().getRcd().compose(
                     testChain.get(i).action.getActionParameters(),
-                    testChain.get(i).user).toString()
+                    testChain.get(i).user).toString()+ "\n==========\n"
             );
         }
     }

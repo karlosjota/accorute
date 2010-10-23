@@ -1,6 +1,10 @@
 package su.msu.cs.lvk.accorute.taskmanager;
 
 import org.apache.log4j.Logger;
+import su.msu.cs.lvk.accorute.utils.Callback0;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,6 +24,12 @@ public abstract class Task implements Runnable{
         NOT_STARTED,RUNNING, BLOCKED, FINISHED
     }
 
+    private final List<Callback0> Callbacks = new ArrayList<Callback0>();
+
+    public void registerCallback(Callback0 cb){
+        Callbacks.add(cb);
+    }
+
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
     private TaskStatus status = TaskStatus.NOT_STARTED;
@@ -37,7 +47,7 @@ public abstract class Task implements Runnable{
      * Get current status
      * @return current status
      */
-    public TaskStatus getStatus(){
+    protected TaskStatus getStatus(){
         return status;
     }
 
@@ -54,8 +64,18 @@ public abstract class Task implements Runnable{
     /**
      * @param t - TaskManager that invoked this task.
      */
-    Task(TaskManager t){
+    public Task(TaskManager t){
         taskManager = t;
+    }
+
+    /**
+     * This adds task to Manager until the specified task will be executed and successfully finished.
+     * Relies on the {@link TaskManager}, that should explicitly resume this task when
+     * the target task is finished.
+     * @param tsk -
+     */
+    synchronized protected void addTask(Task tsk){
+        taskManager.addTask(tsk);
     }
 
     /**
@@ -68,6 +88,13 @@ public abstract class Task implements Runnable{
         logger.trace("Task  WILL WAIT for other task at thread " + Thread.currentThread().getId());
         while(true){
             setStatus(TaskStatus.BLOCKED);
+            class myCallback implements Callback0 {
+                public void CallMeBack(){
+                    resume();
+                }
+            };
+            myCallback cb = new myCallback();
+            tsk.registerCallback(cb);
             taskManager.addWaitedTask(this,tsk);
             while (getStatus() == TaskStatus.BLOCKED){
                 try{
@@ -116,6 +143,9 @@ public abstract class Task implements Runnable{
         setStatus(TaskStatus.RUNNING);
         start();
         setStatus(TaskStatus.FINISHED);
+        for (int i=0; i< Callbacks.size(); i++){
+		  Callbacks.get(i).CallMeBack();
+        }
         taskManager.taskFinished();
     }
 }

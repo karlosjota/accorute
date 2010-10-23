@@ -125,13 +125,15 @@ public class TaskManager implements Comparator<Task>, Runnable {
             }
             boolean serialRunning = false;
             //...then resume tasks that can be unblocked
+
             for(Task t : runningTasks){
+                /* this code is no more needed
                 if(t.getStatus() == Task.TaskStatus.BLOCKED){
                     if(finishedTasks.contains(waitingTasks.get(t))){
                         logger.trace("Unblock blocked task");
                         t.resume();                                                 
                     }
-                }
+                } */
                 if(t instanceof SerialTask){
                     //if the serial task is running right now, we shouldn't go any further
                     serialRunning = true;

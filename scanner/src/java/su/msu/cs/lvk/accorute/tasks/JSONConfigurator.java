@@ -16,7 +16,7 @@ import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 
 import java.io.*;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -28,8 +28,9 @@ import org.json.JSONObject;
  * Time: 9:13:23
  * To change this template use File | Settings | File Templates.
  */
-public class JSONConfigurationTask extends SerialTask{
-    private static Logger logger = Logger.getLogger(JSONConfigurationTask.class.getName());
+public class JSONConfigurator extends SerialTask{
+    private static Logger logger = Logger.getLogger(JSONConfigurator.class.getName());
+
     private static class UnsupportedDOMEventTypeException extends Exception{
         public UnsupportedDOMEventTypeException(){
             super();
@@ -96,7 +97,7 @@ public class JSONConfigurationTask extends SerialTask{
 
     public final String filename;
     public final TestChain t = new TestChain();
-    public JSONConfigurationTask(TaskManager t, String filename){
+    public JSONConfigurator(TaskManager t, String filename){
         super(t);
         this.filename = filename;
         
@@ -154,10 +155,11 @@ public class JSONConfigurationTask extends SerialTask{
                     }
                     WebAppUser u = new WebAppUser();
                     JSONObject creds = user.getJSONObject("credentials");
-                    while(creds.keys().hasNext()){
-                        String key = (String)creds.keys().next();
+                    Iterator it = creds.keys();
+                    while(it.hasNext()){
+                        String key = (String)it.next();
                         String val = creds.getString(key);
-                        u.getStaticCredentials().add(new NamedValue(key, val));                                                    
+                        u.getStaticCredentials().add(new NamedValue(key, val));
                     }
                     u.getStaticCredentials().add(new NamedValue("username", userName ));
                     u.setRole(r);
@@ -175,14 +177,14 @@ public class JSONConfigurationTask extends SerialTask{
                     String uname = sessionCreatedEvt.getString("user");
                     String sessname = sessionCreatedEvt.getString("name");
                     WebAppUser u = WebAppProperties.getInstance().getUserService().getUsersByCredential("username", uname).get(0);
-                    logger.trace("Parsing session " + i + " of user " + uname + ". The session contains " + evts.length() + " events");
+                    logger.trace("Parsing UC \"" + sessname + "\" of user " + uname + ". The UC record contains " + evts.length() + " events");
                     for(int j=1; j < evts.length(); j++){
                         JSONObject evt = evts.getJSONObject(j);
                         String evtType = evt.getString("type");
-                        logger.trace("Parsing evt " + j + ", type: " +evtType);
-
                         if (evtType.equals("UCCreated") && j != evts.length() - 1 ){
-                            JSONObject firstAction = evts.getJSONObject(j+1);
+                            j++;
+                            JSONObject firstAction = evts.getJSONObject(j);
+                            logger.trace("Parsing evt " + j + ", type: " +evtType);
                             try{
                                 Action act = JSONEventParser.parse(firstAction);
                                 if(act.getName().equals("")){
@@ -190,9 +192,8 @@ public class JSONConfigurationTask extends SerialTask{
                                 }
                                 WebAppProperties.getInstance().getActionService().addOrUpdateAction(act);
                                 WebAppProperties.getInstance().addStateChangingAction(act);
-
+                                logger.trace("Recorded state-changing action:\n" +act);
                                 t.add(act, u);
-                                j++;
                             }
                             catch(UnsupportedDOMEventTypeException udatex){
                                 logger.warn(udatex);

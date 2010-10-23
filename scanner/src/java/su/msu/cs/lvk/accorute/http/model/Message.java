@@ -120,9 +120,10 @@ public class Message implements Serializable{
             }
         }
         byte[] content = getContent();
-        if (content != null) {
-            buff.append(HTTPHeader.HTTP_CONTENT_LENGTH + ": ").append(Integer.toString(content.length)).append(crlf);
-        }
+        //disabled this
+        //if (content != null) {
+        //    buff.append(HTTPHeader.HTTP_CONTENT_LENGTH + ": ").append(Integer.toString(content.length)).append(crlf);
+        //}
         buff.append(crlf);
         if (content != null) {
             buff.append(this.getTotallyDecodedBody());

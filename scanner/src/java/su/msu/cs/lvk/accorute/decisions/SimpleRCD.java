@@ -81,12 +81,12 @@ public class SimpleRCD extends  RequestComposerDecomposer{
             );
         }catch(MalformedURLException muex){
             //TODO: Smth here!!!
-        }
-        if(!Body.equals("")){
-            req.setMethod("POST");
-            req.setContent(Body.substring(0,Body.length()-1).getBytes());
-        }
+        } 
         req.setCookies(new CookieDescriptor(cookies,new CookieOrigin(host,port,"",false), "Cookie")); //TODO: CookieOrigin() params are a stub!
+        if(!Body.equals("")){
+            req.setContent(Body.substring(0,Body.length()-1).getBytes());
+            req.setMethod("POST");
+        }
         return req;
     }
     public List<ActionParameter> decomposeURL(String u) throws MalformedURLException {
