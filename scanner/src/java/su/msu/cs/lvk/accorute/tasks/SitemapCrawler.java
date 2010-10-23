@@ -68,7 +68,7 @@ public class SitemapCrawler extends Task {
                 }
             }
         myCb cb = new myCb();
-        ResponseFetcher tsk = new ResponseFetcher(super.taskManager,action, cb);
+        ResponseFetcher tsk = new ResponseFetcher(super.taskManager,action,contextID, cb);
     }
 
     public void start(){

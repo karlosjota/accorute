@@ -47,7 +47,7 @@ public abstract class Task implements Runnable{
      * Get current status
      * @return current status
      */
-    protected TaskStatus getStatus(){
+    synchronized public TaskStatus getStatus(){
         return status;
     }
 

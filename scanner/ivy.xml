@@ -15,5 +15,7 @@
 
         <dependency org="org.json" name="json" rev="20090211"/>
 
+        <dependency org="jgrapht" name="jgrapht" rev="0.7.3"/>
+
     </dependencies>
 </ivy-module>

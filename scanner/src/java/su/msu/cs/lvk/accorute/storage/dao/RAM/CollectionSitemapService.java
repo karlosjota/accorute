@@ -24,8 +24,7 @@ public class CollectionSitemapService implements SitemapService {
     public Sitemap getSitemapForContext(EntityID ctxID){
         Sitemap map = database.get(ctxID);
         if(map == null){
-            map = new Sitemap();
-            map.setCtxID(ctxID);
+            map = new Sitemap(ctxID);
             database.put(ctxID, map);
         }
         return map;

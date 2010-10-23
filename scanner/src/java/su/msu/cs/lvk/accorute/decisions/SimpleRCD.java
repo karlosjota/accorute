@@ -28,7 +28,7 @@ import java.util.List;
  * Time: 13:58:48
  * To change this template use File | Settings | File Templates.
  */
-public class SimpleRCD extends  RequestComposerDecomposer{
+public class SimpleRCD implements  RequestComposerDecomposer{
     public List<ActionParameter> decompose(Request r){
         throw new NotImplementedException();
     }

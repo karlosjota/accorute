@@ -37,7 +37,7 @@ public class ResponseFetcher extends Task {
                 WebAppProperties.getInstance().getContextService().getContextByID(contextID).getUserID()
         );
         Request req = WebAppProperties.getInstance().getRcd().compose(action.getActionParameters(), u);
-        Response resp = HttpWebConnection
+        //TODO: ...
 
     }
 }
