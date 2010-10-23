@@ -41,8 +41,9 @@ public class SimpleRCD implements  RequestComposerDecomposer{
     }
 
     public Request compose(List<ActionParameter> params, WebAppUser user){
-        WebAppProperties.getInstance().getPvd().resolve(params,user);
         Request req = new Request();
+
+        WebAppProperties.getInstance().getPvd().resolve(params,user);
         String Query = "";
         String Body = "";
         String proto = "http";

@@ -7,7 +7,7 @@
         <property name="targetMethod" value="initLogging"/>
         <property name="arguments">
             <list>
-                <value>classpath:log4j-config.xml</value>
+                <value>file:src/resources/log4j-config.xml</value>
             </list>
         </property>
     </bean>

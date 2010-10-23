@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.tasks.JSONConfigurator;
@@ -16,15 +17,16 @@ import su.msu.cs.lvk.accorute.tasks.JSONConfigurator;
  * To change this template use File | Settings | File Templates.
  */
 public class Main {
-    private static Logger logger = Logger.getLogger(Main.class.getName());
+    private static Logger logger;
     public static void main(String[] args){
         ApplicationContext ctx;
         try {
-            ctx = new ClassPathXmlApplicationContext("accorute-config.xml");
+            ctx = new FileSystemXmlApplicationContext("src/resources/accorute-config.xml");
         } catch (BeanDefinitionStoreException ex) {
             System.err.println("Error loading evaluation contexts: " + ex.getMessage());
             return;
         }
+        logger = Logger.getLogger(Main.class.getName());
         /*WebAppUser user = new WebAppUser();
         Action action = new Action("default action", new ArrayList<ActionParameter>());
         logger.trace(WebAppProperties.getInstance());
