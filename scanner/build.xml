@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="scanner" basedir="." default="ivy-publish-local"
+        xmlns:ivy="antlib:org.apache.ivy.ant">
+  
+   <property file="build.properties"/>
+    
+    <property name="out.dir" location="${basedir}/out"/>
+    <property name="lib.dir" location="${basedir}/lib"/>
+   <property name="project.dir" location="${basedir}"/>
+
+    <path id="scanner.classpath">
+        <fileset dir="lib/compile">
+            <include name="**/*.jar"/>
+        </fileset>
+        <pathelement location="${out.dir}/scanner"/>
+     </path>
+
+    <!-- ivy task definitions -->
+    <path id="ivy.libs">
+        <fileset dir="${project.dir}/lib.ivy">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <taskdef uri="antlib:org.apache.ivy.ant"
+        resource="org/apache/ivy/ant/antlib.xml"
+        classpathref="ivy.libs"
+        loaderref="ivy.libs.loader"/>
+
+
+<!-- Compiler options -->
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="128m"/>
+  <patternset id="ignored.files">
+    <exclude name="**/CVS/**"/>
+    <exclude name="**/SCCS/**"/>
+    <exclude name="**/RCS/**"/>
+    <exclude name="**/rcs/**"/>
+    <exclude name="**/.DS_Store/**"/>
+    <exclude name="**/.svn/**"/>
+    <exclude name="**/.pyc/**"/>
+    <exclude name="**/.pyo/**"/>
+    <exclude name="**/*.pyc/**"/>
+    <exclude name="**/*.pyo/**"/>
+    <exclude name="**/.git/**"/>
+    <exclude name="**/.sbas/**"/>
+    <exclude name="**/.IJI.*/**"/>
+    <exclude name="**/vssver.scc/**"/>
+    <exclude name="**/vssver2.scc/**"/>
+  </patternset>
+  <patternset id="compiler.excluded">
+  </patternset>
+  <patternset id="library.patterns">
+    <include name="*.zip"/>
+    <include name="*.war"/>
+    <include name="*.egg"/>
+    <include name="*.ear"/>
+    <include name="*.swc"/>
+    <include name="*.jar"/>
+  </patternset>
+  <patternset id="compiler.resources">
+    <include name="**/?*.properties"/>
+    <include name="**/?*.xml"/>
+    <include name="**/?*.gif"/>
+    <include name="**/?*.png"/>
+    <include name="**/?*.jpeg"/>
+    <include name="**/?*.jpg"/>
+    <include name="**/?*.html"/>
+    <include name="**/?*.dtd"/>
+    <include name="**/?*.tld"/>
+  </patternset>
+
+  <property name="compiler.args.scanner" value="${compiler.args}"/>
+  
+  <path id="scanner.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+   
+  
+  <patternset id="excluded.from.scanner">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.scanner">
+    <patternset refid="excluded.from.scanner"/>
+  </patternset>
+  
+  <path id="scanner.sourcepath">
+    <dirset dir="${basedir}/src">
+      <include name="java"/>
+      <include name="resources"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="build" depends="compile.scanner.production" description="Compile scanner"/>
+  
+  <target name="compile.scanner.production"  description="Compile scanner production classes">
+    <mkdir dir="${out.dir}"/>
+    
+   <javac destdir="${out.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" >
+      <compilerarg line="${compiler.args.scanner}"/>
+      <bootclasspath refid="scanner.bootclasspath"/>
+      <classpath refid="scanner.classpath"/>
+      <src refid="scanner.sourcepath"/>
+      <patternset refid="excluded.from.compilation.scanner"/>
+    </javac>
+    
+    <copy todir="${out.dir}">
+      <fileset dir="${basedir}/src/scanner/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${basedir}/src/scanner/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+
+    <jar destfile="${basedir}/scanner.jar" basedir="${out.dir}">
+    </jar>
+
+     <delete dir="${basedir}/out"/>
+  </target>
+    
+  <target name="clean" description="cleanup module">
+    <delete dir="${out.dir}"/>
+    <delete file="${basedir}/scanner.jar"/>
+  </target>
+
+     <target name="init">
+        <mkdir dir="${lib.dir}"/>
+        <mkdir dir="${lib.dir}/compile"/>
+        <mkdir dir="${lib.dir}/runtime"/>
+        <mkdir dir="${out.dir}"/>
+        <mkdir dir="${out.dir}/lib"/>
+        <mkdir dir="${out.dir}/scanner"/>
+     </target>
+
+   <target name="ivy-configure">
+        <ivy:configure file="${project.dir}/ivysettings.xml"/>
+    </target>
+                    
+    <target name="ivy-resolve" depends="init, ivy-configure">
+        <ivy:retrieve pattern="${lib.dir}/compile/[artifact]-[revision].[ext]"
+            conf="compile" transitive="false" sync="true"/>
+        <ivy:retrieve pattern="${lib.dir}/runtime/[artifact]-[revision].[ext]"
+            conf="runtime" transitive="true" sync="true"/>
+    </target>        
+
+    <target name="ivy-publish-local" depends="clean, ivy-resolve, build">
+        <ivy:publish resolver="local" artifactspattern="${out.dir}/[artifact].[ext]"/>
+    </target>
+
+    <!--
+    <target name="javadoc" description="Create javadocs">
+        <mkdir dir="${out.dir}/docs/api"/>
+        <javadoc destdir="${out.dir}/docs/api"
+         Overview="true"
+         author="false"
+         version="false"
+         windowtitle="API documentation">
+         <packageset dir="src" defaultexcludes="yes">
+             <include name="client/java/su/**"/>
+             <include name="model/java/su/**"/>
+             <include name="storage/java/su/**"/>
+             <include name="scanner/java/su/**"/>
+           </packageset>
+        </javadoc>
+    </target>
+    -->
+
+</project>
