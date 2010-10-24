@@ -1,0 +1,2 @@
+For SVN users:
+svn propset svn:ignore -F .gitignore .
