@@ -30,7 +30,7 @@ public abstract class Task implements Runnable{
         Callbacks.add(cb);
     }
 
-    private Logger logger = Logger.getLogger(this.getClass().getName());
+    protected Logger logger = Logger.getLogger(this.getClass().getName());
 
     private TaskStatus status = TaskStatus.NOT_STARTED;
     private boolean successful = false;

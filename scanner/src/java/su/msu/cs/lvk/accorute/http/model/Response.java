@@ -41,11 +41,13 @@ package su.msu.cs.lvk.accorute.http.model;
 
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.cookie.CookieOrigin;
 import org.apache.commons.httpclient.cookie.MalformedCookieException;
 import org.apache.commons.httpclient.cookie.RFC2965Spec;
 import su.msu.cs.lvk.accorute.http.constants.HTTPHeader;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -86,6 +88,13 @@ public class Response extends Message {
         this.date = resp.date;
         setHeaders(resp.getHeaders());
         setContent(resp.getContent());
+    }
+    public Response(HttpMethod method) throws IOException{
+        for(Header h:method.getResponseHeaders()){
+            setHeader(h.getName(),h.getValue());
+        }
+        byte [] body = method.getResponseBody();
+        setContent(body);
     }
 
     /**

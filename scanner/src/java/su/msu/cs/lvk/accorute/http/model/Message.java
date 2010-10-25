@@ -75,7 +75,7 @@ public class Message implements Serializable{
     private EntityID ctxID = EntityID.NOT_INITIALIZED;
 
 
-    private List<NamedValue> headers = null;
+    protected List<NamedValue> headers = null;
     private byte[] content = null;
 
     /**

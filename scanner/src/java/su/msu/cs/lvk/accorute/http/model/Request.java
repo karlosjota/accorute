@@ -40,6 +40,12 @@
 package su.msu.cs.lvk.accorute.http.model;
 
 import org.apache.commons.httpclient.Cookie;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.URI;
+import org.apache.commons.httpclient.URIException;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.lang.NotImplementedException;
 import su.msu.cs.lvk.accorute.http.constants.HTTPContentType;
 import su.msu.cs.lvk.accorute.http.constants.HTTPHeader;
 import su.msu.cs.lvk.accorute.http.constants.HTTPMethod;
@@ -203,7 +209,31 @@ public class Request extends Message {
                 }
            }
         }
-
         return result;
+    }
+    public HttpMethod genHTTPClientMethod() throws URIException{
+        HttpMethod res;
+        if(method.equalsIgnoreCase("GET")){
+            res = new GetMethod();
+        }else if(method.equalsIgnoreCase("POST")){
+            PostMethod postMeth = new PostMethod();
+            String [] params = getContent().toString().split("&");
+            for(String param:params){
+                String [] namevalue = getContent().toString().split("=",2);
+                postMeth.setParameter(namevalue[0], namevalue[1]);
+            }
+            res = postMeth;
+        }else{
+            throw new NotImplementedException("cannot convert " + method + " method request to httpclient HttpMethod");
+        }
+        try{
+            res.setURI(new URI(url.toString(),false)); // TODO: maybe true here
+        }catch(URIException ex){
+            throw ex;
+        }
+        for(NamedValue v: super.headers){
+            res.addRequestHeader(v.getName(),v.getValue());
+        }
+        return res;
     }
 }
