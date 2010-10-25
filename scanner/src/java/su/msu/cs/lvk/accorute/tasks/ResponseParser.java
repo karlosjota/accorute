@@ -16,7 +16,7 @@ import su.msu.cs.lvk.accorute.utils.Callback1;
  * To change this template use File | Settings | File Templates.
  */
 public class ResponseParser extends Task {
-    public ResponseParser(TaskManager t, Response r, Callback1<Action> cb) {
+    public ResponseParser(TaskManager t, Conversation c,  Callback1<Action> cb) {
         super(t);
     }
 
@@ -27,6 +27,9 @@ public class ResponseParser extends Task {
 
     @Override
     protected void start() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        //1. create WebResponse from conversation : WebResponse(WebResponseData responseData, WebRequest request, long loadTime)
+        //2. create htmlpage : HtmlPage(URL originatingUrl, WebResponse webResponse, WebWindow webWindow)
+        //3. create WebConnectionWrapper that calls back the callback on each request
+        //4. do parsing of the page
     }
 }

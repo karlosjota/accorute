@@ -41,7 +41,7 @@ public class SitemapCrawler extends Task {
                     }
                 };
                 myCb cb = new myCb();
-                ResponseParser tsk = new ResponseParser(super.taskManager, conv.getResponse(), cb);
+                ResponseParser tsk = new ResponseParser(super.taskManager, conv, cb);
                 addTask(tsk);
             }
             siteMap.addEdge(from, n, action);
