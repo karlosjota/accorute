@@ -1,5 +1,6 @@
 package su.msu.cs.lvk.accorute.decisions;
 
+import com.gargoylesoftware.htmlunit.WebRequest;
 import org.apache.commons.httpclient.cookie.MalformedCookieException;
 import su.msu.cs.lvk.accorute.http.model.ActionParameter;
 import su.msu.cs.lvk.accorute.http.model.Request;
@@ -17,6 +18,7 @@ import java.util.List;
  */
 public interface RequestComposerDecomposer {
     public List<ActionParameter> decompose(Request r);
+    public List<ActionParameter> decompose(WebRequest r);
     public Request compose(List<ActionParameter> params, WebAppUser user);
     public List<ActionParameter> decomposeURL(String u) throws MalformedURLException;
     public List<ActionParameter> decomposeCookies(String cookies) throws MalformedCookieException;

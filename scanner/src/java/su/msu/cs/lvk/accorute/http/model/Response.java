@@ -39,15 +39,20 @@
 
 package su.msu.cs.lvk.accorute.http.model;
 
+import com.gargoylesoftware.htmlunit.StringWebResponse;
+import com.gargoylesoftware.htmlunit.WebResponse;
+import com.gargoylesoftware.htmlunit.WebResponseData;
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.cookie.CookieOrigin;
 import org.apache.commons.httpclient.cookie.MalformedCookieException;
 import org.apache.commons.httpclient.cookie.RFC2965Spec;
 import su.msu.cs.lvk.accorute.http.constants.HTTPHeader;
 
 import java.io.IOException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -95,6 +100,12 @@ public class Response extends Message {
         }
         byte [] body = method.getResponseBody();
         setContent(body);
+    }
+    
+    public WebResponse genWebResponse(URL url){
+        List<NameValuePair>  headers = new ArrayList<NameValuePair>();
+        WebResponse wr = new StringWebResponse(toString(),url);
+        return wr;
     }
 
     /**

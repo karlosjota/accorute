@@ -111,11 +111,11 @@
     </javac>
     
     <copy todir="${out.dir}">
-      <fileset dir="${basedir}/src/scanner/java">
+      <fileset dir="${basedir}/src/java">
         <patternset refid="compiler.resources"/>
         <type type="file"/>
       </fileset>
-      <fileset dir="${basedir}/src/scanner/resources">
+      <fileset dir="${basedir}/src/resources">
         <patternset refid="compiler.resources"/>
         <type type="file"/>
       </fileset>

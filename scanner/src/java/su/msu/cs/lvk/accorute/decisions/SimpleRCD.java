@@ -1,5 +1,6 @@
 package su.msu.cs.lvk.accorute.decisions;
 
+import com.gargoylesoftware.htmlunit.WebRequest;
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.cookie.CookieOrigin;
 import org.apache.commons.httpclient.cookie.MalformedCookieException;
@@ -29,8 +30,11 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class SimpleRCD implements  RequestComposerDecomposer{
+    public List<ActionParameter> decompose(WebRequest r){
+        throw new NotImplementedException();  //TODO: implement
+    }
     public List<ActionParameter> decompose(Request r){
-        throw new NotImplementedException();
+        throw new NotImplementedException(); //TODO: implement
     }
     private static ActionParameter getParamByName(List<ActionParameter> params, String name){
         for(ActionParameter param: params ){

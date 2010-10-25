@@ -24,7 +24,7 @@ public class ResponseFetcher extends Task {
     final private Callback1<Conversation> callback;
     final private Action action;
     final private EntityID contextID;
-    final private HttpClient client = new HttpClient();
+    final static private HttpClient client = new HttpClient();
     public ResponseFetcher(TaskManager t, Action act, EntityID ctxID, Callback1<Conversation> c) {
         super(t);
         callback = c;

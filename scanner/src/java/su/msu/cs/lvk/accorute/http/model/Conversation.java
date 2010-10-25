@@ -1,5 +1,7 @@
 package su.msu.cs.lvk.accorute.http.model;
 
+import com.gargoylesoftware.htmlunit.WebResponse;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -93,7 +95,6 @@ public class Conversation implements Serializable {
     public Conversation() {
         time = new Date();
     }
-
 
     public Conversation(Request request) {
         this.request = request;

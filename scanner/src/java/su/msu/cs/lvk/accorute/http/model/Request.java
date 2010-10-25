@@ -39,6 +39,7 @@
 
 package su.msu.cs.lvk.accorute.http.model;
 
+import com.gargoylesoftware.htmlunit.WebRequest;
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.URI;
