@@ -69,6 +69,7 @@ public class TaskManager implements Comparator<Task>, Runnable {
             notify();//wake up the running cycle
             return true;
         }
+        logger.warn("tried to add task to terminating taskManager!");
         return false;
     }
     synchronized public void taskFinished(){

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="log4jInitialization" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetClass" value="org.springframework.util.Log4jConfigurer"/>
+        <property name="targetMethod" value="initLogging"/>
+        <property name="arguments">
+            <list>
+                <value>file:src/resources/log4j-config.xml</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="cookieService" scope="prototype" class="su.msu.cs.lvk.accorute.storage.dao.RAM.CollectionCookieService">
+    </bean>
+    <bean id="actionService" scope="prototype" class="su.msu.cs.lvk.accorute.storage.dao.RAM.CollectionActionService">
+    </bean>
+    <bean id="contextService" scope="prototype" class="su.msu.cs.lvk.accorute.storage.dao.RAM.CollectionContextService">
+    </bean>
+    <bean id="convService" scope="prototype" class="su.msu.cs.lvk.accorute.storage.dao.RAM.CollectionConversationService">
+    </bean>
+    <bean id="mapService" scope="prototype" class="su.msu.cs.lvk.accorute.storage.dao.RAM.CollectionSitemapService">
+    </bean>
+    <bean id="userService" scope="prototype" class="su.msu.cs.lvk.accorute.storage.dao.RAM.CollectionUserService">
+    </bean>
+
+    <bean id="taskman" class="su.msu.cs.lvk.accorute.taskmanager.TaskManager" scope="prototype" />
+
+    <bean id="simpleRCD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimpleRCD"/>
+    <bean id="simplePVD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimplePVD"/>
+    <bean id="dummyChState" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.DummyChStateDec"/>
+    <bean id="respClass" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimpleRespClassifier"/>
+    <bean id="pageEqD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimplePageEqDec"/>
+
+    <bean id="Properties" class="su.msu.cs.lvk.accorute.WebAppProperties" factory-method="getInstance">
+        <property name="actionService" ref="actionService"/>
+        <property name="contextService" ref="contextService"/>
+        <property name="cookieService" ref="cookieService" />
+        <property name="userService" ref="userService"/>
+        <property name="sitemapService" ref="mapService"/>
+        <property name="conversationService" ref="convService"/>
+        <property name="taskManager" ref="taskman" />
+        <property name="roles">
+            <list>
+            </list>
+        </property>
+        <property name="rcd" ref="simpleRCD"/>
+        <property name="pvd" ref="simplePVD"/>
+        <property name="chStateDec" ref="dummyChState" />
+        <property name="respClassificator" ref="respClass" />
+        <property name="pageEqDec" ref="pageEqD" />
+    </bean>
+
+</beans>
+
+        

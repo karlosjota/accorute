@@ -1,5 +1,6 @@
 package su.msu.cs.lvk.accorute.decisions;
 
+import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.cookie.CookieOrigin;
@@ -29,9 +30,19 @@ import java.util.List;
  * Time: 13:58:48
  * To change this template use File | Settings | File Templates.
  */
-public class SimpleRCD implements  RequestComposerDecomposer{
+public class SimpleRCD extends RequestComposerDecomposer{
     public List<ActionParameter> decompose(WebRequest r){
-        throw new NotImplementedException();  //TODO: implement
+        ArrayList<ActionParameter> params = new ArrayList<ActionParameter>();
+        params.addAll(decomposeURL(r.getUrl()));
+        HttpMethod m = r.getHttpMethod();
+        boolean isPost = false;
+        if(m == HttpMethod.POST){
+            isPost = true;
+        }else if(m!=HttpMethod.GET){
+            throw new NotImplementedException("Methods other than get and post are not supported");  
+        }
+        return params;
+
     }
     public List<ActionParameter> decompose(Request r){
         throw new NotImplementedException(); //TODO: implement
@@ -53,6 +64,9 @@ public class SimpleRCD implements  RequestComposerDecomposer{
         String proto = "http";
         String host = getParamByName(params,"host").getValue();
         int port = new Integer(getParamByName(params,"port").getValue());
+        if(port == -1){
+            port = 80;
+        }
         String path = getParamByName(params,"path").getValue();
         List<Cookie> cookies = new ArrayList<Cookie>();
         for(ActionParameter param: params){
@@ -73,6 +87,7 @@ public class SimpleRCD implements  RequestComposerDecomposer{
                     req.addHeader(param);
                 } else if(param.getLocation() == ActionParameterLocation.COOKIE){
                     cookies.add (new Cookie(host,param.getName(), param.getValue()));//TODO: "host" here is a stub!
+                    //TODO: also add other cookies!!!
                 }
             }catch(UnsupportedEncodingException ueex){}
         }
@@ -94,8 +109,7 @@ public class SimpleRCD implements  RequestComposerDecomposer{
         }
         return req;
     }
-    public List<ActionParameter> decomposeURL(String u) throws MalformedURLException {
-        URL url = new URL(u);
+    public List<ActionParameter> decomposeURL(URL url) {
         ArrayList<ActionParameter> params = new ArrayList<ActionParameter>();
 
         params.add(new ActionParameter(

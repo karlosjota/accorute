@@ -39,9 +39,7 @@
 
 package su.msu.cs.lvk.accorute.http.model;
 
-import com.gargoylesoftware.htmlunit.StringWebResponse;
-import com.gargoylesoftware.htmlunit.WebResponse;
-import com.gargoylesoftware.htmlunit.WebResponseData;
+import com.gargoylesoftware.htmlunit.*;
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethod;
@@ -100,12 +98,30 @@ public class Response extends Message {
         }
         byte [] body = method.getResponseBody();
         setContent(body);
+        setStatusCode(Integer.toString(method.getStatusCode()));
+        setStatusMessage(method.getStatusText());
+
+
     }
     
-    public WebResponse genWebResponse(URL url){
-        List<NameValuePair>  headers = new ArrayList<NameValuePair>();
-        WebResponse wr = new StringWebResponse(toString(),url);
-        return wr;
+    public WebResponse genWebResponse(URL url, long loadTime, WebRequest request){
+        String statusMessage = getStatusLine();
+        if (statusMessage == null) {
+            statusMessage = "Unknown status message";
+        }
+        final int statusCode =  Integer.parseInt(getStatusCode());
+        final List<com.gargoylesoftware.htmlunit.util.NameValuePair> headers = new ArrayList<com.gargoylesoftware.htmlunit.util.NameValuePair>();
+        for (final NamedValue header : getHeaders()) {
+            headers.add(new com.gargoylesoftware.htmlunit.util.NameValuePair(header.getName(), header.getValue()));
+        }
+        try{
+            final WebResponseData responseData = new WebResponseData(new DownloadedContent.InMemory(getContent()), statusCode, statusMessage, headers);
+            return new WebResponse(responseData,  request, loadTime);
+        }catch(IOException ex){
+            throw new AssertionError("this is not gonna happen!");
+        }
+
+
     }
 
     /**

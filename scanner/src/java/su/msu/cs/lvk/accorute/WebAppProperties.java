@@ -39,6 +39,10 @@ public class WebAppProperties {
         return respClassificator;
     }
 
+    public void setRespClassificator(ResponseClassificator respClassificator) {
+        this.respClassificator = respClassificator;
+    }
+
     private ResponseClassificator respClassificator;
 
     public ActionChangesStateDecision getChStateDec() {
@@ -50,6 +54,16 @@ public class WebAppProperties {
     }
 
     private ActionChangesStateDecision chStateDec;
+
+    public HtmlPageEqualityDecision getPageEqDec() {
+        return pageEqDec;
+    }
+
+    public void setPageEqDec(HtmlPageEqualityDecision pageEqDec) {
+        this.pageEqDec = pageEqDec;
+    }
+
+    private HtmlPageEqualityDecision pageEqDec;
 
     public MessageEqualityDecision getrEqD() {
         return rEqD;

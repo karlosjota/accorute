@@ -13,7 +13,13 @@
         <priority value="trace" />
         <appender-ref ref="console" />
     </root>
-    <logger name="org.apache.commons.httpclient">
+    <logger name="org.apache">
+        <level value="warn"/>
+    </logger>
+    <logger name="httpclient">
+        <level value="warn"/>
+    </logger>
+    <logger name="com.gargoylesoftware">
         <level value="warn"/>
     </logger>
 </log4j:configuration>

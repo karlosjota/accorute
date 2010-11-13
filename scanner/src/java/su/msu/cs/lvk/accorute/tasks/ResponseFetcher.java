@@ -1,5 +1,6 @@
 package su.msu.cs.lvk.accorute.tasks;
 
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.commons.httpclient.*;
 import su.msu.cs.lvk.accorute.WebAppProperties;
 import su.msu.cs.lvk.accorute.http.model.*;
@@ -21,19 +22,19 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public class ResponseFetcher extends Task {
-    final private Callback1<Conversation> callback;
     final private Action action;
     final private EntityID contextID;
-    final static private HttpClient client = new HttpClient();
-    public ResponseFetcher(TaskManager t, Action act, EntityID ctxID, Callback1<Conversation> c) {
+    private Conversation res;
+    final static private HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
+    public ResponseFetcher(TaskManager t, Action act, EntityID ctxID) {
         super(t);
-        callback = c;
         action = act;
         contextID = ctxID;
+        res = null;
     }
 
     public Object getResult() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return res;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     protected void start() {
@@ -51,20 +52,13 @@ public class ResponseFetcher extends Task {
         }
         try{
             int statusCode = client.executeMethod(httpM);
-            if (statusCode != HttpStatus.SC_OK) {
-                logger.error("Method failed: " + httpM.getStatusLine());
-            }
             Response resp = new Response(httpM);
-            Conversation conv = new Conversation(req, resp);
+            res = new Conversation(req, resp);
             setSuccessful(true);
-            callback.CallMeBack(conv);
-            return;
         } catch (HttpException e) {
             logger.error("Fatal protocol violation: " + e.getMessage());
-            return; // no success
         } catch (IOException e) {
             logger.error("Fatal transport error: " + e.getMessage());
-            return; // no success
         } finally {
             httpM.releaseConnection();
         }

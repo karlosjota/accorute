@@ -1,7 +1,10 @@
 package su.msu.cs.lvk.accorute.http.model;
 
+import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
+import org.apache.commons.lang.NotImplementedException;
 
+import javax.xml.bind.NotIdentifiableEvent;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -101,7 +104,9 @@ public class Conversation implements Serializable {
         response = null;
         time = new Date();
     }
-
+    public Conversation(WebRequest request, WebResponse response) {
+        throw new NotImplementedException();
+    }
     public Conversation(Request request, Response response) {
         this.request = request;
         this.response = response;

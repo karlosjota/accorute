@@ -40,6 +40,7 @@
 package su.msu.cs.lvk.accorute.http.model;
 
 import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.WebResponse;
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.URI;
@@ -94,7 +95,7 @@ public class Request extends Message {
             setContent(req.getContent());
         }
     }
-
+    
     /**
      * Sets the request method
      *
@@ -212,6 +213,19 @@ public class Request extends Message {
         }
         return result;
     }
+    public WebRequest genWebRequest(){
+        WebRequest req = new WebRequest(getURL());
+        for(NamedValue header: getHeaders()){
+            req.setAdditionalHeader(header.getName(),header.getValue());
+        }
+        if(getMethod().equalsIgnoreCase("GET")){
+            req.setHttpMethod(com.gargoylesoftware.htmlunit.HttpMethod.GET);
+        }else if(getMethod().equalsIgnoreCase("POST")){
+            req.setHttpMethod(com.gargoylesoftware.htmlunit.HttpMethod.POST);
+        }
+        //TODO: add more code here!
+        return req;
+    }
     public HttpMethod genHTTPClientMethod() throws URIException{
         HttpMethod res;
         if(method.equalsIgnoreCase("GET")){
@@ -232,8 +246,10 @@ public class Request extends Message {
         }catch(URIException ex){
             throw ex;
         }
-        for(NamedValue v: super.headers){
-            res.addRequestHeader(v.getName(),v.getValue());
+        if(super.headers != null){
+            for(NamedValue v: super.headers){
+                res.addRequestHeader(v.getName(),v.getValue());
+            }
         }
         return res;
     }

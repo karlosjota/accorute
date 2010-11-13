@@ -58,5 +58,4 @@ public class Action {
     boolean equals(Action other){
         return actionID == other.getActionID();
     }
-
 }

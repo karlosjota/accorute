@@ -74,8 +74,8 @@ public abstract class Task implements Runnable{
      * the target task is finished.
      * @param tsk -
      */
-    synchronized protected void addTask(Task tsk){
-        taskManager.addTask(tsk);
+    protected boolean addTask(Task tsk){
+        return taskManager.addTask(tsk);
     }
 
     /**
@@ -143,9 +143,9 @@ public abstract class Task implements Runnable{
         setStatus(TaskStatus.RUNNING);
         start();
         setStatus(TaskStatus.FINISHED);
+        taskManager.taskFinished();
         for (int i=0; i< Callbacks.size(); i++){
 		  Callbacks.get(i).CallMeBack();
         }
-        taskManager.taskFinished();
     }
 }

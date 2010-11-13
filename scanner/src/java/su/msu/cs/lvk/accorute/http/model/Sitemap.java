@@ -1,4 +1,5 @@
 package su.msu.cs.lvk.accorute.http.model;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedMultigraph;
 import su.msu.cs.lvk.accorute.WebAppProperties;
@@ -31,6 +32,17 @@ public class Sitemap {
         return entryNode;
     }
 
+    @Override
+    public String toString() {
+        return "Sitemap{" +
+                "\nctxID=" + ctxID +
+                ",\nactionDepGraph=" + actionDepGraph +
+                ",\ninvalidNode=" + invalidNode +
+                ",\nexitNode=" + exitNode +
+                ",\nentryNode=" + entryNode +
+                "\n}";
+    }
+
     public static class SitemapNode{
         public EntityID getNodeID() {
             return nodeID;
@@ -53,13 +65,24 @@ public class Sitemap {
         public boolean addInbound(Conversation c){
             return inConversation.add(c);
         }
+        public boolean addPage(HtmlPage p){
+            return pages.add(p);
+        }
         public boolean responseEqual(Conversation c){
             if(inConversation.size() == 0)
                 return false;
             return WebAppProperties.getInstance().getrEqD().ResponseEquals(inConversation.get(0).getResponse() ,c.getResponse());
         }
+
+        public boolean pageEqual(HtmlPage p){
+            if(inConversation.size() == 0)
+                return false;
+            return WebAppProperties.getInstance().getPageEqDec().pagesEqual(pages.get(0),p);
+        }
+
         private final Set<Action> actions = new HashSet<Action>();
         private final List<Conversation> inConversation  = new ArrayList<Conversation> ();
+        private final List<HtmlPage> pages  = new ArrayList<HtmlPage> ();
 
         private final EntityID nodeID;
 
@@ -68,6 +91,16 @@ public class Sitemap {
         }
         boolean equals(SitemapNode other){
             return other.getActions().equals(actions);
+        }
+
+        @Override
+        public String toString() {
+            return "SitemapNode{" +
+                    "nodeID=" + nodeID +
+                    ", pages=" + pages +
+                    ", actions=" + actions +
+                    ", inConversation=" + inConversation +
+                    '}';
         }
     }
     synchronized public SitemapNode genNode(){
@@ -80,9 +113,23 @@ public class Sitemap {
     public SitemapNode getNodeByID(EntityID id){
          return nodeById.get(id);
     }
-    public SitemapNode createNode(Conversation conv){
+    public SitemapNode createNode(Conversation conv, HtmlPage p){
         SitemapNode n = genNode();
         n.addInbound(conv);
+        n.addPage(p);
+        return n;
+    }
+    public SitemapNode getNode(HtmlPage p){
+        SitemapNode n = null;
+        for(Map.Entry<EntityID, SitemapNode> entry : nodeById.entrySet()){
+            if(entry.getValue().pageEqual(p)){
+                n = entry.getValue();
+                break;
+            }
+        }
+        if(n != null){
+            n.addPage(p);
+        }
         return n;
     }
     public SitemapNode getNode(Conversation conv){
@@ -127,9 +174,10 @@ public class Sitemap {
         this.ctxID = ctxID;
     }
 
-    public boolean addEdge(SitemapNode from, SitemapNode to, Action act){
+    public boolean addEdge(SitemapNode from, SitemapNode to, Action act, Conversation conv){
         boolean wasImpact = actionDepGraph.addVertex(from) || actionDepGraph.addVertex(to);
         SitemapEdge edge = new SitemapEdge(from,to,act);
+        to.addInbound(conv);
         return wasImpact || actionDepGraph.addEdge(from,to,edge);
     }
 
