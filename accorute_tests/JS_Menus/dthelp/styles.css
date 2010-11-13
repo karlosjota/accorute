@@ -1,0 +1,31 @@
+body {font-family: Tahoma, Arial, Helvetica;  font-size: 11px;  color: #000000; background-color: #FFFFFF;
+      background-image: url(images/back.gif); background-attachment: fixed;}
+
+A       {font-family: Tahoma, Arial, Helvetica;  font-size: 12px;  color: #008CE7;  text-decoration: none;}
+A:hover {font-family: Tahoma, Arial, Helvetica;  font-size: 12px;  color: #008CE7;  text-decoration: underline;}
+
+A.copyright       {font-family: Tahoma, Arial, Helvetica;  font-size: 11px;  color: #FFE4A2;  text-decoration: none;}
+A.copyright:hover {font-family: Tahoma, Arial, Helvetica;  font-size: 11px;  color: #FFE4A2;  text-decoration: underline;}
+
+A.menu       {font-family: Tahoma, Arial, Helvetica;  font-size: 11px;  color: #FFFFFF;  text-decoration: none;}
+A.menu:hover {font-family: Tahoma, Arial, Helvetica;  font-size: 11px;  color: #FFFFFF;  text-decoration: underline;}
+
+A.section    {font-family: Tahoma, Arial, Helvetica; font-size: 12px; font-weight: bold; color: #008CE7;  text-decoration: none;}
+
+HR {height: 1px; color: #FBC48B;}
+
+.mainText   {font-family: Tahoma, Arial, Helvetica;  font-size: 12px;  color: #000000;}
+.mainTitle  {font-family: Arial, Helvetica; font-size: 20px; font-weight: bold; color: #85BAFE;}
+.mainTitle2 {font-family: Arial, Helvetica; font-size: 20px; font-weight: bold; color: #FFAA50;}
+
+.subTitle   {font-family: Tahoma, Arial, Helvetica; font-size: 12px; font-weight: bold; color: #008CE7;}
+
+.titleHR {width: 80%; height: 1px; color: #FBC48B;}
+.titleTD {font-family: Tahoma, Verdana; font-size: 11px;  color: #FFFFFF;
+          padding: 10px;
+          background-color: #000000;}
+
+.leftTD   {width: 10px; background-color: #000000;}
+.borderTD {font-family: Tahoma, Verdana; font-size: 11px; color: #FFFFFF;
+           background-color: #777777;}
+

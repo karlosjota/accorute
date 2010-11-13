@@ -1,0 +1,108 @@
+//Apycom.com DHTML-Tuner StyleNames
+//ItemStyles
+//Main
+//Second
+//Third
+//End of ItemStyles
+//SmStyles
+//End of SmStyles
+//End of StyleNames
+
+var blankImage="img/blank.gif";
+var isHorizontal=1;
+var menuWidth="0";
+var absolutePos=0;
+var posX=30;
+var posY=20;
+var floatable=0;
+var floatIterations=0;
+var movable=0;
+var moveCursor="default";
+var moveImage="";
+var moveWidth=0;
+var moveHeight=0;
+var fontStyle="normal 8pt Verdana";
+var fontColor=["#247BBB","#1A8DC6"];
+var fontDecoration=["none","underline"];
+var itemBackColor=["",""];
+var itemBorderWidth=0;
+var itemAlign="left";
+var itemBorderColor=["",""];
+var itemBorderStyle=["",""];
+var itemBackImage=["",""];
+var itemSpacing=0;
+var itemPadding=7;
+var itemCursor="hand";
+var itemTarget="_blank";
+var iconTopWidth=0;
+var iconTopHeight=0;
+var iconWidth=0;
+var iconHeight=0;
+var menuBackImage="";
+var menuBackColor="#FFFFFF";
+var menuBorderColor="#D5D2D2 ";
+var menuBorderStyle=["solid"];
+var menuBorderWidth=1;
+var subMenuAlign="";
+var transparency=100;
+var transition=24;
+var transDuration=400;
+var shadowColor="#CACACA";
+var shadowLen=0;
+var arrowImageMain=["",""];
+var arrowImageSub=["img/arrow3_n.gif","img/arrow3_n.gif"];
+var arrowWidth=5;
+var arrowHeight=5;
+var separatorImage="img/separ.gif";
+var separatorWidth="100%";
+var separatorHeight="1";
+var separatorAlignment="";
+var separatorVImage="";
+var separatorVWidth="0";
+var separatorVHeight="100%";
+var statusString="link";
+var pressedItem=-2;
+
+
+var itemStyles = [
+   ["fontStyle=bold 8pt Tahoma","fontColor=#FFFFFF,#FFFFFF","fontDecoration=none,none","itemBackColor=#7EB5F1,#9BC6F4",],
+   ["fontColor=#4D9F4A,#66B764",],
+   ["fontColor=#ED8B8B,#F3AFAF",],
+];
+
+var menuItems = [
+   ["Apycom Home","http://www.apycom.com/","","","",,"0",],
+   ["DHTML Menu","","","","",,"0",],
+   ["|Home","../index.html","","","",,,],
+   ["||Examples","dhtml-menu-ex1.html","","","",,,],
+   ["||How to Setup","../indexex.html#set","","","",,,],
+   ["||Parameters","../params.html","","","",,,],
+   ["|Purchase","../order.html","","","",,,],
+   ["|Download","http://www.apycom.com/download.html","","","",,,],
+   ["Our Products","","","","",,"0",],
+   ["|Java menus","","","","",,"2",],
+   ["||Drop Down Menus","http://www.apycom.com/xp-drop-down-menu/","","","",,"2",],
+   ["||Animated Menus","http://www.apycom.com/animated-buttons/","","","",,"2",],
+   ["||Website Buttons","http://www.apycom.com/website-buttons/","","","",,"2",],
+   ["||Navigation Tabs","http://www.apycom.com/navigation-bar-tabs/","","","",,"2",],
+   ["||Live Examples","http://www.apycom.com/indexex.html","","","",,"2",],
+   ["||Sreenshots","http://www.apycom.com/shots/xpdd.html","","","",,"2",],
+   ["||-","","","","",,"2",],
+   ["||Purchase","http://www.apycom.com/order.html","","","",,"2",],
+   ["||Download","http://www.apycom.com/download.html","","","",,"2",],
+   ["|Web buttons","http://www.xp-web-buttons.com/","","","",,,],
+   ["|DBF Viewer/Editor","http://www.dbfview.com/","","","",,,],
+   ["|-","","","","",,,],
+   ["|More Products","","","","",,"1",],
+   ["||Product 1","testlink00415.html","","","",,"1",],
+   ["|||Documentation","testlink00416.html","","","",,"1",],
+   ["|||How to Setup","testlink00417.html","","","",,"1",],
+   ["||Product 2","testlink00418.html","","","",,"1",],
+   ["||Product 3","testlink00419.html","","","",,"1",],
+   ["|||Documentation","testlink00420.html","","","",,"1",],
+   ["|||How to Setup","testlink00421.html","","","",,"1",],
+   ["||Product 4","testlink00422.html","","","",,"1",],
+   ["Contacts","http://www.apycom.com/contact.html","","","",,"0",],
+];
+
+apy_initFrame("fset",1,2,0);

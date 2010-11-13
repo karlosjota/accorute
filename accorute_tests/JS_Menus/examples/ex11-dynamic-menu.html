@@ -1,0 +1,96 @@
+<HTML>
+<!-- Mirrored from dhtml-menu.com/examples/ex11-dynamic-menu.html by HTTrack Website Copier/3.x [XR&CO'2008], Wed, 26 Aug 2009 09:27:43 GMT -->
+<head>
+  <title>Dynamic Menu Ex.#11 - setting pressed item dynamically via javascript</title>
+
+  <!-- Apycom DHTML Menu -->
+  <noscript>Visit <a href=../index.html>dhtml-menu.com</a> for more info.</noscript>
+  <script type="text/javascript" language="JavaScript1.2" src="apymenu.js"></script>
+  <!-- Apycom DHTML Menu, dhtml-menu.com -->
+
+</head>
+
+<body bgcolor=#FFFFFF>
+<a href=../index.html><img border="0" src="img/logo.gif" width="160" height="45" alt="JavaScript Menu Home"></a>
+<br>
+&nbsp;&nbsp;&nbsp; <font face="Verdana" style="font-size: 17pt; font-weight: 700" color="#6080ff">
+  Setting Pressed Item Example<br>
+  <span style="font-size: 9pt">function apy_setPressedItem()</span>
+</font>
+
+<table border="0" cellpadding="0" width="100%"><tr><td bgColor=#80A0FF></td></tr></table>
+<br>
+<script type="text/javascript" language="JavaScript1.2" src="data-presseditem.js"></script>
+<br>
+<br>
+
+<font face="Verdana" style="font-size: 11px">
+
+You can set pressed item manually usign <font color=#F65B06>apy_setPressedItem()</font> function:<br><br>
+<font color=#F65B06>apy_setPressedItem(menuN, submenuN, itemN, recurse)</font><br><br>
+&nbsp;&nbsp;&nbsp;<font color=#F65B06>menuN</font> - menu number on page;<br>
+&nbsp;&nbsp;&nbsp;<font color=#F65B06>submenuN</font> - submenu number in specified menu;<br>
+&nbsp;&nbsp;&nbsp;<font color=#F65B06>itemN</font> - item number in specified submenu;<br>
+&nbsp;&nbsp;&nbsp;<font color=#F65B06>recurse</font> - <b>true</b>/<b>false</b>. Mark all parent items.<br><br>
+
+Menu, submenu and item numeration begins from <b>0</b>.<br>
+Parameter <b>submenu=0</b> means that top menu selected.<br><br>
+
+<b>Note:</b> <i>to unmark pressed item call the function once again for this item.</i>
+<hr size=1 width=450 align=left color=#AAAAAA>
+
+To see how it works click following links:<br><br>
+
+1. <a href="#" onClick="javascript: apy_setPressedItem(0, 1, 0, true)">Set "Our products/Product 1" as pressed.</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;menuN=0, submenuN=1, itemN=0, recurse=true.<br><br>
+
+2. <a href="#" onClick="javascript: apy_setPressedItem(0, 3, 1, true)">Set "Our products/Product 2/Setup/Tutorial" as pressed.</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;menuN=0, submenuN=3, itemN=1, recurse=true.<br><br>
+
+3. <a href="#" onClick="javascript: apy_setPressedItem(0, 7, 1, false)">
+     Set "Javascript calls/Click to call confirmation dialog" as pressed without recurse.</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;menuN=0, submenuN=7, itemN=1, recurse=false.<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>Note:</b> <i>if you call the function with recurse=<b>false</b>,
+                                        parent items of current presed item didn't unmark.</i>
+
+<br>
+<br>
+<hr size=1 width=300 align=left color=#AAAAAA>
+To see configuration file (.js file) click <a href="data-presseditem.js.txt" target="_blank">here</a>
+</font>.
+<br>
+<br>
+
+
+<table border="0" cellpadding="0" width="100%"><tr><td bgColor=#80A0FF></td></tr></table>
+<font face="Verdana" style="font-size: 11px;">
+<a href="ex10-transition-collapse-menu.html">&lt;&lt;Prev: Transition Collapse Menu</a>
+<a href="../javascript-menu-examples.html">DHTML Menu Examples</a>
+<a href="ef1-cross-frame-menu.html">Cross Frame Menu :Next&gt;&gt; </a><br>
+<a href="../javascript-menu-examples.html#set">How to setup</a> |
+<a href="../params.html">Parameters</a> |
+<a href="../index.html" target="_blank">DHTML Menu Home</a> |
+<a href="../order.html" target="_blank">Buy Now</a>
+</font>
+
+<div class="jambanner">
+    <style>
+    .jambanner {
+        margin-top:10px;
+        text-align:left;
+        font-family:Verdana;
+        font-size:11px;
+        color:#222;
+    }
+    .jambanner a, .jambanner a:hover, .jambanner a:visited, .jambanner a:visited:hover {
+        font-family:Verdana;
+        font-size:11px;
+        text-decoration:none;
+    }
+    </style>
+    <a href="http://deluxe-menu.com/" title="JavaScript Menu" target=_blank >JavaScript Menu </a> | <a href="http://vista-buttons.com/" target=_blank>HTML Menu</a> | <a href="http://crossbrowserajax.com/" target=_blank>Cross Browser Ajax</a> | <a href="http://visuallightbox.com/" target=_blank title="Visual Lightbox JS ">Lightbox JS</a> | <a href="http://purecssmenu.com/" title="CSS Menu" target=_blank >CSS Menu</a>    </div>
+
+</body>
+
+<!-- Mirrored from dhtml-menu.com/examples/ex11-dynamic-menu.html by HTTrack Website Copier/3.x [XR&CO'2008], Wed, 26 Aug 2009 09:27:44 GMT -->
+</html>

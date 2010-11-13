@@ -1,0 +1,109 @@
+<HTML>
+<!-- Mirrored from dhtml-menu.com/examples/dhtml-menu-popup-ex.html by HTTrack Website Copier/3.x [XR&CO'2008], Wed, 26 Aug 2009 10:28:32 GMT -->
+<head>
+  <title>DHTML Menu Popup Mode Example</title>
+
+  <!-- Apycom DHTML Menu -->
+  <noscript><a href=../index.html>Apycom Software DHTML Menu</a></noscript>
+  <script type="text/javascript" language="JavaScript1.2" src="apymenu.js"></script>
+  <script type="text/javascript" language="JavaScript1.2" src="data-popup.js"></script>
+  <script type="text/javascript" language="JavaScript1.2" src="data-popup2.js"></script>
+  <!-- (c) 2004, Apycom Software, www.apycom.com -->
+
+</head>
+
+<body bgcolor=#FFFFFF onContextMenu="return apy_popup(1, 1000, event);">
+<a href=http://www.apycom.com/><img border="0" src="img/logo.gif" width="160" height="45"></a>
+<br>
+&nbsp;&nbsp;&nbsp; <font face="Verdana" style="font-size: 17pt; font-weight: 700" color="#6080ff">Popup Mode Example</font>
+<table border="0" cellpadding="0" width="100%"><tr><td bgColor=#80A0FF></td></tr></table>
+<br>
+<font face="Verdana" style="font-size: 11px">
+
+Right click on document space to call a right-click context menu.<br>
+HTML:<br>
+<font color=#1E58FF>&lt;body bgcolor=#FFFFFF onContextMenu="return apy_popup(1, 1000, event);"&gt;</font>
+
+<br><br><br>
+Mouseover the image to see a context dhtml menu:<br>
+HTML:<br>
+<font color=#1E58FF>&lt;img src="img/foto1.gif" width=90 height=98 hspace=10 onMouseOver="return apy_popup(0, 2000, event);" align=left&gt;</font>
+<br><br>
+<img src="img/foto1.gif" width=90 height=98 hspace=10 onMouseOver="return apy_popup(0, 2000, event);">
+
+<br><br>
+
+<a href="testlink00439.html" onMouseOver="return apy_popup(1, 1000, event);">Mouseover this link to see a second context dhtml menu</a><br>
+HTML:<br>
+<font color=#1E58FF>&lt;a href="testlink00440.html" onMouseOver="return apy_popup(1, 1000, event);"&gt;</font>
+
+<br><br><br>
+<a href="#" onClick="return apy_popup(1, 1000, event);">Click this link to see a second context dhtml menu</a><br>
+HTML:<br>
+<font color=#1E58FF>&lt;a href="#" onClick="return apy_popup(1, 1000, event);"&gt;</font>
+
+<br>
+<br>
+<br>
+
+To create a popup menu you should set following parameters:<br><br>
+
+<font color=#1E58FF>var popupMode=1;</font><br><br>
+
+To show a popup menu assign the following function call to event:<br><br>
+
+<font color=#1E58FF>yourEvent = "return apy_popup(menuN, pause, event);"</font><br><br>
+
+Where:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color=#1E58FF>yourEvent</font> - event type (onMouseOver, onClick, onContextMenu, etc.)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color=#1E58FF>menuN</font> - menu number on page.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color=#1E58FF>pause</font> - inactivity delay.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<font color=#1E58FF>event</font> - reserved. Do not change.<br><br>
+
+For example:<br><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<font color=#1E58FF>&lt;img src="pic" onMouseOver="return apy_popup(0, 2000, event);"&gt;<br>
+
+
+<br>
+<br>
+<br>
+<br>
+</font>
+
+<font face="Verdana" style="font-size: 11px">To see configuration file (.js file) click here: <a href="data-popup.js.txt" target="_blank">popup-menu 1</a> <a href="data-popup2.js.txt" target="_blank">popup-menu 2</a></font>.
+
+<br>
+<br>
+
+<table border="0" cellpadding="0" width="100%"><tr><td bgColor=#80A0FF></td></tr></table>
+<font face="Verdana" style="font-size: 11px;">
+<a href="dhtml-menu-ex7.html">&lt;&lt;Prev</a>
+<a href="../index-2.html">More examples</a>
+<a href="dhtml-menu-css-ex.html">Next&gt;&gt;</a>
+<a href="../index-2.html#set">How to setup</a> |
+<a href="../params.html">Parameters</a> |
+<a href="../index.html" target="_blank">DHTML Menu Home</a> |
+<a href="../order.html" target="_blank">Buy Now</a></font>
+
+<div class="jambanner">
+    <style>
+    .jambanner {
+        margin-top:10px;
+        text-align:left;
+        font-family:Verdana;
+        font-size:11px;
+        color:#222;
+    }
+    .jambanner a, .jambanner a:hover, .jambanner a:visited, .jambanner a:visited:hover {
+        font-family:Verdana;
+        font-size:11px;
+        text-decoration:none;
+    }
+    </style>
+    <a href="http://videolightbox.com/flash-lightbox.html" target=_blank>Flash Lightbox</a> | <a href="http://vista-buttons.com/" target=_blank>HTML Menu</a> | <a href="http://deluxe-menu.com/" title="DHTML Menu" target=_blank >DHTML Menu</a> | <a href="http://deluxe-tree.com/" title="DHTML Tree Menu" target=_blank >DHTML Tree Menu</a> | <a href="http://apycom.com/" title="Drop Down Menu" target=_blank >Drop Down Menu</a>    </div>
+
+</body>
+
+<!-- Mirrored from dhtml-menu.com/examples/dhtml-menu-popup-ex.html by HTTrack Website Copier/3.x [XR&CO'2008], Wed, 26 Aug 2009 10:28:32 GMT -->
+</html>

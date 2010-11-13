@@ -1,0 +1,97 @@
+//Apycom.com DHTML-Tuner StyleNames
+//ItemStyles
+//End of ItemStyles
+//SmStyles
+//End of SmStyles
+//End of StyleNames
+
+var blankImage="img/blank.gif";
+var isHorizontal=1;
+var menuWidth="0";
+var absolutePos=0;
+var posX=30;
+var posY=20;
+var floatable=0;
+var floatIterations=0;
+var movable=0;
+var moveCursor="default";
+var moveImage="";
+var moveWidth=0;
+var moveHeight=0;
+var fontStyle="normal 8pt Verdana";
+var fontColor=["#606060","#FFFFFF"];
+var fontDecoration=["none","none"];
+var itemBackColor=["",""];
+var itemBorderWidth=0;
+var itemAlign="left";
+var itemBorderColor=["",""];
+var itemBorderStyle=["",""];
+var itemBackImage=["img/itemback3_n.gif","img/itemback3_o.gif"];
+var itemSpacing=0;
+var itemPadding=4;
+var itemCursor="hand";
+var itemTarget="_blank";
+var iconTopWidth=0;
+var iconTopHeight=0;
+var iconWidth=0;
+var iconHeight=0;
+var menuBackImage="";
+var menuBackColor="#FFFFFF";
+var menuBorderColor="#D2D2D2 ";
+var menuBorderStyle=["solid"];
+var menuBorderWidth=1;
+var subMenuAlign="";
+var transparency=100;
+var transition=10;
+var transDuration=400;
+var shadowColor="#CACACA";
+var shadowLen=2;
+var arrowImageMain=["",""];
+var arrowImageSub=["",""];
+var arrowWidth=7;
+var arrowHeight=7;
+var separatorImage="";
+var separatorWidth="100%";
+var separatorHeight="0";
+var separatorAlignment="";
+var separatorVImage="";
+var separatorVWidth="0";
+var separatorVHeight="100%";
+var statusString="link";
+var pressedItem=-2;
+
+
+var menuItems = [
+   ["Apycom Home","http://www.apycom.com/","","","",,,],
+   ["DHTML Menu","","","","",,,],
+   ["|Home","../index.html","","","",,,],
+   ["||Examples","dhtml-menu-ex1.html","","","",,,],
+   ["||How to Setup","../indexex.html#set","","","",,,],
+   ["||Parameters","../params.html","","","",,,],
+   ["|Purchase","../order.html","","","",,,],
+   ["|Download","http://www.apycom.com/download.html","","","",,,],
+   ["Our Products","","","","",,,],
+   ["|Java menus","","","","",,,],
+   ["||Drop Down Menus","http://www.apycom.com/xp-drop-down-menu/","","","",,,],
+   ["||Animated Menus","http://www.apycom.com/animated-buttons/","","","",,,],
+   ["||Website Buttons","http://www.apycom.com/website-buttons/","","","",,,],
+   ["||Navigation Tabs","http://www.apycom.com/navigation-bar-tabs/","","","",,,],
+   ["||Live Examples","http://www.apycom.com/indexex.html","","","",,,],
+   ["||Sreenshots","http://www.apycom.com/shots/xpdd.html","","","",,,],
+   ["||Purchase","http://www.apycom.com/order.html","","","",,,],
+   ["||Download","http://www.apycom.com/download.html","","","",,,],
+   ["|Web buttons","http://www.xp-web-buttons.com/","","","",,,],
+   ["|DBF Viewer/Editor","http://www.dbfview.com/","","","",,,],
+   ["|More Products","","","","",,,],
+   ["||Product 1","testlink00523.html","","","",,,],
+   ["|||Documentation","testlink00524.html","","","",,,],
+   ["|||How to Setup","testlink00525.html","","","",,,],
+   ["||Product 2","testlink00526.html","","","",,,],
+   ["||Product 3","testlink00527.html","","","",,,],
+   ["|||Documentation","testlink00528.html","","","",,,],
+   ["|||How to Setup","testlink00529.html","","","",,,],
+   ["||Product 4","testlink00530.html","","","",,,],
+   ["Contacts","http://www.apycom.com/contact.html","","","",,,],
+];
+
+apy_init();

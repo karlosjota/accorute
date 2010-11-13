@@ -1,0 +1,25 @@
+ .btitle {FONT: 17px verdana,tahoma,arial; FONT-WEIGHT: bold; color: #6080ff;}
+ .wtitle {FONT: 12px verdana,tahoma,arial; FONT-WEIGHT: bold; color: #FFFFFF;}
+ .blacktitle {FONT: 12px verdana,tahoma,arial; FONT-WEIGHT: bold; color: #000000;}
+ .mtext {FONT: 11px verdana,tahoma,arial; color: #000000;}
+ .bmtext {FONT: 11px verdana,tahoma,arial; FONT-WEIGHT: bold; color: #000000;} 
+
+A.menu:link {FONT: 13px verdana,tahoma,arial; FONT-WEIGHT: bold; TEXT-DECORATION: none; color: #000000;}
+A.menu:visited {FONT: 13px verdana,tahoma,arial; FONT-WEIGHT: bold; TEXT-DECORATION: none; color: #000000;}
+A.menu:hover {FONT: 13px verdana,tahoma,arial; FONT-WEIGHT: bold;  color: #6080FF;}
+
+A.smenu:link {FONT: 12px verdana,tahoma,arial;   TEXT-DECORATION: none; color: #000000;}
+A.smenu:visited {FONT: 12px verdana,tahoma,arial;   TEXT-DECORATION: none; color: #000000;}
+A.smenu:hover {FONT: 12px verdana,tahoma,arial;  TEXT-DECORATION: none; color: #6080FF;}
+
+A.ssmenu:link {FONT: 11px verdana,tahoma,arial;  TEXT-DECORATION: none; color: #ffffff;}
+A.ssmenu:visited {FONT: 11px verdana,tahoma,arial;  TEXT-DECORATION: none; color: #ffffff;}
+A.ssmenu:hover {FONT: 11px verdana,tahoma,arial;  TEXT-DECORATION: underline;  color: #ffffff;}
+
+A.txtlink:link {FONT: 11px verdana,tahoma,arial;  TEXT-DECORATION: none; color: #3050FF;}
+A.txtlink:visited {FONT: 11px verdana,tahoma,arial;  TEXT-DECORATION: none; color: #6080FF;}
+A.txtlink:hover {FONT: 11px verdana,tahoma,arial;  TEXT-DECORATION: underline; color: #000000;}
+A.boldlink:link {FONT: 11px verdana,tahoma,arial;  FONT-WEIGHT: bold; TEXT-DECORATION: none; color: #3050FF;}
+A.boldlink:visited {FONT: 11px verdana,tahoma,arial;  FONT-WEIGHT: bold; TEXT-DECORATION: none; color: #3050ff;}
+A.boldlink:hover {FONT: 11px verdana,tahoma,arial;  FONT-WEIGHT: bold; TEXT-DECORATION: underline; color: #000000;}
+h1{FONT: 12px verdana,tahoma,arial; FONT-WEIGHT: bold; color: #000000;}

@@ -1,0 +1,124 @@
+body {color: #222222; font: 11px Tahoma, Arial; background-color: #FFFFFF;}
+
+.ptitle {font:bold 11px Tahoma, Arial, Helvetica; color: #FFFFFF;
+         border:solid 1px #0575D1; background-color: #0F91F9;}
+
+HR {height: 1px; color:#FFFFFF;}
+
+A:link,
+A:visited       {font: 11px Tahoma, Arial, Helvetica; color: #FFFFFF; text-decoration: underline;}
+
+A:hover,
+A:visited:hover {font: 11px Tahoma, Arial, Helvetica; color: #FFFFFF; text-decoration: none;}
+
+
+.TreeMenuTitle {color: #888888; font: 18px Arial, Helvetica; font-weight: 600}
+
+.XPRedTopBack  {color: #FDC2C2; font: 13px Tahoma, Arial, Helvetica; background-color: #DB8181}
+.XPRedMainBack {background-color: #DB8181; background-image: url(../index.html); background-repeat: no-repeat}
+.XPRedMenuBack {background-color: #E19797; color: #FFFFFF; font: 10px Arial, Helvetica; font-weight: bold}
+.XPRedHorLine  {background-color: #F0CDCD}
+.XPRedExTitle  {color: #FDC2C2; font: 13px Tahoma, Arial, Helvetica; font-weight: bold}
+.XPRedText     {color: #FFFFFF; font: 11px Tahoma, Arial}
+.XPRedTitle    {color: #FFFFFF; font: 20px Arial, Helvetica; font-weight: bold;}
+
+.XPGreenTopBack  {color: #AAF7A2; font: 13px Tahoma, Arial, Helvetica; background-color: #79C370}
+.XPGreenMainBack {background-color: #79C370; background-image: url(../index.html); background-repeat: no-repeat}
+.XPGreenMenuBack {background-color: #90CD89; color: #FFFFFF; font: 10px Arial, Helvetica; font-weight: bold}
+.XPGreenHorLine  {background-color: #CBE7C7}
+.XPGreenExTitle  {color: #D3FACE; font: 13px Tahoma, Arial, Helvetica; font-weight: bold}
+.XPGreenText     {color: #333333; font: 11px Tahoma, Arial}
+.XPGreenTitle    {color: #FFFFFF; font: 20px Arial, Helvetica; font-weight: bold;}
+
+.XPOrangeTopBack  {color: #FFD4A2; font: 13px Tahoma, Arial, Helvetica; background-color: #DA9F5B}
+.XPOrangeMainBack {background-color: #DA9F5B; background-image: url(img/xpback_orange.gif); background-repeat: no-repeat}
+.XPOrangeMenuBack {background-color: #DFB07A; color: #FFFFFF; font: 10px Arial, Helvetica; font-weight: bold}
+.XPOrangeHorLine  {background-color: #EDDBC6}
+.XPOrangeExTitle  {color: #FFE9CC; font: 13px Tahoma, Arial, Helvetica; font-weight: bold}
+.XPOrangeText     {color: #222222; font: 11px Tahoma, Arial}
+.XPOrangeTitle    {color: #FFFFFF; font: 20px Arial, Helvetica; font-weight: bold;}
+
+.XPBlueTopBack  {color: #D6DFF5; font: 13px Tahoma, Arial, Helvetica; background-color: #6375D6;}
+.XPBlueMainBack {background-color: #6375D6; background-image: url(img/xpback.gif); background-repeat: no-repeat}
+.XPBlueMenuBack {background-color: #7AA1E6; color: #FFFFFF; font: 10px Arial, Helvetica; font-weight: bold;}
+.XPBlueHorLine  {background-color: #C5DFFF}
+.XPBlueExTitle  {color: #D6DFF5; font: 13px Tahoma, Arial, Helvetica; font-weight: bold;}
+.XPBlueText     {color: #FFFFFF; font: 11px Tahoma, Arial}
+.XPBlueTitle    {color: #D6DFF5; font: 16px Arial, Helvetica; font-weight: bold;}
+
+.XPSilverTopBack  {color: #EEEEEE; font: 13px Tahoma, Arial, Helvetica; background-color: #B1B3C8}
+.XPSilverMainBack {background-color: #B1B3C8; background-image: url(img/xpback_s.gif); background-repeat: no-repeat}
+.XPSilverMenuBack {background-color: #C3C7D3; color: #FFFFFF; font: 10px Arial, Helvetica; font-weight: bold}
+.XPSilverHorLine  {background-color: #DFDFDF}
+.XPSilverExTitle  {color: #666666; font: 13px Tahoma, Arial, Helvetica; font-weight: bold}
+.XPSilverText     {color: #333333; font: 11px Tahoma, Arial}
+.XPSilverTitle    {color: #DEE4F6; font: 20px Arial, Helvetica; font-weight: bold;}
+
+.XPOliveTopBack  {color: #E0E7B8; font: 13px Tahoma, Arial, Helvetica; background-color: #A5BD84}
+.XPOliveMainBack {background-color: #A5BD84; background-image: url(img/xpback_o.gif); background-repeat: no-repeat}
+.XPOliveMenuBack {background-color: #CBD8AC; color: #FFFFFF; font: 10px Arial, Helvetica; font-weight: bold}
+.XPOliveHorLine  {background-color: #DFDFDF}
+.XPOliveExTitle  {color: #EDF1D5; font: 13px Tahoma, Arial, Helvetica; font-weight: bold}
+.XPOliveText     {color: #333333; font: 11px Tahoma, Arial}
+.XPOliveTitle    {color: #E0E7B8; font: 20px Arial, Helvetica; font-weight: bold;}
+
+.TopBack  {color: #AAAAAA; font: 13px Tahoma, Arial, Helvetica; background-color: #FFFFFF}
+.Text     {color: #222222; font: 11px Tahoma, Arial}
+.MainBack {background-color: #FFFFFF; color: #222222; font: 10px Arial, Helvetica; font-weight: bold}
+.MenuBack {background-color: #CCCCCC; color: #FFFFFF; font: 10px Arial, Helvetica; font-weight: bold}
+.ExTitle  {color: #AAAAAA; font: 13px Tahoma, Arial, Helvetica; font-weight: bold}
+
+.ParamTitle    {color: #222222; font: 16px Arial, Helvetica; font-weight: bold}
+.ParamBack     {background-color: #FFFFFF; font: 11px Tahoma, Arial, Helvetica; font: 11px Tahoma, Arial}
+.ParamTbl      {color: #333333; font: 11px Tahoma, Arial, Helvetica; font: 11px Tahoma, Arial}
+.ParamTblTitle {background-color: #CEE9F2; color: #444444; font: 11px Tahoma, Arial, Helvetica; font-weight: bold;}
+.ParamTblCell  {background-color: #ECF7F9; font: 11px Tahoma, Arial, Helvetica; color: #222222;}
+
+
+.StyleNameW    {color: #FFFFFF; font: 11px MS Sans Serif; font-weight: bold}
+.StyleNameB    {color: #000000; font: 11px MS Sans Serif; font-weight: bold}
+
+
+A.White:link,
+A.White:visited       {font: 11px Tahoma, Arial, Helvetica; color: #FFFFFF; text-decoration: none;}
+
+A.White:hover,
+A.White:visited:hover {font: 11px Tahoma, Arial, Helvetica; color: #FFFFFF; text-decoration: underline;}
+
+
+
+A.Dark:link          {font: 11px Tahoma, Arial, Helvetica; color: #3333DD; text-decoration: none;}
+A.Dark:hover         {font: 11px Tahoma, Arial, Helvetica; color: #5555FF; text-decoration: underline;}
+A.Dark:visited       {font: 11px Tahoma, Arial, Helvetica; color: #5555CC; text-decoration: none;}
+A.Dark:visited:hover {font: 11px Tahoma, Arial, Helvetica; color: #5555FF; text-decoration: underline;}
+
+A.Black:link          {font: 11px Tahoma, Arial, Helvetica; color: #222222; text-decoration: none;}
+A.Black:hover         {font: 11px Tahoma, Arial, Helvetica; color: #000000; text-decoration: underline;}
+A.Black:visited       {font: 11px Tahoma, Arial, Helvetica; color: #222222; text-decoration: none;}
+A.Black:visited:hover {font: 11px Tahoma, Arial, Helvetica; color: #000000; text-decoration: underline;}
+
+
+A.MenuLink:link,
+A.MenuLink:visited       {font: 11px Tahoma, Arial, Helvetica; color: #FFFFFF; text-decoration: none;}
+A.MenuLink:hover,
+A.MenuLink:visited:hover {font: 11px Tahoma, Arial, Helvetica; color: #FFFFFF; text-decoration: none;}
+
+
+.MenuTable          {border-width: 0;}
+.MenuItem           {border-width: 1; background-color: #628FE2; border-style: solid; border-color: #A0C0FF; color: #FFFFFF}
+.MenuItemOver       {border-width: 1; background-color: #285BA5; border-style: solid; border-color: #FFFFFF; color: #000000; cursor: hand}
+
+.MenuItemSilver     {border-width: 1; background-color: #A3A3A3; border-style: solid; border-color: #E3E3E3; color: #FFFFFF}
+.MenuItemOverSilver {border-width: 1; background-color: #696969; border-style: solid; border-color: #FFFFFF; color: #000000; cursor: hand}
+
+.MenuItemOlive     {border-width: 1; background-color: #9FA862; border-style: solid; border-color: #E2E4CF; color: #FFFFFF}
+.MenuItemOverOlive {border-width: 1; background-color: #696D2F; border-style: solid; border-color: #FFFFFF; color: #000000; cursor: hand}
+
+.MenuItemOrange     {border-width: 1; background-color: #C1911F; border-style: solid; border-color: #FFEEC9; color: #FFFFFF}
+.MenuItemOverOrange {border-width: 1; background-color: #816300; border-style: solid; border-color: #FFFFFF; color: #000000; cursor: hand}
+
+.MenuItemGreen     {border-width: 1; background-color: #20AF1C; border-style: solid; border-color: #CAFFD1; color: #FFFFFF}
+.MenuItemOverGreen {border-width: 1; background-color: #258200; border-style: solid; border-color: #FFFFFF; color: #000000; cursor: hand}
+
+.MenuItemRed     {border-width: 1; background-color: #B11C1C; border-style: solid; border-color: #FFEEEE; color: #FFFFFF}
+.MenuItemOverRed {border-width: 1; background-color: #840000; border-style: solid; border-color: #FFFFFF; color: #000000; cursor: hand}

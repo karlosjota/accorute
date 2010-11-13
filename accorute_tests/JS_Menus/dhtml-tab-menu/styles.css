@@ -1,0 +1,47 @@
+body {
+  background-color: #FFEED3; font-family: Tahoma, Arial, Helvetica;  font-size: 11px; color: #000000;
+}
+
+body.lic {
+  background-color: #AAAAAA; font-family: Tahoma, Arial, Helvetica;  font-size: 11px; color: #000000;
+}
+
+A:link,A:visited {
+  font-family: Tahoma, Arial, Helvetica;  font-size: 11px;  color: #0078C6;  text-decoration: none;
+}
+
+A:hover,A:visited:hover {
+  font-family: Tahoma, Arial, Helvetica;  font-size: 11px;  color: #0078C6;  text-decoration: underline;
+}
+
+
+A.copyright:link,A.copyright:visited {
+  font-family: Tahoma, Arial, Helvetica;  font-size: 10px;  color: #ffffff;  text-decoration: none;
+}
+
+A.copyright:hover,A.copyright:visited:hover {
+  font-family: Tahoma, Arial, Helvetica;  font-size: 10px;  color: #ffffff;  text-decoration: underline;
+}
+
+.mainText {
+  font-family: Tahoma, Arial, Helvetica;  font-size: 11px; color: #000000;
+}
+
+.copyrightText {
+  font-family: Tahoma, Arial, Helvetica;  font-size: 10px; color: #ffffff;
+}
+
+A.menu:link,A.menu:visited {
+  font-family: Tahoma, Arial, Helvetica;  font-size: 10px;  color: #FFDFE2;  text-decoration: none;
+}
+
+A.menu:hover,A.menu:visited:hover {
+  font-family: Tahoma, Arial, Helvetica;  font-size: 10px;  color: #FFDFE2;  text-decoration: underline;
+}
+
+.title {
+  font-family: Arial;
+  font-size: 16px;
+  font-weight: bold;
+  color:#31B4FF;
+}

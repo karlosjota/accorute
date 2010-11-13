@@ -1,0 +1,97 @@
+var isHorizontal=1;
+
+var blankImage="img/blank.gif";
+var fontStyle="bold 8pt Verdana";
+var fontColor=["#333333","#000000"];
+var fontDecoration=["none","none"];
+
+var itemBackColor=["",""];
+var itemBorderWidth=0;
+var itemAlign="left";
+var itemBorderColor=["#6655ff","#665500"];
+var itemBorderStyle=["solid","solid"];
+var itemBackImage=["",""];
+
+var subMenuAlign = "left";
+
+var menuBackImage="img/iconback3.gif";
+var menuBackColor="#FFFFFF";
+var menuBorderColor="#BBBBBB";
+var menuBorderStyle="solid";
+var menuBorderWidth=1;
+var transparency=100;
+var transition=6;
+var transDuration=300;
+var shadowColor="#AAAAAA";
+var shadowLen=2;
+var menuWidth="";
+
+var iconTopWidth  = 16;
+var iconTopHeight = 16;
+var iconWidth  = 24;
+var iconHeight = 24;
+
+var itemCursor="hand";
+var itemTarget="";
+var statusString="Apycom DHTML Menu";
+var arrowImageMain=["img/arrow3m.gif","img/arrow4m.gif"];
+var arrowImageSub=["img/arrow3.gif","img/arrow4.gif"];
+var arrowWidth =9;
+var arrowHeight=9;
+var itemSpacing=0;
+var itemPadding=3;
+
+var separatorImage="img/separ.gif";
+var separatorWidth="70%";
+var separatorHeight="3";
+var separatorAlignment="center";
+
+var separatorVImage="";
+var separatorVWidth="5";
+var separatorVHeight="16";
+
+var moveCursor = "move";
+var moveImage  = "img/movepic2.gif";
+var moveWidth      = 12;
+var moveHeight      = 24;
+
+var movable = 0;
+var absolutePos = 1;
+var posX = 20;
+var posY  = 120;
+
+var floatable=0;
+var floatIterations=5;
+
+var itemStyles =
+[
+    ["fontStyle=normal 9pt Tahoma","fontColor=#000000,#9999ff"],
+    ["itemBackImage=img/iconback3.gif,img/iconback4.gif"],
+];
+
+var menuItems = 
+[
+    ["Home","testlink00286.html","img/icon6.gif","img/icon5.gif","Home Tip",,"1"],
+    ["Our Products","testlink00287.html","img/icon6.gif","img/icon5.gif","Our Products Tip",,"1"],
+    ["|Product 1","testlink00288.html","img/icon3.gif","img/icon4.gif","Product 1 Tip",,"0"],
+    ["|Product 2","testlink00289.html","img/icon3.gif","img/icon4.gif","Product 2 Tip",,"0"],
+    ["||Info","testlink00290.html","img/icon3.gif","img/icon4.gif",,,"0"],
+    ["||Setup","testlink00291.html","img/icon3.gif","img/icon4.gif",,,"0"],
+    ["|||Parameters","testlink00292.html","img/icon3.gif","img/icon4.gif",,,"0"],
+    ["|||Tutorial","testlink00293.html","img/icon3.gif","img/icon4.gif",,,"0"],
+    ["||Help","testlink00294.html","img/icon3.gif","img/icon4.gif",,,"0"],
+    ["|Product 3","testlink00295.html","img/icon3.gif","img/icon4.gif","Product 3 Tip",,"0"],
+    ["|Product 4","testlink00296.html","img/icon3.gif","img/icon4.gif","Product 4 Tip",,"0"],
+    ["|-"],
+    ["|Product 5","testlink00297.html","img/icon3.gif","img/icon4.gif","Product 5 Tip",,"0"],
+    ["|Product 6","testlink00298.html","img/icon3.gif","img/icon4.gif","Product 6 Tip",,"0"],
+    ["More Info","testlink00299.html","img/icon6.gif","img/icon5.gif",,,"1"],
+    ["|You can place <b>any HTML code</b><br> to item, for example <u>ordered list</u>:<br><ol><li>item<li>item<li>item</ol> or a <a style='cursor:hand' href='testlink00300.html'>link</a>","",,,,,"1"],
+    ["Javascript calls","","img/icon6.gif","img/icon5.gif",,,"1"],
+    ["|Click to call<br>message box","javascript:alert('Hello world!')",,,,,"1"],
+    ["|Click to call<br>confirmation<br>dialog","javascript:confirm('Do you want to confirm?')",,,,,"1"],
+    ["|Open 'Testlink'<br>page in 680x600<br>window","javascript:open('testlink00301.html','_blank','scrollbars,width=680,height=600')",,,,,"1"],
+    ["Contact Us","mailto:support@apycom.com","img/icon6.gif","img/icon5.gif","Contact Us Tip","_",""]
+];
+
+apy_init();
