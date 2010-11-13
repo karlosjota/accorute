@@ -24,7 +24,15 @@ import java.util.regex.Pattern;
 public class WebAppProperties {
     private static WebAppProperties ourInstance = new WebAppProperties();
 
-    private final List<Pattern> scope = new ArrayList<Pattern>();
+    public Pattern getScope() {
+        return scope;
+    }
+
+    public void setScope(Pattern scope) {
+        this.scope = scope;
+    }
+
+    private Pattern scope;
 
     private String sessionTokenName;
     private ActionParameterLocation sessionTokenLocation;

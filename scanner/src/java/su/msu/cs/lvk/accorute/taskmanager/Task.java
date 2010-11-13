@@ -47,7 +47,7 @@ public abstract class Task implements Runnable{
      * Get current status
      * @return current status
      */
-    synchronized public TaskStatus getStatus(){
+    public TaskStatus getStatus(){
         return status;
     }
 
@@ -139,7 +139,7 @@ public abstract class Task implements Runnable{
     abstract protected void start();
 
     public void run(){
-        logger.trace("Task was STARTED at thread " + Thread.currentThread().getId());
+        logger.trace("Task " +this.getClass().getName()+ " was STARTED at thread " + Thread.currentThread().getId());
         setStatus(TaskStatus.RUNNING);
         start();
         setStatus(TaskStatus.FINISHED);

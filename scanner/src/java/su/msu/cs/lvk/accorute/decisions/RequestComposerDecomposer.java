@@ -18,6 +18,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public abstract class RequestComposerDecomposer {
+    abstract public URL getURL(List<ActionParameter> params);
     abstract public List<ActionParameter> decompose(Request r);
     abstract public List<ActionParameter> decompose(WebRequest r);
     abstract public Request compose(List<ActionParameter> params, WebAppUser user);

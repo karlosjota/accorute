@@ -31,6 +31,37 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class SimpleRCD extends RequestComposerDecomposer{
+    public URL getURL(List<ActionParameter> params){
+        String Query = "";
+        String proto = "http";
+        String host = getParamByName(params,"host").getValue();
+        int port = new Integer(getParamByName(params,"port").getValue());
+        if(port == -1){
+            port = 80;
+        }
+        String path = getParamByName(params,"path").getValue();
+        for(ActionParameter param: params){
+            try{
+                if(param.getLocation() == ActionParameterLocation.QUERY){
+                    Query +=(URLEncoder.encode(param.getName(),"UTF-8")
+                            + "="
+                            + URLEncoder.encode(param.getValue(),"UTF-8")
+                            + "&"
+                    );
+                }
+            }catch(UnsupportedEncodingException ueex){}
+        }
+        try{
+            return new URL(
+                    proto,
+                    host,
+                    port,
+                    path + ((Query.equals("")) ? "":("?"+Query.substring(0,Query.length()-1)))
+                );
+        }catch(final MalformedURLException muex){
+            return null;
+        }
+    }
     public List<ActionParameter> decompose(WebRequest r){
         //TODO: not complete at all!
         ArrayList<ActionParameter> params = new ArrayList<ActionParameter>();

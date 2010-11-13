@@ -18,6 +18,7 @@ import su.msu.cs.lvk.accorute.utils.Callback3;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.regex.Matcher;
 
 /**
  * Created by IntelliJ IDEA.
@@ -51,14 +52,21 @@ public class SitemapCrawler extends Task implements Callback0{
         wasErr = false;
     }
 
-    private void addNewAction(
+    synchronized private void addNewAction(
             final EntityID fromNodeID,
             HtmlPage p,
             HttpElementAction domAct,
             Action  httpAct
     ){
+        String url = WebAppProperties.getInstance().getRcd().getURL(httpAct.getActionParameters()).toString();
+        Matcher m = WebAppProperties.getInstance().getScope().matcher(url);
+        if(!m.matches()){
+            logger.trace("Will not access url "+ url+" because it's out of scope");
+            siteMap.addEdge(siteMap.getNodeByID(fromNodeID), siteMap.getExitNode(), httpAct, null);
+            return;
+        }
         if(WebAppProperties.getInstance().getChStateDec().changesState(httpAct)){
-            logger.trace("Will not perform action, because it will change the state");
+            logger.trace("Will not perform action because it will change the state");
             final Sitemap.SitemapNode from = siteMap.getNodeByID(fromNodeID);
             siteMap.addEdge(from, siteMap.getExitNode(), httpAct, null);
             return;
@@ -109,7 +117,7 @@ public class SitemapCrawler extends Task implements Callback0{
         }
     }
 
-    private void addConversationForActionFromNode(
+    synchronized private void addConversationForActionFromNode(
             final EntityID fromNodeID,
             final Action action,
             final Conversation conv,
@@ -117,7 +125,6 @@ public class SitemapCrawler extends Task implements Callback0{
     ){
         logger.trace("addConversationForActionFromNode: node " + fromNodeID
                 + " action " + action
-                + " conv " + conv
                 + " page " + p             
         );
         ResponseClassificator.ResponseType respType =  WebAppProperties.getInstance().getRespClassificator().getResponseType(conv);
@@ -157,7 +164,7 @@ public class SitemapCrawler extends Task implements Callback0{
             throw new NotImplementedException("expired sessions are not yes supported");
             //TODO: do smth here!
         }else{
-            throw new NotImplementedException("expired sessions are not yes supported");
+            throw new NotImplementedException("not yes supported");
         }
         logger.trace(from.getNodeID() + " -> " + resultingNode.getNodeID());
         Action equalAction = null;
@@ -192,7 +199,7 @@ public class SitemapCrawler extends Task implements Callback0{
             return; //no success
         }
         Conversation conv = (Conversation) tsk.getResult();
-        WebClient webClient = new WebClient();
+        WebClient webClient = new WebClient();                                                        
         URL origUrl = conv.getRequest().getURL();
         //1. create WebResponse from page : WebResponse(WebResponseData responseData, WebRequest request, long loadTime)
         WebResponse resp = conv.getResponse().genWebResponse(origUrl,1,conv.getRequest().genWebRequest());

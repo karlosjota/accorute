@@ -79,6 +79,8 @@ public class HtmlElementActionPerformer extends Task {
     @Override
     protected void start() {
         WebWindow w = webClient.openWindow(null,"tmpWindow");
+        webClient.setThrowExceptionOnFailingStatusCode(false);
+        webClient.setThrowExceptionOnScriptError(false);
         page.setEnclosingWindow(w);
         w.setEnclosedPage(page);
         page.getWebClient().setWebConnection(falseWebConn);

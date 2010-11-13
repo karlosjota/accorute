@@ -16,25 +16,29 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * Time: 23:30:08
  * To change this template use File | Settings | File Templates.
  */
-public class TaskManager implements Comparator<Task>, Runnable {
+public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutionHandler {
     
-    public int compare(Task t1, Task t2){
+    synchronized public int compare(Task t1, Task t2){
         int p1 = taskPriority.get(t1);
         int p2 = taskPriority.get(t2);
         if(p1==p2)
             return taskID.get(t1) - taskID.get(t2);
         else return p1-p2;
     }
-
+    final int maxThreads = 200;
     final private Queue<Task> pendingTasks = new PriorityQueue<Task>(10,this);
     final private HashSet<Task> runningTasks = new HashSet<Task>();
     final private HashMap<Task, Task> waitingTasks = new HashMap<Task, Task>(); //TODO:poor naming
-    final private ThreadPoolExecutor executor = new  ThreadPoolExecutor(10000,10000,2,
+    final private ThreadPoolExecutor executor = new  ThreadPoolExecutor(maxThreads/2,maxThreads,2,
                 TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
     final private HashMap<Task, Integer> taskPriority = new HashMap<Task, Integer>();
     private int nextID = 0;
     final private HashMap<Task, Integer> taskID = new HashMap<Task, Integer>();
     private Logger logger = Logger.getLogger(this.getClass().getName());
+
+    public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+        throw new RejectedExecutionException();
+    }
 
     public enum TaskManagerStatus {
         NOT_STARTED, RUNNING, PAUSED
@@ -82,6 +86,8 @@ public class TaskManager implements Comparator<Task>, Runnable {
         if( (pending instanceof SerialTask) || (waiting instanceof  SerialTask) ){
             throw new IllegalArgumentException("You can only wait from a non-serial task, and only for a non-serial task!!!");
         }
+        taskID.put(pending,nextID);
+        nextID++;
         taskPriority.put(pending,1); // waited task
         pendingTasks.add(pending);
         waitingTasks.put(waiting,pending);

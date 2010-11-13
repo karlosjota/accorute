@@ -38,9 +38,9 @@ public class Sitemap {
                 "\nctxID=" + ctxID +
                 ",\nNodes=" + actionDepGraph.vertexSet() +
                 ",\nEdges=" + actionDepGraph.edgeSet() +
-                ",\ninvalidNode=" + invalidNode +
-                ",\nexitNode=" + exitNode +
-                ",\nentryNode=" + entryNode +
+                ",\ninvalidNodeID=" + invalidNode.getNodeID().getId() +
+                ",\nexitNodeID=" + exitNode.getNodeID().getId() +
+                ",\nentryNodeID=" + entryNode.getNodeID().getId() +
                 "\n}";
     }
 
@@ -76,7 +76,7 @@ public class Sitemap {
         }
 
         public boolean pageEqual(HtmlPage p){
-            if(inConversation.size() == 0)
+            if(inConversation.size() == 0 || pages.size() == 0)
                 return false;
             return WebAppProperties.getInstance().getPageEqDec().pagesEqual(pages.get(0),p);
         }
@@ -97,7 +97,7 @@ public class Sitemap {
         @Override
         public String toString() {
             return "\nSitemapNode{" +
-                    "nodeID=" + nodeID +
+                    "nodeID=" + nodeID.getId() +
                     ", pages=" + pages +
                     ", actions=" + actions +
                     /*", inConversation=" + inConversation +*/
@@ -168,8 +168,8 @@ public class Sitemap {
         @Override
         public String toString() {
             return "\nSitemapEdge{" +
-                    "v1=" + v1.getNodeID() +
-                    ", v2=" + v2.getNodeID() +
+                    v1.getNodeID().getId() +
+                    " -> " + v2.getNodeID().getId() +
                     ", label=" + label +
                     '}';
         }

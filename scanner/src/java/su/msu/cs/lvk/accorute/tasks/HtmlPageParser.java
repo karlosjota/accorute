@@ -5,6 +5,7 @@ import com.gargoylesoftware.htmlunit.html.*;
 import com.gargoylesoftware.htmlunit.javascript.host.Node;
 import com.gargoylesoftware.htmlunit.util.FalsifyingWebConnection;
 import com.gargoylesoftware.htmlunit.util.NameValuePair;
+import net.sourceforge.htmlunit.corejs.javascript.EcmaError;
 import net.sourceforge.htmlunit.corejs.javascript.ScriptableObject;
 import su.msu.cs.lvk.accorute.WebAppProperties;
 import su.msu.cs.lvk.accorute.browserUI.HttpElementAction;
@@ -16,6 +17,7 @@ import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 import su.msu.cs.lvk.accorute.utils.Callback2;
 import su.msu.cs.lvk.accorute.utils.Callback3;
+import su.msu.cs.lvk.accorute.utils.HtmlUnitUtils;
 
 import java.io.IOException;
 import java.net.URL;
@@ -51,14 +53,15 @@ public class HtmlPageParser extends Task implements DomChangeListener {
                 wasRequest = true;
                 logger.debug("Intercepted a request");
                 List<ActionParameter> param = WebAppProperties.getInstance().getRcd().decompose(request);
-                callback.CallMeBack(tmpPage.cloneNode(true),curAction,new Action("tmp", param));
-                WebResponseData wrd = new WebResponseData(
+                callback.CallMeBack(HtmlUnitUtils.clonePage(tmpPage),curAction,new Action("tmp", param));
+                /*WebResponseData wrd = new WebResponseData(
                         new byte[0],
                         200,
                         "200 OK",
                         new ArrayList< NameValuePair >()
                 );
-                return new WebResponse(wrd, request, 1);
+                return new WebResponse(wrd, request, 1); */
+                throw new IOException("goes just as planned");
             }
         };
         //create WebConnectionWrapper that calls back the callback on each request
@@ -68,12 +71,11 @@ public class HtmlPageParser extends Task implements DomChangeListener {
         String path = htmlElement.getCanonicalXPath();
         logger.trace("Trying to click "+ path);
         //clone page
-        tmpPage =  page.cloneNode(true);
         //set a window
         WebWindow w = webClient.openWindow(null,"tmpWindow");
+        tmpPage =  HtmlUnitUtils.clonePage(page,w);
         tmpPage.setEnclosingWindow(w);
         w.setEnclosedPage(tmpPage);
-        tmpPage.getWebClient().setWebConnection(falseWebConn);
         //get corresponding element...
         HtmlElement el = tmpPage.getFirstByXPath(path);
         wasRequest = false;
@@ -83,6 +85,16 @@ public class HtmlPageParser extends Task implements DomChangeListener {
             el.click();
         }catch(IOException ex) {
             logger.warn("io exception while clicking",ex);
+        }
+        catch(EcmaError ee){
+            logger.error("error in javascript!!!! Will continue. ",ee);
+        }
+        catch(RuntimeException ex){
+            //Dirty, dirty hack!!!
+            if(ex.getMessage() == null)
+                throw ex;
+            if(!ex.getMessage().equalsIgnoreCase("java.io.IOException: goes just as planned"))
+                throw ex;
         }
         //if there was no request, we can happily reproduce this action on current page
         if(!wasRequest){
@@ -136,11 +148,13 @@ public class HtmlPageParser extends Task implements DomChangeListener {
     }
     public void nodeAdded(final DomChangeEvent event) {
         DomNode newNode = event.getChangedNode();
+        /*
         String path = newNode.getCanonicalXPath();
         if(page.getFirstByXPath(path) != newNode){
             logger.warn("Event triggered from cloned page, this is a bug in HtmlUnit");
             return;
         }
+        */
         if (newNode instanceof HtmlElement) {
             doJsActions((HtmlElement) newNode);
             Iterable<HtmlElement> htmlChildren = newNode.getHtmlElementDescendants();
@@ -178,6 +192,8 @@ public class HtmlPageParser extends Task implements DomChangeListener {
         }*/
         page.addDomChangeListener(this);
         //find all HtmlElement nodes that have actions and execute them
+        webClient.setThrowExceptionOnFailingStatusCode(false);
+        webClient.setThrowExceptionOnScriptError(false);
         emulateUserActions(page);
         /*baseWindow.close();*/
     }

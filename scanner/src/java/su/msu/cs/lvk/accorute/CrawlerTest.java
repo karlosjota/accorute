@@ -36,7 +36,7 @@ public class CrawlerTest {
         WebAppProperties.getInstance().getContextService().addOrUpdateContext(dummyCtx);
         Action act;
         try{
-            act = new Action("initial",WebAppProperties.getInstance().getRcd().decomposeURL("http://127.0.0.1/accorute_tests/plainHTML/test1/1.html"));
+            act = new Action("initial",WebAppProperties.getInstance().getRcd().decomposeURL("http://127.0.0.1/accorute_tests/JS_Menus/javascript-menu-examples.html"));
         }catch(Throwable r){
             return;
         }
@@ -48,6 +48,6 @@ public class CrawlerTest {
         }
         WebAppProperties.getInstance().getTaskManager().terminate();
         Sitemap map = WebAppProperties.getInstance().getSitemapService().getSitemapForContext(dummyCtx.getContextID());
-        logger.debug("Map is " + map);
+        logger.fatal("Map is " + map);
     }
 }

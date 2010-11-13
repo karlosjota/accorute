@@ -1,0 +1,19 @@
+<html>
+<head>
+<script type=text/javascript>
+function addLink(){
+    if(document.getElementById("b"))
+        return;
+    newDiv = document.createElement("div");
+    newDiv.id="b";
+    newDiv.innerHTML = "<a href=4.html>dynamic link</a>";
+    my_div = document.getElementById("a");
+    document.body.insertBefore(newDiv, my_div);
+}
+</script>
+</head>
+<body>
+<a id="a" href="1.html" onmouseover="addLink();">link</a>
+<a href="http://www.ya.ru">yandex</a>
+</body>
+</html>
