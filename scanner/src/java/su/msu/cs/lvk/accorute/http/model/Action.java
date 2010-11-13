@@ -1,5 +1,6 @@
 package su.msu.cs.lvk.accorute.http.model;
 
+import su.msu.cs.lvk.accorute.WebAppProperties;
 import su.msu.cs.lvk.accorute.decisions.ParameterValueDecision;
 import su.msu.cs.lvk.accorute.decisions.RequestComposerDecomposer;
 
@@ -55,7 +56,4 @@ public class Action {
         this.actionParameters = params;
     }
 
-    boolean equals(Action other){
-        return actionID == other.getActionID();
-    }
 }

@@ -15,7 +15,7 @@ import java.util.*;
  */
 public class Sitemap {
     private long nextNodeID = 01l;
-    private final Map<EntityID, SitemapNode>  nodeById = new HashMap();
+    private final Map<EntityID, SitemapNode>  nodeById = new HashMap<EntityID, SitemapNode>();
     private final SitemapNode entryNode = genNode();
     private final SitemapNode invalidNode = genNode();
     private final SitemapNode exitNode = genNode();
@@ -36,7 +36,8 @@ public class Sitemap {
     public String toString() {
         return "Sitemap{" +
                 "\nctxID=" + ctxID +
-                ",\nactionDepGraph=" + actionDepGraph +
+                ",\nNodes=" + actionDepGraph.vertexSet() +
+                ",\nEdges=" + actionDepGraph.edgeSet() +
                 ",\ninvalidNode=" + invalidNode +
                 ",\nexitNode=" + exitNode +
                 ",\nentryNode=" + entryNode +
@@ -95,11 +96,11 @@ public class Sitemap {
 
         @Override
         public String toString() {
-            return "SitemapNode{" +
+            return "\nSitemapNode{" +
                     "nodeID=" + nodeID +
                     ", pages=" + pages +
                     ", actions=" + actions +
-                    ", inConversation=" + inConversation +
+                    /*", inConversation=" + inConversation +*/
                     '}';
         }
     }
@@ -163,6 +164,15 @@ public class Sitemap {
         public SitemapNode getV2() {
             return v2;
         }
+
+        @Override
+        public String toString() {
+            return "\nSitemapEdge{" +
+                    "v1=" + v1.getNodeID() +
+                    ", v2=" + v2.getNodeID() +
+                    ", label=" + label +
+                    '}';
+        }
     }
 
     private final DirectedMultigraph<SitemapNode, SitemapEdge> actionDepGraph =
@@ -175,10 +185,11 @@ public class Sitemap {
     }
 
     public boolean addEdge(SitemapNode from, SitemapNode to, Action act, Conversation conv){
-        boolean wasImpact = actionDepGraph.addVertex(from) || actionDepGraph.addVertex(to);
+        actionDepGraph.addVertex(from);
+        actionDepGraph.addVertex(to);
         SitemapEdge edge = new SitemapEdge(from,to,act);
         to.addInbound(conv);
-        return wasImpact || actionDepGraph.addEdge(from,to,edge);
+        return actionDepGraph.addEdge(from,to,edge);
     }
 
     public EntityID getCtxID() {

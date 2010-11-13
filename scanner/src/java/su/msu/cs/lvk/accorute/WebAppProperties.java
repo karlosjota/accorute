@@ -35,6 +35,16 @@ public class WebAppProperties {
     private ParameterValueDecision pvd;
     private RequestComposerDecomposer rcd;
 
+    public ActionEqualityDecision getAcEqDec() {
+        return acEqDec;
+    }
+
+    public void setAcEqDec(ActionEqualityDecision acEqDec) {
+        this.acEqDec = acEqDec;
+    }
+
+    private ActionEqualityDecision acEqDec;
+
     public ResponseClassificator getRespClassificator() {
         return respClassificator;
     }

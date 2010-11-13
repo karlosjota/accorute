@@ -13,6 +13,7 @@ import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 import su.msu.cs.lvk.accorute.utils.Callback3;
+import su.msu.cs.lvk.accorute.utils.HtmlUnitUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public class HtmlElementActionPerformer extends Task {
             Callback3<Conversation, Action, HtmlPage> cb
     ) {
         super(t);
-        page = pg;
+        page = HtmlUnitUtils.clonePage(pg,webClient.getCurrentWindow());
         action = act_;
         ctx = ctxID;
         callback = cb;
@@ -56,6 +57,9 @@ public class HtmlElementActionPerformer extends Task {
                 logger.trace("Will request Action " + act);
                 ResponseFetcher tsk = new ResponseFetcher(taskManager, act, ctx);
                 waitForTask(tsk);
+                while(tsk.getStatus()!=TaskStatus.FINISHED){
+                    ;
+                }
                 logger.trace("got responce from fetcher");
                 if(tsk.isSuccessful()){
                     conv = (Conversation) tsk.getResult();
@@ -83,7 +87,9 @@ public class HtmlElementActionPerformer extends Task {
         case CLICK:
             try{
                 logger.trace("Will click on " + action.getXpathElString());
+                logger.trace(page);
                 Page  newPage = el.click();
+                logger.trace(newPage);
                 if(!wasReq){
                     logger.error("No request intercepted!!!");
                     setSuccessful(false);

@@ -32,6 +32,7 @@
     <bean id="dummyChState" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.DummyChStateDec"/>
     <bean id="respClass" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimpleRespClassifier"/>
     <bean id="pageEqD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimplePageEqDec"/>
+    <bean id="acEqD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimpleAcEqDec"/>
 
     <bean id="Properties" class="su.msu.cs.lvk.accorute.WebAppProperties" factory-method="getInstance">
         <property name="actionService" ref="actionService"/>
@@ -50,6 +51,7 @@
         <property name="chStateDec" ref="dummyChState" />
         <property name="respClassificator" ref="respClass" />
         <property name="pageEqDec" ref="pageEqD" />
+        <property name="acEqDec" ref="acEqD" />
     </bean>
 
 </beans>

@@ -32,6 +32,7 @@ import java.util.List;
  */
 public class SimpleRCD extends RequestComposerDecomposer{
     public List<ActionParameter> decompose(WebRequest r){
+        //TODO: not complete at all!
         ArrayList<ActionParameter> params = new ArrayList<ActionParameter>();
         params.addAll(decomposeURL(r.getUrl()));
         HttpMethod m = r.getHttpMethod();
@@ -119,9 +120,12 @@ public class SimpleRCD extends RequestComposerDecomposer{
                 ActionParameterMeaning.AUTOMATIC,
                 ActionParameterDatatype.STRING)
         );
+        int port = url.getPort();
+        if(port < 0)
+            port = 80;
         params.add(new ActionParameter(
                 "port",
-                new Integer(url.getPort()).toString(),
+                Integer.toString(port),
                 ActionParameterLocation.URL,
                 ActionParameterMeaning.AUTOMATIC,
                 ActionParameterDatatype.NUMBER)

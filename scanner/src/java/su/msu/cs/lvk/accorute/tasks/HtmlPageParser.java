@@ -10,6 +10,7 @@ import su.msu.cs.lvk.accorute.WebAppProperties;
 import su.msu.cs.lvk.accorute.browserUI.HttpElementAction;
 import su.msu.cs.lvk.accorute.browserUI.HttpElementActionType;
 import su.msu.cs.lvk.accorute.http.model.Action;
+import su.msu.cs.lvk.accorute.http.model.ActionParameter;
 import su.msu.cs.lvk.accorute.http.model.Conversation;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
@@ -33,12 +34,12 @@ import java.util.List;
 public class HtmlPageParser extends Task implements DomChangeListener {
     private final HtmlPage page;
     private HtmlPage tmpPage;
-    private final Callback2<HtmlPage, HttpElementAction> callback;
+    private final Callback3<HtmlPage, HttpElementAction, Action> callback;
     private final WebClient webClient;
     private boolean wasRequest;
     private WebConnection falseWebConn;
     private HttpElementAction curAction;
-    public HtmlPageParser(TaskManager t, HtmlPage _page, Callback2<HtmlPage, HttpElementAction> cb) {
+    public HtmlPageParser(TaskManager t, HtmlPage _page, Callback3<HtmlPage, HttpElementAction, Action> cb) {
         super(t);
         page = _page;
         callback = cb;
@@ -49,7 +50,8 @@ public class HtmlPageParser extends Task implements DomChangeListener {
             public WebResponse getResponse(WebRequest request) throws IOException {
                 wasRequest = true;
                 logger.debug("Intercepted a request");
-                callback.CallMeBack(tmpPage.cloneNode(true),curAction);
+                List<ActionParameter> param = WebAppProperties.getInstance().getRcd().decompose(request);
+                callback.CallMeBack(tmpPage.cloneNode(true),curAction,new Action("tmp", param));
                 WebResponseData wrd = new WebResponseData(
                         new byte[0],
                         200,
