@@ -1,0 +1,5 @@
+AddHandler python-program .html
+PythonHandler dispatcher
+Options -Indexes
+PythonDebug On
+PythonPath "sys.path+['%INSTALL_DIR%/html']+['%INSTALL_DIR%']"
