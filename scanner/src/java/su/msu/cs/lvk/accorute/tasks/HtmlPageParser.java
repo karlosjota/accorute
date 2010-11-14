@@ -4,23 +4,17 @@ import com.gargoylesoftware.htmlunit.*;
 import com.gargoylesoftware.htmlunit.html.*;
 import com.gargoylesoftware.htmlunit.javascript.host.Node;
 import com.gargoylesoftware.htmlunit.util.FalsifyingWebConnection;
-import com.gargoylesoftware.htmlunit.util.NameValuePair;
 import net.sourceforge.htmlunit.corejs.javascript.EcmaError;
 import net.sourceforge.htmlunit.corejs.javascript.ScriptableObject;
 import su.msu.cs.lvk.accorute.WebAppProperties;
-import su.msu.cs.lvk.accorute.browserUI.HttpElementAction;
-import su.msu.cs.lvk.accorute.browserUI.HttpElementActionType;
-import su.msu.cs.lvk.accorute.http.model.Action;
-import su.msu.cs.lvk.accorute.http.model.ActionParameter;
-import su.msu.cs.lvk.accorute.http.model.Conversation;
+import su.msu.cs.lvk.accorute.http.model.DOMAction;
+import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
-import su.msu.cs.lvk.accorute.utils.Callback2;
 import su.msu.cs.lvk.accorute.utils.Callback3;
 import su.msu.cs.lvk.accorute.utils.HtmlUnitUtils;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -36,12 +30,12 @@ import java.util.List;
 public class HtmlPageParser extends Task implements DomChangeListener {
     private final HtmlPage page;
     private HtmlPage tmpPage;
-    private final Callback3<HtmlPage, HttpElementAction, Action> callback;
+    private final Callback3<HtmlPage, ArrayList<DOMAction>, HTTPAction> callback;
     private final WebClient webClient;
     private boolean wasRequest;
     private WebConnection falseWebConn;
-    private HttpElementAction curAction;
-    public HtmlPageParser(TaskManager t, HtmlPage _page, Callback3<HtmlPage, HttpElementAction, Action> cb) {
+    private final ArrayList<DOMAction> curActionChain = new ArrayList<DOMAction>();
+    public HtmlPageParser(TaskManager t, HtmlPage _page, Callback3<HtmlPage, ArrayList<DOMAction>, HTTPAction> cb) {
         super(t);
         page = _page;
         callback = cb;
@@ -53,7 +47,7 @@ public class HtmlPageParser extends Task implements DomChangeListener {
                 wasRequest = true;
                 logger.debug("Intercepted a request");
                 List<ActionParameter> param = WebAppProperties.getInstance().getRcd().decompose(request);
-                callback.CallMeBack(HtmlUnitUtils.clonePage(tmpPage),curAction,new Action("tmp", param));
+                callback.CallMeBack(tmpPage, (ArrayList<DOMAction>) curActionChain.clone(),new HTTPAction("tmp", param));
                 /*WebResponseData wrd = new WebResponseData(
                         new byte[0],
                         200,
@@ -74,12 +68,10 @@ public class HtmlPageParser extends Task implements DomChangeListener {
         //set a window
         WebWindow w = webClient.openWindow(null,"tmpWindow");
         tmpPage =  HtmlUnitUtils.clonePage(page,w);
-        tmpPage.setEnclosingWindow(w);
-        w.setEnclosedPage(tmpPage);
         //get corresponding element...
         HtmlElement el = tmpPage.getFirstByXPath(path);
         wasRequest = false;
-        curAction = new HttpElementAction(path, HttpElementActionType.CLICK);
+        curActionChain.add(new DOMAction(path, DOMActionType.CLICK));
         //dry-run the action
         try{
             el.click();
@@ -92,9 +84,9 @@ public class HtmlPageParser extends Task implements DomChangeListener {
         catch(RuntimeException ex){
             //Dirty, dirty hack!!!
             if(ex.getMessage() == null)
-                throw ex;
+                logger.error("got runtime exception during click!", ex);
             if(!ex.getMessage().equalsIgnoreCase("java.io.IOException: goes just as planned"))
-                throw ex;
+                logger.error("got runtime exception during click!", ex);
         }
         //if there was no request, we can happily reproduce this action on current page
         if(!wasRequest){
@@ -103,7 +95,11 @@ public class HtmlPageParser extends Task implements DomChangeListener {
                 htmlElement.click();
             }catch(IOException ex) {
                 logger.warn("exception while clicking",ex);
+            }catch(RuntimeException ex){
+                logger.error("got runtime exception during click!", ex);                
             }
+        }else{
+            curActionChain.remove(curActionChain.size() - 1);    
         }
     }
 
@@ -133,12 +129,12 @@ public class HtmlPageParser extends Task implements DomChangeListener {
             }
             //TODO: currently we do not support the situation when request is made while doing this!
             wasRequest = false;
-            curAction = new HttpElementAction(path, HttpElementActionType.MOUSEOVER);
             if (jsNode.getEventHandler("onmouseover") != null) {
+                curActionChain.add(new DOMAction(path, DOMActionType.MOUSEOVER));
                 htmlElement.mouseOver();
             }
-            curAction = new HttpElementAction(path, HttpElementActionType.MOUSEMOVE);
             if (jsNode.getEventHandler("onmousemove") != null) {
+                curActionChain.add(new DOMAction(path, DOMActionType.MOUSEMOVE));
                 htmlElement.mouseMove();
             }
             if(wasRequest){
@@ -147,6 +143,7 @@ public class HtmlPageParser extends Task implements DomChangeListener {
         }
     }
     public void nodeAdded(final DomChangeEvent event) {
+        logger.trace("DOM changed");
         DomNode newNode = event.getChangedNode();
         /*
         String path = newNode.getCanonicalXPath();

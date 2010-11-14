@@ -3,10 +3,17 @@ package su.msu.cs.lvk.accorute.utils;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebWindow;
 import com.gargoylesoftware.htmlunit.WebWindowImpl;
-import com.gargoylesoftware.htmlunit.html.DomDocumentFragment;
-import com.gargoylesoftware.htmlunit.html.DomNode;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.*;
+import com.gargoylesoftware.htmlunit.javascript.SimpleScriptable;
+import com.gargoylesoftware.htmlunit.javascript.host.Window;
+import net.sourceforge.htmlunit.corejs.javascript.ScriptableObject;
+import org.w3c.dom.NamedNodeMap;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 /**
  * Created by IntelliJ IDEA.
@@ -16,30 +23,32 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
  * To change this template use File | Settings | File Templates.
  */
 public class HtmlUnitUtils {
-    static  final WebClient wc = new WebClient();
-    public static HtmlPage clonePage(HtmlPage other){
-        //Dirty, dirty hack!
-        WebWindowImpl w = new  WebWindowImpl(wc){
-            public WebWindow getParentWindow() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-            public WebWindow getTopWindow() {
-                return this;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-            @Override
-            protected boolean isJavaScriptInitializationNeeded() {
-                return true;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-        };
-        return clonePage(other, w);
 
-    }
     public static HtmlPage clonePage(HtmlPage other, WebWindow w){
         HtmlPage p = new HtmlPage(other.getUrl(), other.getWebResponse(), w);
-        Iterable<DomNode> children = other.getChildren();
-        for(DomNode node: children){
-            p.appendChild(node.cloneNode(true));
+        DomNode newContents = other.getFirstChild().cloneNode(true);
+        p.appendChild(newContents);
+        w.setEnclosedPage(p);
+        p.setEnclosingWindow(w);
+        List<HtmlElement> scripts = p.getElementsByTagName("script");
+        for(HtmlElement sc: scripts){
+            HtmlScript script = (HtmlScript)sc;
+            DomNode n = script.getParentNode();
+            HtmlScript newScript = (HtmlScript) p.createElement("script");
+            NamedNodeMap map =  script.getAttributes();
+            for(int i=0;i<map.getLength();i++){
+                newScript.setAttribute(map.item(i).getNodeName(),map.item(i).getNodeValue());
+            }
+            newScript.setTextContent(script.getTextContent());
+            newScript.setNodeValue(script.getNodeValue());
+            n.removeChild(script);
+            n.appendChild(newScript);
+        }
+        if(other.getFocusedElement()!=null){
+            String focusPath = other.getFocusedElement().getCanonicalXPath();
+            p.setFocusedElement(p.<HtmlElement>getFirstByXPath(focusPath));
         }
         return p;
     }
 }
+

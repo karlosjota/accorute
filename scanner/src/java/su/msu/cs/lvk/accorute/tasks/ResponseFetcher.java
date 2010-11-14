@@ -1,15 +1,10 @@
 package su.msu.cs.lvk.accorute.tasks;
 
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.commons.httpclient.*;
 import su.msu.cs.lvk.accorute.WebAppProperties;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
-import su.msu.cs.lvk.accorute.utils.Callback0;
-import su.msu.cs.lvk.accorute.utils.Callback1;
-import su.msu.cs.lvk.accorute.utils.Callback2;
-import com.gargoylesoftware.htmlunit.HttpWebConnection;
 
 import java.io.IOException;
 
@@ -22,11 +17,11 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public class ResponseFetcher extends Task {
-    final private Action action;
+    final private HTTPAction action;
     final private EntityID contextID;
     private Conversation res;
     final static private HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
-    public ResponseFetcher(TaskManager t, Action act, EntityID ctxID) {
+    public ResponseFetcher(TaskManager t, HTTPAction act, EntityID ctxID) {
         super(t);
         action = act;
         contextID = ctxID;

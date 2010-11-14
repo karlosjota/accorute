@@ -1,6 +1,6 @@
 package su.msu.cs.lvk.accorute.storage;
 
-import su.msu.cs.lvk.accorute.http.model.Action;
+import su.msu.cs.lvk.accorute.http.model.HTTPAction;
 import su.msu.cs.lvk.accorute.http.model.EntityID;
 
 /**
@@ -17,9 +17,9 @@ public interface ActionService {
      * @param act
      * @throws IllegalArgumentException
      */
-    public void addOrUpdateAction(Action act);
-    public Action getActionByID(EntityID actID);
-    public Action getFirstActionInContext(EntityID ctxID);
-    public Action getLastActionInContext(EntityID ctxID);
+    public void addOrUpdateAction(HTTPAction act);
+    public HTTPAction getActionByID(EntityID actID);
+    public HTTPAction getFirstActionInContext(EntityID ctxID);
+    public HTTPAction getLastActionInContext(EntityID ctxID);
 
 }

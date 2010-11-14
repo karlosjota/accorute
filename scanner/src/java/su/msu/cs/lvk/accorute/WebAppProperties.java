@@ -10,7 +10,7 @@ package su.msu.cs.lvk.accorute;
 import su.msu.cs.lvk.accorute.RBAC.Role;
 import su.msu.cs.lvk.accorute.decisions.*;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterLocation;
-import su.msu.cs.lvk.accorute.http.model.Action;
+import su.msu.cs.lvk.accorute.http.model.HTTPAction;
 import su.msu.cs.lvk.accorute.http.model.TestChain;
 import su.msu.cs.lvk.accorute.storage.*;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
@@ -39,7 +39,7 @@ public class WebAppProperties {
 
     private URL startPage = null;
     private TestChain testChain;
-    private final Collection<Action> stateChangingActions = new ArrayList<Action>();
+    private final Collection<HTTPAction> stateChangingHTTPActions = new ArrayList<HTTPAction>();
     private ParameterValueDecision pvd;
     private RequestComposerDecomposer rcd;
 
@@ -195,8 +195,8 @@ public class WebAppProperties {
     public void setContextService(ContextService contextService) {
         this.contextService = contextService;
     }
-    public void addStateChangingAction(Action act){
-        stateChangingActions.add(act);
+    public void addStateChangingAction(HTTPAction act){
+        stateChangingHTTPActions.add(act);
     }
 
     public TaskManager getTaskManager() {

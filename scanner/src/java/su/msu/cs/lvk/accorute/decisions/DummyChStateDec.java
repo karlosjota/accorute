@@ -1,6 +1,6 @@
 package su.msu.cs.lvk.accorute.decisions;
 
-import su.msu.cs.lvk.accorute.http.model.Action;
+import su.msu.cs.lvk.accorute.http.model.HTTPAction;
 
 /**
  * Created by IntelliJ IDEA.
@@ -10,7 +10,7 @@ import su.msu.cs.lvk.accorute.http.model.Action;
  * To change this template use File | Settings | File Templates.
  */
 public class DummyChStateDec implements ActionChangesStateDecision{
-    public boolean changesState(Action action) {
+    public boolean changesState(HTTPAction action) {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterDatatype;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterLocation;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterMeaning;
+import su.msu.cs.lvk.accorute.http.constants.ActionParameterRole;
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,9 +15,10 @@ import su.msu.cs.lvk.accorute.http.constants.ActionParameterMeaning;
  */
 public class ActionParameter extends NamedValue {
     private static Logger logger = Logger.getLogger(NamedValue.class.getName());
-    private ActionParameterLocation location;
-    private ActionParameterMeaning meaning;
-    private ActionParameterDatatype datatype;
+    private final ActionParameterLocation location;
+    private final ActionParameterMeaning meaning;
+    private final ActionParameterDatatype datatype;
+    private final ActionParameterRole role;
 
     @Override
     public String toString() {
@@ -26,13 +28,14 @@ public class ActionParameter extends NamedValue {
     public boolean isDefined() {
         return defined;
     }
-
+    public ActionParameterRole getRole() {
+        return role;
+    }
     public void setDefined(boolean defined) {
         this.defined = defined;
     }
 
     private boolean defined = false;
-
     public ActionParameter(String pname, String pvalue,
                            ActionParameterLocation loc,
                            ActionParameterMeaning mean,
@@ -42,6 +45,20 @@ public class ActionParameter extends NamedValue {
         location = loc;
         meaning = mean;
         datatype = type;
+        role = ActionParameterRole.UNKNOWN;
+    }
+
+    public ActionParameter(String pname, String pvalue,
+                           ActionParameterLocation loc,
+                           ActionParameterMeaning mean,
+                           ActionParameterDatatype type,
+                           ActionParameterRole paramRole
+                           ){
+        super(pname,pvalue);
+        location = loc;
+        meaning = mean;
+        datatype = type;
+        role = paramRole;
     }
     public ActionParameterLocation getLocation() {
         return location;

@@ -8,9 +8,6 @@ import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.tasks.SitemapCrawler;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by IntelliJ IDEA.
  * User: george
@@ -34,9 +31,9 @@ public class CrawlerTest {
         UserContext dummyCtx = new UserContext();
         dummyCtx.setUserID(u.getUserID());
         WebAppProperties.getInstance().getContextService().addOrUpdateContext(dummyCtx);
-        Action act;
+        HTTPAction act;
         try{
-            act = new Action("initial",WebAppProperties.getInstance().getRcd().decomposeURL("http://127.0.0.1/accorute_tests/JS_Menus/javascript-menu-examples.html"));
+            act = new HTTPAction("initial",WebAppProperties.getInstance().getRcd().decomposeURL("http://127.0.0.1/accorute_tests/plainHTML/test4/1.html"));
         }catch(Throwable r){
             return;
         }

@@ -3,7 +3,6 @@ package su.msu.cs.lvk.accorute;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
@@ -28,7 +27,7 @@ public class Main {
         }
         logger = Logger.getLogger(Main.class.getName());
         /*WebAppUser user = new WebAppUser();
-        Action action = new Action("default action", new ArrayList<ActionParameter>());
+        HTTPAction action = new HTTPAction("default action", new ArrayList<ActionParameter>());
         logger.trace(WebAppProperties.getInstance());
 
         WebAppProperties.getInstance().getUserService().addOrModifyUser(user);

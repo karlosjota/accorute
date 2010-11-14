@@ -13,7 +13,7 @@ import java.util.List;
  * Time: 12:19:25
  * To change this template use File | Settings | File Templates.
  */
-public class Action {
+public class HTTPAction {
     public String getName() {
         return name;
     }
@@ -24,7 +24,7 @@ public class Action {
 
     @Override
     public String toString() {
-        return "Action{" +
+        return "HTTPAction{" +
                 "name='" + name + '\'' +
                 ", actionParameters=" + actionParameters +
                 ", actionID=" + actionID +
@@ -51,7 +51,7 @@ public class Action {
     private List<ActionParameter> actionParameters;
     private EntityID actionID = EntityID.NOT_INITIALIZED;
 
-    public Action(String name,List<ActionParameter> params ){
+    public HTTPAction(String name,List<ActionParameter> params ){
         this.name = name;
         this.actionParameters = params;
     }

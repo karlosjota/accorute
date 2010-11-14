@@ -1,4 +1,4 @@
-package su.msu.cs.lvk.accorute.browserUI;
+package su.msu.cs.lvk.accorute.http.model;
 
 /**
  * Created by IntelliJ IDEA.
@@ -7,10 +7,11 @@ package su.msu.cs.lvk.accorute.browserUI;
  * Time: 17:03:50
  * To change this template use File | Settings | File Templates.
  */
-public enum HttpElementActionType {
+public enum DOMActionType {
     CLICK,
     MOUSEMOVE,
     MOUSEOVER,
+    REFRESH,
     OTHER
     // TODO: add other!
 }

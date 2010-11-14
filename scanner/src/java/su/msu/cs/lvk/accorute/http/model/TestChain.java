@@ -1,7 +1,6 @@
 package su.msu.cs.lvk.accorute.http.model;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -13,16 +12,16 @@ import java.util.List;
  */
 public class TestChain {
     public static class ActionByUser {
-        public final Action action;
+        public final HTTPAction action;
         public final WebAppUser user;
-        public ActionByUser(Action act, WebAppUser u){
+        public ActionByUser(HTTPAction act, WebAppUser u){
             action = act;
             user = u;
         }
     }
     private List<ActionByUser> acts = new ArrayList<ActionByUser>();
 
-    public void add(Action a,  WebAppUser u){
+    public void add(HTTPAction a,  WebAppUser u){
         acts.add(new ActionByUser(a,u));
     }
 

@@ -4,11 +4,9 @@ import com.gargoylesoftware.htmlunit.*;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.util.FalsifyingWebConnection;
-import com.gargoylesoftware.htmlunit.util.NameValuePair;
 import org.apache.commons.lang.NotImplementedException;
 import su.msu.cs.lvk.accorute.WebAppProperties;
-import su.msu.cs.lvk.accorute.browserUI.HttpElementAction;
-import su.msu.cs.lvk.accorute.browserUI.HttpElementActionType;
+import su.msu.cs.lvk.accorute.http.model.DOMAction;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
@@ -28,24 +26,23 @@ import java.util.List;
  */
 public class HtmlElementActionPerformer extends Task {
     final private HtmlPage page;
-    final private HttpElementAction action;
+    final private ArrayList<DOMAction> actions;
     final private EntityID ctx;
-    final private Callback3<Conversation, Action, HtmlPage> callback;
+    final private Callback3<Conversation, HTTPAction, HtmlPage> callback;
     final private WebClient webClient = new WebClient();
     final private WebConnection falseWebConn;
     private boolean wasReq = false;
     private Conversation conv;
-    private Action act;
+    private HTTPAction act;
     public HtmlElementActionPerformer(
             TaskManager t,
             HtmlPage pg,
-            HttpElementAction act_,
+            ArrayList<DOMAction> act_,
             EntityID ctxID,
-            Callback3<Conversation, Action, HtmlPage> cb
+            Callback3<Conversation, HTTPAction, HtmlPage> cb
     ) {
         super(t);
-        page = HtmlUnitUtils.clonePage(pg,webClient.getCurrentWindow());
-        action = act_;
+        actions = act_;
         ctx = ctxID;
         callback = cb;
         falseWebConn = new FalsifyingWebConnection(webClient){
@@ -53,8 +50,8 @@ public class HtmlElementActionPerformer extends Task {
                 //TODO:not so easy!!!
                 wasReq = true;
                 List<ActionParameter> param = WebAppProperties.getInstance().getRcd().decompose(request);
-                act = new Action(action + " on "+ page, param);
-                logger.trace("Will request Action " + act);
+                act = new HTTPAction(actions + " on "+ page, param);
+                logger.trace("Will request HTTPAction " + act);
                 ResponseFetcher tsk = new ResponseFetcher(taskManager, act, ctx);
                 waitForTask(tsk);
                 while(tsk.getStatus()!=TaskStatus.FINISHED){
@@ -69,6 +66,7 @@ public class HtmlElementActionPerformer extends Task {
             }
         };
         webClient.setWebConnection(falseWebConn);
+        page = HtmlUnitUtils.clonePage(pg,webClient.getCurrentWindow());
     }
 
     @Override
@@ -84,11 +82,12 @@ public class HtmlElementActionPerformer extends Task {
         page.setEnclosingWindow(w);
         w.setEnclosedPage(page);
         page.getWebClient().setWebConnection(falseWebConn);
-        HtmlElement el = page.getFirstByXPath(action.getXpathElString());
-        switch (action.getType()){
+        DOMAction last = actions.get(actions.size() - 1);
+        HtmlElement el = page.getFirstByXPath(last.getXpathElString());
+        switch (last.getType()){
         case CLICK:
             try{
-                logger.trace("Will click on " + action.getXpathElString());
+                logger.trace("Will click on " + last.getXpathElString());
                 logger.trace(page);
                 Page  newPage = el.click();
                 logger.trace(newPage);

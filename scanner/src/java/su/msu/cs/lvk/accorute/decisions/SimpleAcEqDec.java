@@ -1,7 +1,6 @@
 package su.msu.cs.lvk.accorute.decisions;
 
-import su.msu.cs.lvk.accorute.WebAppProperties;
-import su.msu.cs.lvk.accorute.http.model.Action;
+import su.msu.cs.lvk.accorute.http.model.HTTPAction;
 import su.msu.cs.lvk.accorute.http.model.ActionParameter;
 
 import java.util.List;
@@ -26,7 +25,7 @@ public class SimpleAcEqDec implements ActionEqualityDecision{
         }
         return null;
     }
-    public boolean ActionEquals(Action a, Action b) {
+    public boolean ActionEquals(HTTPAction a, HTTPAction b) {
         //ignore action name...
         List aParams = a.getActionParameters();
         List bParams = b.getActionParameters();
