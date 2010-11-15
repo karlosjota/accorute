@@ -20,6 +20,6 @@
         <level value="warn"/>
     </logger>
     <logger name="com.gargoylesoftware">
-        <level value="warn"/>
+        <level value="fatal"/>
     </logger>
 </log4j:configuration>

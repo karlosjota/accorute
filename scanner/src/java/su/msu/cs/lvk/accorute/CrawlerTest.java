@@ -31,9 +31,10 @@ public class CrawlerTest {
         UserContext dummyCtx = new UserContext();
         dummyCtx.setUserID(u.getUserID());
         WebAppProperties.getInstance().getContextService().addOrUpdateContext(dummyCtx);
-        HTTPAction act;
+        HttpAction act;
         try{
-            act = new HTTPAction("initial",WebAppProperties.getInstance().getRcd().decomposeURL("http://127.0.0.1/accorute_tests/plainHTML/test4/1.html"));
+            //"http://127.0.0.1/accorute_tests/JS_menu_2/demo1/index.html"
+            act = new HttpAction("initial",WebAppProperties.getInstance().getRcd().decomposeURL("http://127.0.0.1/accorute_tests/plainHTML/test4/1.html"));
         }catch(Throwable r){
             return;
         }

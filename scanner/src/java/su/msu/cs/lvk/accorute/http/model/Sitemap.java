@@ -49,19 +49,19 @@ public class Sitemap {
             return nodeID;
         }
 
-        public Set<HTTPAction> getActions() {
-            return HTTPActions;
+        public Set<HttpAction> getActions() {
+            return httpActions;
         }
 
-        public void setActions(Collection<HTTPAction> HTTPActions) {
-            this.HTTPActions.clear();
-            addActions(HTTPActions);
+        public void setActions(Collection<HttpAction> httpActions) {
+            this.httpActions.clear();
+            addActions(httpActions);
         }
-        public boolean addAction(HTTPAction action) {
-            return this.HTTPActions.add(action);
+        public boolean addAction(HttpAction action) {
+            return this.httpActions.add(action);
         }
-        public boolean addActions(Collection<HTTPAction> HTTPActions) {
-            return this.HTTPActions.addAll(HTTPActions);
+        public boolean addActions(Collection<HttpAction> httpActions) {
+            return this.httpActions.addAll(httpActions);
         }
         public boolean addInbound(Conversation c){
             return inConversation.add(c);
@@ -81,7 +81,7 @@ public class Sitemap {
             return WebAppProperties.getInstance().getPageEqDec().pagesEqual(pages.get(0),p);
         }
 
-        private final Set<HTTPAction> HTTPActions = new HashSet<HTTPAction>();
+        private final Set<HttpAction> httpActions = new HashSet<HttpAction>();
         private final List<Conversation> inConversation  = new ArrayList<Conversation> ();
         private final List<HtmlPage> pages  = new ArrayList<HtmlPage> ();
 
@@ -91,7 +91,7 @@ public class Sitemap {
             this.nodeID = id;
         }
         boolean equals(SitemapNode other){
-            return other.getActions().equals(HTTPActions);
+            return other.getActions().equals(httpActions);
         }
 
         @Override
@@ -99,7 +99,7 @@ public class Sitemap {
             return "\nSitemapNode{" +
                     "nodeID=" + nodeID.getId() +
                     ", pages=" + pages +
-                    ", HTTPactions=" + HTTPActions +
+                    ", HTTPactions=" + httpActions +
                     /*", inConversation=" + inConversation +*/
                     '}';
         }
@@ -150,11 +150,14 @@ public class Sitemap {
         private final SitemapNode v1;
         private final SitemapNode v2;
         private final CorrespondentActions label;
+        private final ArrayList<Conversation> convs;
 
-        public SitemapEdge(SitemapNode v1, SitemapNode v2, CorrespondentActions label) {
+
+        public SitemapEdge(SitemapNode v1, SitemapNode v2, CorrespondentActions label, ArrayList<Conversation> convs) {
             this.v1 = v1;
             this.v2 = v2;
             this.label = label;
+            this.convs = convs;
         }
 
         public SitemapNode getV1() {
@@ -170,7 +173,7 @@ public class Sitemap {
             return "\n{" +
                     v1.getNodeID().getId() +
                     " -> " + v2.getNodeID().getId() +
-                    ", http=" + label.getHttpAction().getActionParameters() +
+                    ", http=" + label.getHttpActions() +
                     ", DOM=" + label.getDomActions() +
                     '}';
         }
@@ -185,11 +188,15 @@ public class Sitemap {
         this.ctxID = ctxID;
     }
 
-    public boolean addEdge(SitemapNode from, SitemapNode to, CorrespondentActions act, Conversation conv){
+    public boolean addEdge(SitemapNode from, SitemapNode to, CorrespondentActions act, ArrayList<Conversation> convs){
         actionDepGraph.addVertex(from);
         actionDepGraph.addVertex(to);
-        SitemapEdge edge = new SitemapEdge(from,to,act);
-        to.addInbound(conv);
+        SitemapEdge edge = new SitemapEdge(from,to,act,convs);
+        if(convs!=null){
+            for(Conversation c : convs){
+                to.addInbound(c);
+            }
+        }
         return actionDepGraph.addEdge(from,to,edge);
     }
 

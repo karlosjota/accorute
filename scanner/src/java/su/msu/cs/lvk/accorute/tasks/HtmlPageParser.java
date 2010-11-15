@@ -7,11 +7,12 @@ import com.gargoylesoftware.htmlunit.util.FalsifyingWebConnection;
 import net.sourceforge.htmlunit.corejs.javascript.EcmaError;
 import net.sourceforge.htmlunit.corejs.javascript.ScriptableObject;
 import su.msu.cs.lvk.accorute.WebAppProperties;
-import su.msu.cs.lvk.accorute.http.model.DOMAction;
+import su.msu.cs.lvk.accorute.http.model.DomAction;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 import su.msu.cs.lvk.accorute.utils.Callback3;
+import su.msu.cs.lvk.accorute.utils.Callback4;
 import su.msu.cs.lvk.accorute.utils.HtmlUnitUtils;
 
 import java.io.IOException;
@@ -30,24 +31,27 @@ import java.util.List;
 public class HtmlPageParser extends Task implements DomChangeListener {
     private final HtmlPage page;
     private HtmlPage tmpPage;
-    private final Callback3<HtmlPage, ArrayList<DOMAction>, HTTPAction> callback;
+    private final Callback4<HtmlPage,  ArrayList<DomAction>, HttpAction, Boolean> callback;
     private final WebClient webClient;
     private boolean wasRequest;
     private WebConnection falseWebConn;
-    private final ArrayList<DOMAction> curActionChain = new ArrayList<DOMAction>();
-    public HtmlPageParser(TaskManager t, HtmlPage _page, Callback3<HtmlPage, ArrayList<DOMAction>, HTTPAction> cb) {
+    private final ArrayList<DomAction> curActionChain = new ArrayList<DomAction>();
+    public HtmlPageParser(TaskManager t, HtmlPage _page, Callback4<HtmlPage,  ArrayList<DomAction>, HttpAction, Boolean> cb) {
         super(t);
-        page = _page;
         callback = cb;
         logger.trace("HtmlPageParser created");
         webClient = new WebClient();
+        //TODO: requests here may follow, need to intercept and add cookies.
+        //TODO: Still, content loaded on load (usually js and css, is almost always not protected by cookies.
+        page = HtmlUnitUtils.clonePage(_page,webClient.getCurrentWindow());
         final HtmlPageParser thisParser = this;
         falseWebConn = new FalsifyingWebConnection(webClient){
             public WebResponse getResponse(WebRequest request) throws IOException {
                 wasRequest = true;
                 logger.debug("Intercepted a request");
                 List<ActionParameter> param = WebAppProperties.getInstance().getRcd().decompose(request);
-                callback.CallMeBack(tmpPage, (ArrayList<DOMAction>) curActionChain.clone(),new HTTPAction("tmp", param));
+                //TODO: ajax detection!!!!
+                callback.CallMeBack(tmpPage, (ArrayList<DomAction>) curActionChain.clone(),new HttpAction("tmp", param), false);
                 /*WebResponseData wrd = new WebResponseData(
                         new byte[0],
                         200,
@@ -71,7 +75,7 @@ public class HtmlPageParser extends Task implements DomChangeListener {
         //get corresponding element...
         HtmlElement el = tmpPage.getFirstByXPath(path);
         wasRequest = false;
-        curActionChain.add(new DOMAction(path, DOMActionType.CLICK));
+        curActionChain.add(new DomAction(path, DomActionType.CLICK));
         //dry-run the action
         try{
             el.click();
@@ -103,16 +107,18 @@ public class HtmlPageParser extends Task implements DomChangeListener {
         }
     }
 
-    private void emulateUserActions(HtmlPage htmlPage) {
-        logger.trace("emulateUserActions on " + htmlPage);
-        Iterable<HtmlElement> htmlChildren = htmlPage.getHtmlElementDescendants();
+    private void emulateUserActions(HtmlElement el) {
+        doJsActions(el);
+        logger.trace("emulateUserActions on " + el);
+        Iterable<HtmlElement> htmlChildren = el.getHtmlElementDescendants();
         Iterator<HtmlElement> it = htmlChildren.iterator();
         while (it.hasNext()) {
             doJsActions(it.next());
         }
-        List<HtmlAnchor> anchors = htmlPage.getAnchors();
-        for(HtmlAnchor a:anchors){
-            tryClick(a);
+        List<HtmlElement> anchors = el.getElementsByTagName("a");
+        for(HtmlElement a:anchors){
+            if(((HtmlAnchor) a).getHrefAttribute() != DomElement.ATTRIBUTE_NOT_DEFINED)
+                tryClick(a);
         }
     }
     private void doJsActions(HtmlElement htmlElement) {
@@ -130,11 +136,11 @@ public class HtmlPageParser extends Task implements DomChangeListener {
             //TODO: currently we do not support the situation when request is made while doing this!
             wasRequest = false;
             if (jsNode.getEventHandler("onmouseover") != null) {
-                curActionChain.add(new DOMAction(path, DOMActionType.MOUSEOVER));
+                curActionChain.add(new DomAction(path, DomActionType.MOUSEOVER));
                 htmlElement.mouseOver();
             }
             if (jsNode.getEventHandler("onmousemove") != null) {
-                curActionChain.add(new DOMAction(path, DOMActionType.MOUSEMOVE));
+                curActionChain.add(new DomAction(path, DomActionType.MOUSEMOVE));
                 htmlElement.mouseMove();
             }
             if(wasRequest){
@@ -145,6 +151,15 @@ public class HtmlPageParser extends Task implements DomChangeListener {
     public void nodeAdded(final DomChangeEvent event) {
         logger.trace("DOM changed");
         DomNode newNode = event.getChangedNode();
+        if (newNode instanceof HtmlElement){
+            doJsActions((HtmlElement)newNode);
+            logger.trace("emulateUserActions on " + newNode);
+            Iterable<HtmlElement> htmlChildren = newNode.getHtmlElementDescendants();
+            Iterator<HtmlElement> it = htmlChildren.iterator();
+            while (it.hasNext()) {
+                doJsActions(it.next());
+            }
+        }
         /*
         String path = newNode.getCanonicalXPath();
         if(page.getFirstByXPath(path) != newNode){
@@ -152,14 +167,6 @@ public class HtmlPageParser extends Task implements DomChangeListener {
             return;
         }
         */
-        if (newNode instanceof HtmlElement) {
-            doJsActions((HtmlElement) newNode);
-            Iterable<HtmlElement> htmlChildren = newNode.getHtmlElementDescendants();
-            Iterator<HtmlElement> it = htmlChildren.iterator();
-            while (it.hasNext()) {
-                doJsActions(it.next());
-            }
-        }
     }
 
     public void nodeDeleted(final DomChangeEvent event) {/* we have nothing to do with it */}
@@ -191,7 +198,7 @@ public class HtmlPageParser extends Task implements DomChangeListener {
         //find all HtmlElement nodes that have actions and execute them
         webClient.setThrowExceptionOnFailingStatusCode(false);
         webClient.setThrowExceptionOnScriptError(false);
-        emulateUserActions(page);
+        emulateUserActions(page.getDocumentElement());
         /*baseWindow.close();*/
     }
 }

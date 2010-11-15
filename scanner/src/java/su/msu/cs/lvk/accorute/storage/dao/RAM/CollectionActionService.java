@@ -1,6 +1,6 @@
 package su.msu.cs.lvk.accorute.storage.dao.RAM;
 
-import su.msu.cs.lvk.accorute.http.model.HTTPAction;
+import su.msu.cs.lvk.accorute.http.model.HttpAction;
 import su.msu.cs.lvk.accorute.http.model.EntityID;
 import su.msu.cs.lvk.accorute.storage.ActionService;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -16,17 +16,17 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 public class CollectionActionService implements ActionService{
-    private final Map<EntityID, HTTPAction> database = new HashMap<EntityID, HTTPAction>();
+    private final Map<EntityID, HttpAction> database = new HashMap<EntityID, HttpAction>();
     private Long nextId = 1l;
 
-    public void addOrUpdateAction(HTTPAction act){
+    public void addOrUpdateAction(HttpAction act){
         EntityID aid = act.getActionID();
         if(aid == EntityID.NOT_INITIALIZED){
             EntityID id = new EntityID(nextId ++);
             act.setActionID(id);
             database.put(id, act);
         }else{
-            HTTPAction dbAction = database.get(aid);
+            HttpAction dbAction = database.get(aid);
             if(dbAction == null){
                 throw new IllegalArgumentException("Invalid actionID");
             }
@@ -34,17 +34,17 @@ public class CollectionActionService implements ActionService{
         }
 
     }
-    public HTTPAction getActionByID(EntityID actID){
-        HTTPAction dbAction = database.get(actID);
+    public HttpAction getActionByID(EntityID actID){
+        HttpAction dbAction = database.get(actID);
         if(actID == EntityID.NOT_INITIALIZED || dbAction == null){
             throw new IllegalArgumentException("invalid actionID");
         }
         return dbAction;            
     }
-    public HTTPAction getFirstActionInContext(EntityID ctxID){
+    public HttpAction getFirstActionInContext(EntityID ctxID){
         throw new NotImplementedException();
     }
-    public HTTPAction getLastActionInContext(EntityID ctxID){
+    public HttpAction getLastActionInContext(EntityID ctxID){
         throw new NotImplementedException();
     }
 }

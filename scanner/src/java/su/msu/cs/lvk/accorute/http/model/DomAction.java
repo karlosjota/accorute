@@ -7,18 +7,18 @@ package su.msu.cs.lvk.accorute.http.model;
  * Time: 17:05:36
  * To change this template use File | Settings | File Templates.
  */
-public class DOMAction {
+public class DomAction {
     public String getXpathElString() {
         return xpathElString;
     }
 
-    public DOMActionType getType() {
+    public DomActionType getType() {
         return type;
     }
     final private String xpathElString;
-    final private DOMActionType type;
+    final private DomActionType type;
 
-    public DOMAction(String elemXpath, DOMActionType t){
+    public DomAction(String elemXpath, DomActionType t){
         xpathElString = elemXpath;
         type = t;
     }

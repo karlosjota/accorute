@@ -1,9 +1,5 @@
 package su.msu.cs.lvk.accorute.http.model;
 
-import su.msu.cs.lvk.accorute.WebAppProperties;
-import su.msu.cs.lvk.accorute.decisions.ParameterValueDecision;
-import su.msu.cs.lvk.accorute.decisions.RequestComposerDecomposer;
-
 import java.util.List;
 
 /**
@@ -13,7 +9,7 @@ import java.util.List;
  * Time: 12:19:25
  * To change this template use File | Settings | File Templates.
  */
-public class HTTPAction {
+public class HttpAction {
     public String getName() {
         return name;
     }
@@ -24,7 +20,7 @@ public class HTTPAction {
 
     @Override
     public String toString() {
-        return "HTTPAction{" +
+        return "HttpAction{" +
                 "name='" + name + '\'' +
                 ", actionParameters=" + actionParameters +
                 ", actionID=" + actionID +
@@ -51,7 +47,7 @@ public class HTTPAction {
     private List<ActionParameter> actionParameters;
     private EntityID actionID = EntityID.NOT_INITIALIZED;
 
-    public HTTPAction(String name,List<ActionParameter> params ){
+    public HttpAction(String name,List<ActionParameter> params ){
         this.name = name;
         this.actionParameters = params;
     }

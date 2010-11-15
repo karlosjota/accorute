@@ -40,9 +40,9 @@ public class JSONConfigurator extends SerialTask{
         }
     }
     private static class JSONEventParser{
-        public static HTTPAction parse(JSONObject event) throws JSONException, MalformedURLException, MalformedCookieException,UnsupportedDOMEventTypeException {
+        public static HttpAction parse(JSONObject event) throws JSONException, MalformedURLException, MalformedCookieException,UnsupportedDOMEventTypeException {
             String type = event.getString("type");
-            HTTPAction act;
+            HttpAction act;
             if(type.equals("pageLoaded")){
                 String URL = event.getJSONObject("document").getString("location");
                 List<ActionParameter> params;
@@ -51,7 +51,7 @@ public class JSONConfigurator extends SerialTask{
                 } catch (java.net.MalformedURLException e) {
                     throw e;
                 }
-                act = new HTTPAction("",params);
+                act = new HttpAction("",params);
             }else if(type.equals("formSubmitted")){
                 String method = event.getString("method");
                 String action = event.getString("action");
@@ -79,14 +79,14 @@ public class JSONConfigurator extends SerialTask{
                     );//TODO: be more specific here!!!
                 }
                 params.addAll(WebAppProperties.getInstance().getRcd().decomposeURL(action));
-                act = new HTTPAction("",params);
+                act = new HttpAction("",params);
 
             }else if(type.equals("linkClicked")){
                 String URL = event.getString("href");
                 String cookies = event.getString("cookie");
                 List<ActionParameter> params = WebAppProperties.getInstance().getRcd().decomposeCookies(cookies);
                 params.addAll(WebAppProperties.getInstance().getRcd().decomposeURL(URL));
-                act = new HTTPAction("",params);
+                act = new HttpAction("",params);
             }else{
                 throw new UnsupportedDOMEventTypeException(type);
             }
@@ -186,7 +186,7 @@ public class JSONConfigurator extends SerialTask{
                             JSONObject firstAction = evts.getJSONObject(j);
                             logger.trace("Parsing evt " + j + ", type: " +evtType);
                             try{
-                                HTTPAction act = JSONEventParser.parse(firstAction);
+                                HttpAction act = JSONEventParser.parse(firstAction);
                                 if(act.getName().equals("")){
                                     act.setName("#" + new Integer(counter++).toString()+"("+sessname  +")" ) ;
                                 }

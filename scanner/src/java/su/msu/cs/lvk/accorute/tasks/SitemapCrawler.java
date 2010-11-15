@@ -7,13 +7,14 @@ import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.commons.lang.NotImplementedException;
 import su.msu.cs.lvk.accorute.WebAppProperties;
-import su.msu.cs.lvk.accorute.http.model.DOMAction;
+import su.msu.cs.lvk.accorute.http.model.DomAction;
 import su.msu.cs.lvk.accorute.decisions.ResponseClassificator;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 import su.msu.cs.lvk.accorute.utils.Callback0;
 import su.msu.cs.lvk.accorute.utils.Callback3;
+import su.msu.cs.lvk.accorute.utils.Callback4;
 
 import java.io.IOException;
 import java.net.URL;
@@ -29,21 +30,22 @@ import java.util.regex.Matcher;
  */
 public class SitemapCrawler extends Task implements Callback0{
     //TODO: Add various constraints etc...
-    private final HTTPAction startingAct;
+    private final HttpAction startingAct;
     private final EntityID contextID;
     private final Sitemap siteMap;
     private int spawnedTasks;
-    private final List<HTTPAction> performedHTTPActions = new ArrayList<HTTPAction>();
-    private final Map<HTTPAction,Conversation> actionConversationMap = new HashMap<HTTPAction,Conversation> ();
-    private final Map<HTTPAction,EntityID> actionNodeMap = new HashMap<HTTPAction,EntityID> ();
-    private final Map<HTTPAction,List<EntityID> > unresolvedActions = new HashMap<HTTPAction,List<EntityID> >();
+    private final List<HttpAction> performedHttpActions = new ArrayList<HttpAction>();
+    private final Map<HttpAction,ArrayList<Conversation> > actionConversationMap = new HashMap<HttpAction,ArrayList<Conversation> > ();
+    private final Map<HttpAction,ArrayList<HttpAction> > actionActionChainMap = new HashMap<HttpAction,ArrayList<HttpAction>> ();
+    private final Map<HttpAction,EntityID> actionNodeMap = new HashMap<HttpAction,EntityID> ();
+    private final Map<HttpAction,List<EntityID> > unresolvedActions = new HashMap<HttpAction,List<EntityID> >();
     private boolean wasErr;
     synchronized public void CallMeBack(){
         spawnedTasks--;
         logger.trace("task finished; "+spawnedTasks+" left");
         notify();
     }
-    public SitemapCrawler(TaskManager t, HTTPAction startReq, EntityID ctxID){
+    public SitemapCrawler(TaskManager t, HttpAction startReq, EntityID ctxID){
         super(t);
         siteMap = WebAppProperties.getInstance().getSitemapService().getSitemapForContext(ctxID);
         startingAct = startReq;
@@ -55,9 +57,15 @@ public class SitemapCrawler extends Task implements Callback0{
     synchronized private void addNewAction(
             final EntityID fromNodeID,
             final HtmlPage p,
-            final CorrespondentActions acts
+            final CorrespondentActions acts,
+            final boolean isAjax
     ){
-        HTTPAction  httpAct = acts.getHttpAction();
+        ArrayList<HttpAction> httpActs = acts.getHttpActions();
+        if(httpActs.size() != 1){
+            logger.error("addNewAction: trying to add multiple actions at once, ignoring!");
+            return;
+        }
+        HttpAction httpAct = httpActs.get(0);
         String url = WebAppProperties.getInstance().getRcd().getURL(httpAct.getActionParameters()).toString();
         Matcher m = WebAppProperties.getInstance().getScope().matcher(url);
         if(!m.matches()){
@@ -65,47 +73,54 @@ public class SitemapCrawler extends Task implements Callback0{
             siteMap.addEdge(siteMap.getNodeByID(fromNodeID), siteMap.getExitNode(), acts, null);
             return;
         }
-        logger.trace("url " + url + " is in scope");
         if(WebAppProperties.getInstance().getChStateDec().changesState(httpAct)){
             logger.trace("Will not perform action because it will change the state");
             final Sitemap.SitemapNode from = siteMap.getNodeByID(fromNodeID);
             siteMap.addEdge(from, siteMap.getExitNode(), acts, null);
             return;
         }
-        synchronized (performedHTTPActions){
-            HTTPAction equalHTTPAction = null;
-            for(HTTPAction act: performedHTTPActions){
-                if(WebAppProperties.getInstance().getAcEqDec().ActionEquals(act,httpAct)){
-                    equalHTTPAction = act;
-                    break;
-                }
-            }
-            if(equalHTTPAction != null){
-                logger.trace("Will not perform action " + httpAct + " that was already performed");
-                Conversation c = actionConversationMap.get(equalHTTPAction);
-                EntityID nId = actionNodeMap.get(equalHTTPAction);
-                if(c == null || nId == null){
-                    List<EntityID> l= unresolvedActions.get(equalHTTPAction);
-                    if(l == null){
-                        l = new ArrayList<EntityID>();
-                        unresolvedActions.put(equalHTTPAction,l);
+        synchronized (performedHttpActions){
+            HttpAction equalHttpAction = null;
+            if(!isAjax){// if ajax, we cannot rely on cache
+                for(HttpAction act: performedHttpActions){
+                    if(WebAppProperties.getInstance().getAcEqDec().ActionEquals(act,httpAct)){
+                        equalHttpAction = act;
+                        break;
                     }
-                    l.add(fromNodeID);
-                }else{
-                    siteMap.addEdge(siteMap.getNodeByID(fromNodeID),siteMap.getNodeByID(nId), acts, c);
                 }
-                return;
+                if(equalHttpAction != null){
+                    logger.trace("Will not perform action " + httpAct + " that was already performed");
+                    ArrayList<Conversation>  c = actionConversationMap.get(equalHttpAction);
+                    ArrayList<HttpAction> chain = actionActionChainMap.get(equalHttpAction);
+                    EntityID nId = actionNodeMap.get(equalHttpAction);
+                    if(c == null || nId == null){
+                        List<EntityID> l= unresolvedActions.get(equalHttpAction);
+                        if(l == null){
+                            l = new ArrayList<EntityID>();
+                            unresolvedActions.put(equalHttpAction,l);
+                        }
+                        l.add(fromNodeID);
+                    }else{
+                        siteMap.addEdge(
+                                siteMap.getNodeByID(fromNodeID),
+                                siteMap.getNodeByID(nId),
+                                new CorrespondentActions(chain,acts.getDomActions() ),
+                                c
+                        );
+                    }
+                    return;
+                }
+                performedHttpActions.add(httpAct);
             }
-            performedHTTPActions.add(httpAct);
         }
         HtmlElementActionPerformer tsk = new HtmlElementActionPerformer(
                 taskManager,
                 p,
                 acts.getDomActions(),
                 contextID,
-                new Callback3<Conversation, HTTPAction, HtmlPage>(){
-                    public void CallMeBack(Conversation c , HTTPAction a, HtmlPage p){
-                        addConversationForActionFromNode(fromNodeID,c,p,new CorrespondentActions(a,acts.getDomActions()));
+                new Callback3<ArrayList<Conversation>, ArrayList<HttpAction>, HtmlPage>(){
+                    public void CallMeBack(ArrayList<Conversation> c , ArrayList<HttpAction> a, HtmlPage p){
+                        addConversationsForActionFromNode(fromNodeID,c,p,new CorrespondentActions(a,acts.getDomActions()), isAjax);
                     }
                 }
         );
@@ -118,19 +133,27 @@ public class SitemapCrawler extends Task implements Callback0{
         }
     }
 
-    synchronized private void addConversationForActionFromNode(
+    synchronized private void addConversationsForActionFromNode(
             final EntityID fromNodeID,
-            final Conversation conv,
+            final ArrayList<Conversation> convs,
             final HtmlPage p,
-            final CorrespondentActions corActs
+            final CorrespondentActions corActs,
+            boolean wasAjax
     ){
-        final HTTPAction action = corActs.getHttpAction();
-        final ArrayList<DOMAction> domActs = corActs.getDomActions();
+        final ArrayList<DomAction> domActs = corActs.getDomActions();
+        if(domActs.size() < 0 || convs.size() < 0 || corActs.getHttpActions().size() != convs.size()){
+            logger.error("invalid params: " +domActs + " " + convs);
+            return;
+        }
         logger.trace("addConversationForActionFromNode: node " + fromNodeID
-                + " action " + action
+                + " actions " + corActs.getHttpActions()
                 + " page " + p
-                + " conv " + conv
+                + " convs " + convs
         );
+        if(convs.size() > 1){
+            logger.info("Multi-request action, will take into account only first one");
+        }
+        Conversation conv = convs.get(convs.size() - 1);
         ResponseClassificator.ResponseType respType =  WebAppProperties.getInstance().getRespClassificator().getResponseType(conv);
         final Sitemap.SitemapNode from = siteMap.getNodeByID(fromNodeID);
         Sitemap.SitemapNode resultingNode;
@@ -142,9 +165,11 @@ public class SitemapCrawler extends Task implements Callback0{
                 HtmlPageParser tsk = new HtmlPageParser(
                         super.taskManager,
                         p,
-                        new Callback3<HtmlPage,  ArrayList<DOMAction>, HTTPAction>(){
-                            public void CallMeBack(HtmlPage p, ArrayList<DOMAction> domActs, HTTPAction httpAction){
-                                addNewAction(nodeID,p,new CorrespondentActions(httpAction,domActs));
+                        new Callback4<HtmlPage,  ArrayList<DomAction>, HttpAction, Boolean>(){
+                            public void CallMeBack(HtmlPage p, ArrayList<DomAction> domActs, HttpAction httpAction, Boolean isAjax){
+                                ArrayList<HttpAction> acts = new  ArrayList<HttpAction>();
+                                acts.add(httpAction);
+                                addNewAction(nodeID,p,new CorrespondentActions(acts,domActs), isAjax);
                             }
                         }
                 );
@@ -171,66 +196,59 @@ public class SitemapCrawler extends Task implements Callback0{
             throw new NotImplementedException("not yes supported");
         }
         logger.trace(from.getNodeID() + " -> " + resultingNode.getNodeID());
-        HTTPAction equalHTTPAction = null;
-        synchronized (performedHTTPActions){
-            for(HTTPAction act: performedHTTPActions){
-                if(WebAppProperties.getInstance().getAcEqDec().ActionEquals(act,action)){
-                    equalHTTPAction = act;
-                    break;
+        HttpAction equalHttpAction = null;
+        if(!wasAjax){
+            final HttpAction action = corActs.getHttpActions().get(0);
+            synchronized (performedHttpActions){
+                for(HttpAction act: performedHttpActions){
+                    if(WebAppProperties.getInstance().getAcEqDec().ActionEquals(act,action)){
+                        equalHttpAction = act;
+                        break;
+                    }
                 }
-            }
-            actionConversationMap.put(equalHTTPAction,conv);
-            actionNodeMap.put(equalHTTPAction,resultingNode.getNodeID());
-        }
-        siteMap.addEdge(from, resultingNode, corActs, conv);
-        synchronized (unresolvedActions){
-            List<EntityID> unresNodes =  unresolvedActions.get(equalHTTPAction);
-            if(unresNodes != null){
-                for(EntityID nid : unresNodes){
-                    logger.trace(nid + " -> " + resultingNode.getNodeID());  
-                    siteMap.addEdge(siteMap.getNodeByID(nid),resultingNode, corActs, conv);
+                actionConversationMap.put(equalHttpAction,convs);
+                actionNodeMap.put(equalHttpAction,resultingNode.getNodeID());
+                actionActionChainMap.put(action,corActs.getHttpActions());
+            }      
+            synchronized (unresolvedActions){
+                List<EntityID> unresNodes =  unresolvedActions.get(equalHttpAction);
+                if(unresNodes != null){
+                    for(EntityID nid : unresNodes){
+                        logger.trace(nid + " -> " + resultingNode.getNodeID());
+                        siteMap.addEdge(siteMap.getNodeByID(nid),resultingNode, corActs, convs);
+                    }
                 }
+                unresolvedActions.remove(equalHttpAction);
             }
-            unresolvedActions.remove(equalHTTPAction);
         }
+        siteMap.addEdge(from, resultingNode, corActs, convs);
     }
 
     public void start(){
-        ResponseFetcher tsk = new ResponseFetcher(super.taskManager, startingAct, contextID);
-        waitForTask(tsk);
-        if(!tsk.isSuccessful()){
-            logger.error("Could not fetch responce!!!");
-            return; //no success
-        }
-        Conversation conv = (Conversation) tsk.getResult();
-        WebClient webClient = new WebClient();                                                        
-        URL origUrl = conv.getRequest().getURL();
-        //1. create WebResponse from page : WebResponse(WebResponseData responseData, WebRequest request, long loadTime)
-        WebResponse resp = conv.getResponse().genWebResponse(origUrl,1,conv.getRequest().genWebRequest());
-        TopLevelWindow baseWindow = (TopLevelWindow) webClient.openWindow(null,"");
-        try {
-            webClient.loadWebResponseInto(resp, baseWindow);
-        } catch (IOException ioex) {
-            baseWindow.close();
-            throw new IllegalStateException("Cannot receive IOException on converted Response object");
-        }
-        Page page = baseWindow.getEnclosedPage();
-        if(page instanceof HtmlPage){
-            performedHTTPActions.add(startingAct);
-            ArrayList<DOMAction> act = new ArrayList<DOMAction>();
-            act.add(
-                    new DOMAction(
-                    "",
-                    DOMActionType.REFRESH)
-            );
-            addConversationForActionFromNode(
-                    siteMap.getEntryNode().getNodeID(),
-                    conv,
-                    (HtmlPage)page,
-                    new CorrespondentActions(startingAct,act)
-            );
-        }else{
-            logger.warn("Returned page is not a HTML page!");
+        performedHttpActions.add(startingAct);
+        HtmlElementActionPerformer tsk = new HtmlElementActionPerformer(
+                taskManager,
+                startingAct,
+                contextID,
+                new Callback3<ArrayList<Conversation>, ArrayList<HttpAction>, HtmlPage>(){
+                    public void CallMeBack(ArrayList<Conversation> c , ArrayList<HttpAction> a, HtmlPage p){
+                        ArrayList<DomAction > lst = new ArrayList<DomAction>();
+                        lst.add(new DomAction("", DomActionType.REFRESH));
+                        addConversationsForActionFromNode(
+                                siteMap.getEntryNode().getNodeID(),
+                                c,
+                                p,
+                                new CorrespondentActions(a,lst),
+                                false
+                        );
+                    }
+                }
+        );
+        tsk.registerCallback(this);
+        if(addTask(tsk))
+            spawnedTasks++;
+        else{
+            logger.error("Could not add task!");
             setSuccessful(true);
             return;
         }

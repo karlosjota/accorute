@@ -17,11 +17,11 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public class ResponseFetcher extends Task {
-    final private HTTPAction action;
+    final private HttpAction action;
     final private EntityID contextID;
     private Conversation res;
     final static private HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
-    public ResponseFetcher(TaskManager t, HTTPAction act, EntityID ctxID) {
+    public ResponseFetcher(TaskManager t, HttpAction act, EntityID ctxID) {
         super(t);
         action = act;
         contextID = ctxID;

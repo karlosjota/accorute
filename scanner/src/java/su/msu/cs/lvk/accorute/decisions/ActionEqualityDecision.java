@@ -1,6 +1,6 @@
 package su.msu.cs.lvk.accorute.decisions;
 
-import su.msu.cs.lvk.accorute.http.model.HTTPAction;
+import su.msu.cs.lvk.accorute.http.model.HttpAction;
 
 /**
  * Created by IntelliJ IDEA.
@@ -10,5 +10,5 @@ import su.msu.cs.lvk.accorute.http.model.HTTPAction;
  * To change this template use File | Settings | File Templates.
  */
 public interface ActionEqualityDecision {
-    public boolean ActionEquals(HTTPAction a, HTTPAction b);
+    public boolean ActionEquals(HttpAction a, HttpAction b);
 }

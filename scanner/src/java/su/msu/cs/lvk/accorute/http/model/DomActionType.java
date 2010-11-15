@@ -7,7 +7,7 @@ package su.msu.cs.lvk.accorute.http.model;
  * Time: 17:03:50
  * To change this template use File | Settings | File Templates.
  */
-public enum DOMActionType {
+public enum DomActionType {
     CLICK,
     MOUSEMOVE,
     MOUSEOVER,

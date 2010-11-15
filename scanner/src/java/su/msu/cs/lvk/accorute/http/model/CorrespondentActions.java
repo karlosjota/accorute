@@ -1,7 +1,6 @@
 package su.msu.cs.lvk.accorute.http.model;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -11,19 +10,19 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class CorrespondentActions {
-    private final HTTPAction httpAction;
-    private final ArrayList<DOMAction> domActions;
+    private final ArrayList<HttpAction> httpActions;
+    private final ArrayList<DomAction> domActions;
 
-    public ArrayList<DOMAction> getDomActions() {
+    public ArrayList<DomAction> getDomActions() {
         return domActions;
     }
 
-    public CorrespondentActions(HTTPAction h, ArrayList<DOMAction> d){
-        httpAction = h;
+    public CorrespondentActions(ArrayList<HttpAction> h, ArrayList<DomAction> d){
+        httpActions = h;
         domActions = d;
     }
 
-    public HTTPAction getHttpAction() {
-        return httpAction;
+    public ArrayList<HttpAction> getHttpActions() {
+        return httpActions;
     }
 }

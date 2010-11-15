@@ -27,7 +27,7 @@ public class Main {
         }
         logger = Logger.getLogger(Main.class.getName());
         /*WebAppUser user = new WebAppUser();
-        HTTPAction action = new HTTPAction("default action", new ArrayList<ActionParameter>());
+        HttpAction action = new HttpAction("default action", new ArrayList<ActionParameter>());
         logger.trace(WebAppProperties.getInstance());
 
         WebAppProperties.getInstance().getUserService().addOrModifyUser(user);

@@ -12,16 +12,16 @@ import java.util.List;
  */
 public class TestChain {
     public static class ActionByUser {
-        public final HTTPAction action;
+        public final HttpAction action;
         public final WebAppUser user;
-        public ActionByUser(HTTPAction act, WebAppUser u){
+        public ActionByUser(HttpAction act, WebAppUser u){
             action = act;
             user = u;
         }
     }
     private List<ActionByUser> acts = new ArrayList<ActionByUser>();
 
-    public void add(HTTPAction a,  WebAppUser u){
+    public void add(HttpAction a,  WebAppUser u){
         acts.add(new ActionByUser(a,u));
     }
 
