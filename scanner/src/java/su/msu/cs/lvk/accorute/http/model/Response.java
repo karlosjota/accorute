@@ -94,7 +94,7 @@ public class Response extends Message {
     }
     public Response(HttpMethod method) throws IOException{
         for(Header h:method.getResponseHeaders()){
-            setHeader(h.getName(),h.getValue());
+            addHeader(h.getName(),h.getValue());
         }
         byte [] body = method.getResponseBody();
         setContent(body);
@@ -275,7 +275,7 @@ public class Response extends Message {
             }
         }
 
-        return new CookieDescriptor(result, origin, headerName);
+        return new CookieDescriptor(result, origin, headerName, getCtxID());
     }
 
     /**

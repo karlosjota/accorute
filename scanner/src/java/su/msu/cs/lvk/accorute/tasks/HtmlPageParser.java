@@ -16,6 +16,7 @@ import su.msu.cs.lvk.accorute.utils.Callback4;
 import su.msu.cs.lvk.accorute.utils.HtmlUnitUtils;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -48,10 +49,14 @@ public class HtmlPageParser extends Task implements DomChangeListener {
         falseWebConn = new FalsifyingWebConnection(webClient){
             public WebResponse getResponse(WebRequest request) throws IOException {
                 wasRequest = true;
-                logger.debug("Intercepted a request");
+                logger.debug("Intercepted a request: "+ request);
                 List<ActionParameter> param = WebAppProperties.getInstance().getRcd().decompose(request);
+                URL u = WebAppProperties.getInstance().getRcd().getURL(param);
+                boolean cancellable = false;
+                //if(u.getFile().endsWith(".js") || u.getFile().endsWith(".css"))
+                //    cancellable = true;
                 //TODO: ajax detection!!!!
-                callback.CallMeBack(tmpPage, (ArrayList<DomAction>) curActionChain.clone(),new HttpAction("tmp", param), false);
+                callback.CallMeBack(tmpPage, (ArrayList<DomAction>) curActionChain.clone(),new HttpAction("tmp", param), cancellable);
                 /*WebResponseData wrd = new WebResponseData(
                         new byte[0],
                         200,
@@ -106,19 +111,32 @@ public class HtmlPageParser extends Task implements DomChangeListener {
             curActionChain.remove(curActionChain.size() - 1);    
         }
     }
-
+    private void fillForms(HtmlElement el){
+        List<HtmlElement> forms = el.getHtmlElementsByTagName("form");
+        for(HtmlElement f: forms){
+            WebAppProperties.getInstance().getFfd().FillForm((HtmlForm)f);
+        }
+    }
     private void emulateUserActions(HtmlElement el) {
+        fillForms(el);
         doJsActions(el);
+        List<HtmlElement> anchors = el.getHtmlElementsByTagName("a");
+        List<HtmlElement> inputs = el.getHtmlElementsByTagName("input");
         logger.trace("emulateUserActions on " + el);
         Iterable<HtmlElement> htmlChildren = el.getHtmlElementDescendants();
         Iterator<HtmlElement> it = htmlChildren.iterator();
         while (it.hasNext()) {
             doJsActions(it.next());
         }
-        List<HtmlElement> anchors = el.getElementsByTagName("a");
         for(HtmlElement a:anchors){
+            //only click anchors that has a href
             if(((HtmlAnchor) a).getHrefAttribute() != DomElement.ATTRIBUTE_NOT_DEFINED)
                 tryClick(a);
+        }
+        for(HtmlElement i: inputs){
+            HtmlInput inp = (HtmlInput) i;
+            if(inp.getTypeAttribute().equalsIgnoreCase("submit"))
+                tryClick(inp);
         }
     }
     private void doJsActions(HtmlElement htmlElement) {
@@ -152,21 +170,8 @@ public class HtmlPageParser extends Task implements DomChangeListener {
         logger.trace("DOM changed");
         DomNode newNode = event.getChangedNode();
         if (newNode instanceof HtmlElement){
-            doJsActions((HtmlElement)newNode);
-            logger.trace("emulateUserActions on " + newNode);
-            Iterable<HtmlElement> htmlChildren = newNode.getHtmlElementDescendants();
-            Iterator<HtmlElement> it = htmlChildren.iterator();
-            while (it.hasNext()) {
-                doJsActions(it.next());
-            }
+            emulateUserActions((HtmlElement)newNode);
         }
-        /*
-        String path = newNode.getCanonicalXPath();
-        if(page.getFirstByXPath(path) != newNode){
-            logger.warn("Event triggered from cloned page, this is a bug in HtmlUnit");
-            return;
-        }
-        */
     }
 
     public void nodeDeleted(final DomChangeEvent event) {/* we have nothing to do with it */}

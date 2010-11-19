@@ -43,6 +43,16 @@ public class WebAppProperties {
     private ParameterValueDecision pvd;
     private RequestComposerDecomposer rcd;
 
+    public FormFillDecision getFfd() {
+        return ffd;
+    }
+
+    public void setFfd(FormFillDecision ffd) {
+        this.ffd = ffd;
+    }
+
+    private FormFillDecision ffd;
+
     public ActionEqualityDecision getAcEqDec() {
         return acEqDec;
     }

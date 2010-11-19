@@ -34,7 +34,9 @@ public class CrawlerTest {
         HttpAction act;
         try{
             //"http://127.0.0.1/accorute_tests/JS_menu_2/demo1/index.html"
-            act = new HttpAction("initial",WebAppProperties.getInstance().getRcd().decomposeURL("http://127.0.0.1/accorute_tests/plainHTML/test4/1.html"));
+            //http://127.0.0.1/accorute_tests/plainHTML/test4/1.html
+            //http://127.0.0.1:8080/accounts/login/?next=/test1/
+            act = new HttpAction("initial",WebAppProperties.getInstance().getRcd().decomposeURL("http://127.0.0.1:8080/test1/"));
         }catch(Throwable r){
             return;
         }

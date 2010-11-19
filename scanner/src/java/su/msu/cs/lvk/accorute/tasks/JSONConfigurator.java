@@ -159,9 +159,9 @@ public class JSONConfigurator extends SerialTask{
                     while(it.hasNext()){
                         String key = (String)it.next();
                         String val = creds.getString(key);
-                        u.getStaticCredentials().add(new NamedValue(key, val));
+                        u.getStaticCredentials().put(key, val);
                     }
-                    u.getStaticCredentials().add(new NamedValue("username", userName ));
+                    u.getStaticCredentials().put("username", userName);
                     u.setRole(r);
                     WebAppProperties.getInstance().getUserService().addOrModifyUser(u);
                     logger.trace("Added user " + userName + " of role " + r.getRoleName());

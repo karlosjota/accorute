@@ -58,7 +58,7 @@ public class SitemapCrawler extends Task implements Callback0{
             final EntityID fromNodeID,
             final HtmlPage p,
             final CorrespondentActions acts,
-            final boolean isAjax
+            final boolean cancellable
     ){
         ArrayList<HttpAction> httpActs = acts.getHttpActions();
         if(httpActs.size() != 1){
@@ -79,9 +79,11 @@ public class SitemapCrawler extends Task implements Callback0{
             siteMap.addEdge(from, siteMap.getExitNode(), acts, null);
             return;
         }
+
+        URL u = WebAppProperties.getInstance().getRcd().getURL(httpAct.getActionParameters());
         synchronized (performedHttpActions){
             HttpAction equalHttpAction = null;
-            if(!isAjax){// if ajax, we cannot rely on cache
+            if(!cancellable){
                 for(HttpAction act: performedHttpActions){
                     if(WebAppProperties.getInstance().getAcEqDec().ActionEquals(act,httpAct)){
                         equalHttpAction = act;
@@ -120,7 +122,7 @@ public class SitemapCrawler extends Task implements Callback0{
                 contextID,
                 new Callback3<ArrayList<Conversation>, ArrayList<HttpAction>, HtmlPage>(){
                     public void CallMeBack(ArrayList<Conversation> c , ArrayList<HttpAction> a, HtmlPage p){
-                        addConversationsForActionFromNode(fromNodeID,c,p,new CorrespondentActions(a,acts.getDomActions()), isAjax);
+                        addConversationsForActionFromNode(fromNodeID,c,p,new CorrespondentActions(a,acts.getDomActions()), cancellable);
                     }
                 }
         );
@@ -138,7 +140,7 @@ public class SitemapCrawler extends Task implements Callback0{
             final ArrayList<Conversation> convs,
             final HtmlPage p,
             final CorrespondentActions corActs,
-            boolean wasAjax
+            boolean wasCancellable
     ){
         final ArrayList<DomAction> domActs = corActs.getDomActions();
         if(domActs.size() < 0 || convs.size() < 0 || corActs.getHttpActions().size() != convs.size()){
@@ -197,7 +199,7 @@ public class SitemapCrawler extends Task implements Callback0{
         }
         logger.trace(from.getNodeID() + " -> " + resultingNode.getNodeID());
         HttpAction equalHttpAction = null;
-        if(!wasAjax){
+        if(!wasCancellable){
             final HttpAction action = corActs.getHttpActions().get(0);
             synchronized (performedHttpActions){
                 for(HttpAction act: performedHttpActions){
@@ -208,7 +210,7 @@ public class SitemapCrawler extends Task implements Callback0{
                 }
                 actionConversationMap.put(equalHttpAction,convs);
                 actionNodeMap.put(equalHttpAction,resultingNode.getNodeID());
-                actionActionChainMap.put(action,corActs.getHttpActions());
+                actionActionChainMap.put(equalHttpAction,corActs.getHttpActions());
             }      
             synchronized (unresolvedActions){
                 List<EntityID> unresNodes =  unresolvedActions.get(equalHttpAction);

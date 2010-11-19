@@ -32,10 +32,12 @@
     <bean id="dummyChState" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.DummyChStateDec"/>
     <bean id="respClass" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimpleRespClassifier"/>
     <bean id="pageEqD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimplePageEqDec"/>
-    <bean id="acEqD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimpleAcEqDec"/>
+    <bean id="acEqD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.ActionEqualsIfNameValueEquals"/>
     <bean id="scopeRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
-        <constructor-arg><value>.*accorute_tests.*</value></constructor-arg>
+        <constructor-arg><value>.*127.0.0.1.*</value></constructor-arg>
     </bean>
+    <bean id="ffd" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimpleFormFill"/>
+
 
     <bean id="Properties" class="su.msu.cs.lvk.accorute.WebAppProperties" factory-method="getInstance">
         <property name="actionService" ref="actionService"/>
@@ -56,6 +58,7 @@
         <property name="pageEqDec" ref="pageEqD" />
         <property name="acEqDec" ref="acEqD" />
         <property name="scope" ref="scopeRegex" />
+        <property name="ffd" ref="ffd" />
     </bean>
 
 </beans>

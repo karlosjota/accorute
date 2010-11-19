@@ -2,6 +2,7 @@ package su.msu.cs.lvk.accorute.decisions;
 
 import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.util.NameValuePair;
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.cookie.CookieOrigin;
 import org.apache.commons.httpclient.cookie.MalformedCookieException;
@@ -11,17 +12,14 @@ import su.msu.cs.lvk.accorute.WebAppProperties;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterDatatype;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterLocation;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterMeaning;
-import su.msu.cs.lvk.accorute.http.model.ActionParameter;
-import su.msu.cs.lvk.accorute.http.model.CookieDescriptor;
-import su.msu.cs.lvk.accorute.http.model.Request;
-import su.msu.cs.lvk.accorute.http.model.WebAppUser;
+import su.msu.cs.lvk.accorute.http.model.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -73,6 +71,36 @@ public class SimpleRCD extends RequestComposerDecomposer{
         }else if(m!=HttpMethod.GET){
             throw new NotImplementedException("Methods other than get and post are not supported");  
         }
+        if(isPost){
+            String body = r.getRequestBody();
+            if(body != null){
+                String [] parameters = body.split("&");
+                for(String par: parameters){
+                    String nameval[] = par.split("=",2);
+                    nameval[0] = URLDecoder.decode(nameval[0]);
+                    nameval[1] = URLDecoder.decode((nameval.length > 1)?nameval[1]:"");
+                    params.add(new ActionParameter(
+                            nameval[0],
+                            nameval[1],
+                            ActionParameterLocation.BODY,
+                            ActionParameterMeaning.USERCONTROLLABLE,//TODO: this is temporary
+                            ActionParameterDatatype.STRING
+                    ));
+                }
+            }else{
+                List<NameValuePair> par = r.getRequestParameters();
+                for(NameValuePair nvp : par){
+                    params.add(new ActionParameter(
+                            URLDecoder.decode(nvp.getName()),
+                            URLDecoder.decode(nvp.getValue()),
+                            ActionParameterLocation.BODY,
+                            ActionParameterMeaning.USERCONTROLLABLE,//TODO: this is temporary
+                            ActionParameterDatatype.STRING
+                    ));
+                }
+
+            }
+        }
         return params;
 
     }
@@ -87,57 +115,63 @@ public class SimpleRCD extends RequestComposerDecomposer{
         return null;
     }
 
-    public Request compose(List<ActionParameter> params, WebAppUser user){
+    public Request compose(List<ActionParameter> params, UserContext ctx){
         Request req = new Request();
-
-        WebAppProperties.getInstance().getPvd().resolve(params,user);
-        String Query = "";
-        String Body = "";
-        String proto = "http";
-        String host = getParamByName(params,"host").getValue();
-        int port = new Integer(getParamByName(params,"port").getValue());
-        if(port == -1){
-            port = 80;
+        URL url = getURL(params); //preliminary(for cookies)
+        WebAppUser user = WebAppProperties.getInstance().getUserService().getUserByID(ctx.getUserID());
+        Collection<ContextCookie> coll = WebAppProperties.getInstance().getCookieService().getCookiesForUrlInContext(ctx.getContextID(),url);
+        Map<String,String> cookieMap = new HashMap<String,String>();
+        if(coll!=null){
+            for(ContextCookie c : coll){
+                cookieMap.put(c.getName(),c.getValue());
+            }
         }
-        String path = getParamByName(params,"path").getValue();
+        for(int i = 0; i< params.size(); i++){
+            ActionParameter param = params.get(i);
+            if(param.getLocation() == ActionParameterLocation.COOKIE){
+                cookieMap.remove(param.getName());
+            }
+        }
+        for(String additionalCookie:cookieMap.keySet()){
+            params.add(new ActionParameter(
+                    additionalCookie,
+                    "",
+                    ActionParameterLocation.COOKIE,
+                    ActionParameterMeaning.SESSIONTOKEN,//TODO: add a decision for this
+                    ActionParameterDatatype.STRING
+            ));
+        }
+        WebAppProperties.getInstance().getPvd().resolve(params,user);
+        url = getURL(params);
+        String Body="";
         List<Cookie> cookies = new ArrayList<Cookie>();
         for(ActionParameter param: params){
-            try{
-                if(param.getLocation() == ActionParameterLocation.QUERY){
-                    Query +=(URLEncoder.encode(param.getName(),"UTF-8")
-                            + "="
-                            + URLEncoder.encode(param.getValue(),"UTF-8")
-                            + "&"
-                    );
-                }else if(param.getLocation() == ActionParameterLocation.BODY){
-                    Body +=(URLEncoder.encode(param.getName(),"UTF-8")
-                            + "="
-                            + URLEncoder.encode(param.getValue(),"UTF-8")
-                            + "&"
-                    );
-                } else if(param.getLocation() == ActionParameterLocation.HEADER){
-                    req.addHeader(param);
-                } else if(param.getLocation() == ActionParameterLocation.COOKIE){
-                    cookies.add (new Cookie(host,param.getName(), param.getValue()));//TODO: "host" here is a stub!
-                    //TODO: also add other cookies!!!
-                }
-            }catch(UnsupportedEncodingException ueex){}
+            if(param.getLocation() == ActionParameterLocation.BODY){
+                Body +=(URLEncoder.encode(param.getName())
+                        + "="
+                        + URLEncoder.encode(param.getValue())
+                        + "&"
+                );
+            } else if(param.getLocation() == ActionParameterLocation.HEADER){
+                req.addHeader(param);
+            }
         }
-        try{
-            req.setURL(new URL(
-                    proto,
-                    host,
-                    port,
-                    path + ((Query.equals("")) ? "":("?"+Query.substring(0,Query.length()-1)))
-                )
-            );
-        }catch(MalformedURLException muex){
-            //TODO: Smth here!!!
-        } 
-        req.setCookies(new CookieDescriptor(cookies,new CookieOrigin(host,port,"",false), "Cookie")); //TODO: CookieOrigin() params are a stub!
-        if(!Body.equals("")){
-            req.setContent(Body.substring(0,Body.length()-1).getBytes());
+        req.setURL(url);
+
+        for(ActionParameter param: params){
+            if(param.getLocation() == ActionParameterLocation.COOKIE){
+                String value = param.getValue();
+                if(user.getDynamicCredentials().containsKey(param.getName()))
+                    value = user.getDynamicCredentials().get(param.getName());
+                cookies.add (new Cookie(url.getHost(),param.getName(), value));//TODO: "host" here is a stub!
+            }
+        }
+        req.setCookies(new CookieDescriptor(cookies,new CookieOrigin(url.getHost(),url.getPort(),"",false), "Cookie", EntityID.NOT_INITIALIZED));
+        if(!Body.equals("")){      
+            req.setHeader("Content-Type", "application/x-www-form-urlencoded");
             req.setMethod("POST");
+            Body = Body.substring(0,Body.length()-1);
+            req.setContent(Body.getBytes());
         }
         return req;
     }
@@ -174,8 +208,8 @@ public class SimpleRCD extends RequestComposerDecomposer{
             for(String pair : ar){
                 String [] nameValue = pair.split("=",2);
                 params.add(new ActionParameter(
-                    nameValue[0],
-                    nameValue[1],
+                    URLDecoder.decode(nameValue[0]),
+                    URLDecoder.decode( (nameValue.length>1)?nameValue[1]:""),
                     ActionParameterLocation.QUERY,
                     ActionParameterMeaning.AUTOMATIC,
                     ActionParameterDatatype.STRING)

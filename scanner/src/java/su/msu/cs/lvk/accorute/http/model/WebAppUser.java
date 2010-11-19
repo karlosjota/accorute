@@ -4,7 +4,9 @@ import su.msu.cs.lvk.accorute.RBAC.Role;
 import su.msu.cs.lvk.accorute.RBAC.User;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,22 +24,21 @@ public class WebAppUser implements User {
      * Also, all static form data as Name/Surname/Age/Sex,
      * that is not directly associated with security...
      */
-    private final List<NamedValue> dynamicCredentials = new ArrayList<NamedValue>();
-    private final List<NamedValue> staticCredentials = new ArrayList<NamedValue>();
+    private final Map<String, String> staticCredentials = new HashMap<String, String>();
+    private final Map<String, String> dynamicCredentials = new HashMap<String, String>();
 
-    public List<NamedValue> getDynamicCredentials() {
+    public Map<String, String> getDynamicCredentials() {
         return dynamicCredentials;
     }
-    public List<NamedValue> getStaticCredentials() {
+    public Map<String, String> getStaticCredentials() {
         return staticCredentials;
     }
 
 
-    @Override
     public EntityID getUserID() {
         return userID;  //To change body of implemented methods use File | Settings | File Templates.
     }
-    @Override
+
     public Role getUserRole() {
         return role;  //To change body of implemented methods use File | Settings | File Templates.
     }

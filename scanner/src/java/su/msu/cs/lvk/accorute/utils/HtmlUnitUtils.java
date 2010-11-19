@@ -11,9 +11,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -44,6 +42,23 @@ public class HtmlUnitUtils {
             n.removeChild(script);
             n.appendChild(newScript);
         }
+        List<HtmlElement> cssLinks = p.getElementsByTagName("link");
+        for(HtmlElement l: cssLinks){
+            HtmlLink link = (HtmlLink)l;
+            DomNode n = link.getParentNode();
+            HtmlLink newLink = (HtmlLink) p.createElement("link");
+            NamedNodeMap map =  link.getAttributes();
+            for(int i=0;i<map.getLength();i++){
+                newLink.setAttribute(map.item(i).getNodeName(),map.item(i).getNodeValue());
+            }
+            n.removeChild(link);
+            n.appendChild(newLink);
+
+        }
+        /*Map<Object, Object> repl = new HashMap<Object, Object>();
+        repl.put(other.getEnclosingWindow(), w);
+        Window newWin = (Window)  SerialClone.clone(((Window)other.getEnclosingWindow().getScriptObject()),repl);
+        w.setScriptObject(newWin);*/
         if(other.getFocusedElement()!=null){
             String focusPath = other.getFocusedElement().getCanonicalXPath();
             p.setFocusedElement(p.<HtmlElement>getFirstByXPath(focusPath));

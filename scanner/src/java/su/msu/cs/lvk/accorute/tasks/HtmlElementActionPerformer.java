@@ -73,7 +73,7 @@ public class HtmlElementActionPerformer extends Task {
                 //TODO:not so easy!!!
                 wasReq = true;
                 List<ActionParameter> param = WebAppProperties.getInstance().getRcd().decompose(request);
-                HttpAction act = new HttpAction(actions + " on "+ page, param);
+                HttpAction act = new HttpAction("tmp", param);
                 acts.add(act);
                 logger.trace("Will request HttpAction " + act);
                 ResponseFetcher tsk = new ResponseFetcher(taskManager, act, ctx);

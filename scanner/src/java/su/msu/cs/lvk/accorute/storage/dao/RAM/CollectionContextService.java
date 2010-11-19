@@ -1,12 +1,12 @@
 package su.msu.cs.lvk.accorute.storage.dao.RAM;
 
+import com.truchsess.util.ArrayListTree;
 import su.msu.cs.lvk.accorute.http.model.EntityID;
 import su.msu.cs.lvk.accorute.http.model.UserContext;
 import su.msu.cs.lvk.accorute.storage.ContextService;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -40,6 +40,16 @@ public class CollectionContextService implements ContextService {
             throw new IllegalArgumentException("invalid UserContextID");
         }
         return dbUserContext;            
+    }
+
+    public List<UserContext> getContextsByUserID(EntityID userID) {
+        List<UserContext> l = new ArrayList<UserContext>();
+        for(UserContext u: database.values()){
+            if(u.getUserID().equals(userID)){
+                l.add(u);
+            }
+        }
+        return l;
     }
 
 }

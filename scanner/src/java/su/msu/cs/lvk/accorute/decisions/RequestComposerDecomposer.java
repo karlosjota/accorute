@@ -4,6 +4,7 @@ import com.gargoylesoftware.htmlunit.WebRequest;
 import org.apache.commons.httpclient.cookie.MalformedCookieException;
 import su.msu.cs.lvk.accorute.http.model.ActionParameter;
 import su.msu.cs.lvk.accorute.http.model.Request;
+import su.msu.cs.lvk.accorute.http.model.UserContext;
 import su.msu.cs.lvk.accorute.http.model.WebAppUser;
 
 import java.net.MalformedURLException;
@@ -21,7 +22,7 @@ public abstract class RequestComposerDecomposer {
     abstract public URL getURL(List<ActionParameter> params);
     abstract public List<ActionParameter> decompose(Request r);
     abstract public List<ActionParameter> decompose(WebRequest r);
-    abstract public Request compose(List<ActionParameter> params, WebAppUser user);
+    abstract public Request compose(List<ActionParameter> params, UserContext userContext);
     abstract public List<ActionParameter> decomposeURL(URL u);
     public List<ActionParameter> decomposeURL(String u) throws MalformedURLException {
         return decomposeURL(new URL(u));

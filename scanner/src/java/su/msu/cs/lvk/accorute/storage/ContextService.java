@@ -3,6 +3,8 @@ package su.msu.cs.lvk.accorute.storage;
 import su.msu.cs.lvk.accorute.http.model.EntityID;
 import su.msu.cs.lvk.accorute.http.model.UserContext;
 
+import java.util.List;
+
 /**
  * Created by IntelliJ IDEA.
  * User: george
@@ -28,4 +30,12 @@ public interface ContextService {
      * @throws IllegalArgumentException iff ctxID is NOT_INITIALIZED or is not present in the collection.
      */
     public UserContext getContextByID(EntityID ctxID);
+
+    /**
+     *
+     * @param userID
+     * @return UserContexts that has user with this ID
+     * @throws IllegalArgumentException iff ctxID is NOT_INITIALIZED or is not present in the collection.
+     */
+    public List<UserContext> getContextsByUserID(EntityID userID);
 }

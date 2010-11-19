@@ -41,11 +41,8 @@ public class CollectionUserService implements UserService {
     public List<WebAppUser> getUsersByCredential(String name, String value){
         ArrayList<WebAppUser> matches = new ArrayList<WebAppUser>();
         for(WebAppUser u: database.values()){
-            for(NamedValue cred: u.getStaticCredentials()){
-                if(cred.getName().equals(name) && cred.getValue().equals(value)){
-                    matches.add(u);
-                    break;
-                }
+            if( u.getStaticCredentials().containsKey(name) && u.getStaticCredentials().get(name).equals(value)){
+                matches.add(u);
             }
         }
         return matches;

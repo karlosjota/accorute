@@ -15,5 +15,5 @@ urlpatterns = patterns('',
     (r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'simple_login.html'}),
     (r'^accounts/logout/$', 'django.contrib.auth.views.logout',{'template_name': 'base.html'}),
 
-    (r'^test1/', include('accorute_tests.test1.urls')),
+    (r'^test1/', include('django_accorute_tests.test1.urls')),
 )

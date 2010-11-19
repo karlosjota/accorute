@@ -36,7 +36,8 @@ public class CookieDescriptor {
      * @param origin
      * @param cookieHeaderName
      */
-    public CookieDescriptor(List<Cookie> cookies, CookieOrigin origin, String cookieHeaderName) {
+    public CookieDescriptor(List<Cookie> cookies, CookieOrigin origin, String cookieHeaderName, EntityID ctxID) {
+        this.ctxID = ctxID;
         List<ContextCookie> list = new ArrayList<ContextCookie>();
         for(Cookie cook: cookies){
             ContextCookie newcook = new ContextCookie(cook);

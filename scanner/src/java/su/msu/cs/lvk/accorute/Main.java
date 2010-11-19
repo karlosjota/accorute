@@ -70,12 +70,12 @@ public class Main {
             logger.trace("smth went wrong!");
         }
         TestChain testChain = WebAppProperties.getInstance().getTestChain();
-        for(int i=0; i < testChain.size(); i++){
+        /*for(int i=0; i < testChain.size(); i++){
             logger.trace("UC: " + testChain.get(i).action + " by role " +testChain.get(i).user.getUserRole().getRoleName());
             logger.trace("\n==========\n" + WebAppProperties.getInstance().getRcd().compose(
                     testChain.get(i).action.getActionParameters(),
                     testChain.get(i).user).toString()+ "\n==========\n"
             );
-        }
+        } */
     }
 }

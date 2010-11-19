@@ -14,10 +14,10 @@
         <appender-ref ref="console" />
     </root>
     <logger name="org.apache">
-        <level value="warn"/>
+        <level value="trace"/>
     </logger>
     <logger name="httpclient">
-        <level value="warn"/>
+        <level value="trace"/>
     </logger>
     <logger name="com.gargoylesoftware">
         <level value="fatal"/>

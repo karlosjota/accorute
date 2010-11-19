@@ -5,6 +5,7 @@ import su.msu.cs.lvk.accorute.http.model.NamedValue;
 import su.msu.cs.lvk.accorute.http.model.WebAppUser;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,11 +16,8 @@ import java.util.List;
  */
 public class SimplePVD extends ParameterValueDecision{
     public void resolve(ActionParameter param, WebAppUser user){
-        List<NamedValue> creds = user.getStaticCredentials();
-        for(NamedValue cred: creds){
-            if(cred.getName() == param.getName()){
-                param.setValue(cred.getValue());
-            }
-        }
+        Map<String, String> creds = user.getStaticCredentials();
+        if(creds.containsKey(param.getName()))
+            param.setValue(creds.get(param.getName()));
     }
 }

@@ -4,9 +4,11 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HTMLParser;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.javascript.host.Window;
 import su.msu.cs.lvk.accorute.utils.HtmlUnitUtils;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,18 +22,9 @@ public class clonePage {
         WebClient w = new WebClient();
         WebClient w1 = new WebClient();
         try{
-            HtmlPage p = w.getPage("http://127.0.0.1/accorute_tests/plainHTML/test4/3.html");
-            HtmlPage p2 = p.cloneNode(true);
+            HtmlPage p = w.getPage("http://127.0.0.1/accorute_tests/JS_menu_2/demo1/index.html");
             HtmlPage p3 = HtmlUnitUtils.clonePage(p,w1.getCurrentWindow());
-            p.getElementById("a").click();
-            System.out.println(p.asXml());
-            System.out.println("========");
-            System.out.println(p2.asXml());
-            System.out.println("========");
-            System.out.println(p3.asXml());
-            System.out.println("========");
-            p3.getElementById("a").click();
-            System.out.println(p3.asXml());
+            p3.executeJavaScript("menu;");
         }catch(IOException e){
             System.out.println("FUCK!");
         }

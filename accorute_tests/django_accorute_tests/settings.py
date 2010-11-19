@@ -1,4 +1,4 @@
-# Django settings for accorute_tests project.
+# Django settings for django_accorute_tests project.
 import os
 import sys
 
@@ -68,9 +68,10 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware'
 )
 
-ROOT_URLCONF = 'accorute_tests.urls'
+ROOT_URLCONF = 'django_accorute_tests.urls'
 
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_DIR, 'templates'),
@@ -85,5 +86,5 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'accorute_tests.test1',
+    'django_accorute_tests.test1',
 )
