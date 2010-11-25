@@ -4,9 +4,17 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
+import su.msu.cs.lvk.accorute.decisions.SimpleFormFill;
 import su.msu.cs.lvk.accorute.http.model.*;
+import su.msu.cs.lvk.accorute.taskmanager.JoinTask;
+import su.msu.cs.lvk.accorute.taskmanager.SerialAdapter;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
+import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
+import su.msu.cs.lvk.accorute.tasks.SimpleDetectSpikes;
 import su.msu.cs.lvk.accorute.tasks.SitemapCrawler;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,17 +28,28 @@ public class CrawlerTest {
     public static void main(String[] args){
         ApplicationContext ctx;
         try {
-            ctx = new FileSystemXmlApplicationContext("src/resources/accorute-config-crawler-test.xml");
+            ctx = new FileSystemXmlApplicationContext("src/resources/accorute-config-django-test-1.xml");
         } catch (BeanDefinitionStoreException ex) {
             System.err.println("Error loading evaluation contexts: " + ex.getMessage());
             return;
         }
         logger = Logger.getLogger(Main.class.getName());
-        WebAppUser u = new WebAppUser();
-        WebAppProperties.getInstance().getUserService().addOrModifyUser(u);
-        UserContext dummyCtx = new UserContext();
-        dummyCtx.setUserID(u.getUserID());
-        WebAppProperties.getInstance().getContextService().addOrUpdateContext(dummyCtx);
+        WebAppUser u1 = new WebAppUser();
+        u1.getStaticCredentials().put("username","user1");
+        u1.getStaticCredentials().put("password","user1");
+        WebAppProperties.getInstance().getUserService().addOrModifyUser(u1);
+        UserContext u1Ctx = new UserContext();
+        u1Ctx.setUserID(u1.getUserID());
+        WebAppProperties.getInstance().getContextService().addOrUpdateContext(u1Ctx);
+
+        WebAppUser u2 = new WebAppUser();
+        u2.getStaticCredentials().put("username","user2");
+        u2.getStaticCredentials().put("password","user2");
+        WebAppProperties.getInstance().getUserService().addOrModifyUser(u2);
+        UserContext u2Ctx = new UserContext();
+        u2Ctx.setUserID(u2.getUserID());
+        WebAppProperties.getInstance().getContextService().addOrUpdateContext(u2Ctx);
+
         HttpAction act;
         try{
             //"http://127.0.0.1/accorute_tests/JS_menu_2/demo1/index.html"
@@ -40,14 +59,27 @@ public class CrawlerTest {
         }catch(Throwable r){
             return;
         }
-        SitemapCrawler crawler = new SitemapCrawler(WebAppProperties.getInstance().getTaskManager(),act,dummyCtx.getContextID());
-        WebAppProperties.getInstance().getTaskManager().addTask(crawler);
+        TaskManager taskman = WebAppProperties.getInstance().getTaskManager();
+        Task authTask1 = WebAppProperties.getInstance().getAuthTaskFactory().genContextedTask(u1Ctx.getContextID(),taskman);
+        Task authTask2 = WebAppProperties.getInstance().getAuthTaskFactory().genContextedTask(u2Ctx.getContextID(),taskman);
+        SitemapCrawler crawler1 = new SitemapCrawler(taskman,act,u1Ctx.getContextID());
+        SitemapCrawler crawler2 = new SitemapCrawler(taskman,act,u2Ctx.getContextID());
+        SerialAdapter combo1 = new SerialAdapter(taskman,false,false,authTask1,crawler1);
+        SerialAdapter combo2 = new SerialAdapter(taskman,false,false,authTask2,crawler2);
+        SimpleDetectSpikes detector = new SimpleDetectSpikes(taskman,u1Ctx.getContextID(),u2Ctx.getContextID());
+        taskman.addTask(combo1);
+        taskman.addTask(combo2);
+        taskman.addTask(new JoinTask(taskman));
+        taskman.addTask(detector);
         new Thread(WebAppProperties.getInstance().getTaskManager()).start();
-        while(crawler.getStatus() != Task.TaskStatus.FINISHED){
-            ;//Spin lock =)
-        }
         WebAppProperties.getInstance().getTaskManager().terminate();
-        Sitemap map = WebAppProperties.getInstance().getSitemapService().getSitemapForContext(dummyCtx.getContextID());
-        logger.fatal("Map is " + map);
+        WebAppProperties.getInstance().getTaskManager().waitForFinish();
+        Sitemap map1 = WebAppProperties.getInstance().getSitemapService().getSitemapForContext(u1Ctx.getContextID());
+        Sitemap map2 = WebAppProperties.getInstance().getSitemapService().getSitemapForContext(u2Ctx.getContextID());
+        Map<EntityID, Set<HttpAction>> spikeMap = (Map<EntityID, Set<HttpAction>>) detector.getResult();
+        logger.fatal("Map1 is " + map1);
+        logger.fatal("Map2 is " + map2);
+        logger.fatal("u1-> u2 " + spikeMap.get(u1Ctx.getContextID()));
+        logger.fatal("u2-> u1 " + spikeMap.get(u2Ctx.getContextID()));
     }
 }

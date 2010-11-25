@@ -1,6 +1,7 @@
 package su.msu.cs.lvk.accorute.decisions;
 
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterLocation;
+import su.msu.cs.lvk.accorute.http.constants.ActionParameterMeaning;
 import su.msu.cs.lvk.accorute.http.model.HttpAction;
 import su.msu.cs.lvk.accorute.http.model.ActionParameter;
 
@@ -34,11 +35,11 @@ public class ActionEqualsIfNameValueEquals implements ActionEqualityDecision{
         List<ActionParameter> bParams = b.getActionParameters();
         Set<String> names = new HashSet<String>();
         for(ActionParameter aParam:aParams){
-            if(aParam.getLocation() != ActionParameterLocation.COOKIE)
+            if(aParam.getMeaning() != ActionParameterMeaning.SESSIONTOKEN && aParam.getMeaning() != ActionParameterMeaning.ONETIMETOKEN)
                 names.add(aParam.getName());
         }
         for(ActionParameter bParam:bParams){
-            if(bParam.getLocation() != ActionParameterLocation.COOKIE)
+            if(bParam.getMeaning() != ActionParameterMeaning.SESSIONTOKEN && bParam.getMeaning() != ActionParameterMeaning.ONETIMETOKEN)
                 names.add(bParam.getName());
         }
         for(String name : names){

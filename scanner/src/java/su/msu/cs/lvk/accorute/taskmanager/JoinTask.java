@@ -7,14 +7,11 @@ package su.msu.cs.lvk.accorute.taskmanager;
  * Time: 1:49:49
  * To change this template use File | Settings | File Templates.
  */
-public class JoinTask extends SerialTask{
-    final String info;
+public class JoinTask extends Task{
     public void start(){
-        System.out.println(info);
     }
-    JoinTask(TaskManager t, String str){
-        super(t);
-        info = str;
+    public JoinTask(TaskManager t){
+        super(t, true);
     }
     public Object getResult(){
         return null;

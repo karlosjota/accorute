@@ -226,7 +226,7 @@ public class Request extends Message {
         //TODO: add more code here!
         return req;
     }
-    public HttpMethod genHTTPClientMethod() throws URIException{
+    public HttpMethod genHTTPClientMethod(){
         HttpMethod res;
         if(method.equalsIgnoreCase("GET")){
             res = new GetMethod();
@@ -244,7 +244,7 @@ public class Request extends Message {
         try{
             res.setURI(new URI(url.toString(),true));
         }catch(URIException ex){
-            throw ex;
+            throw new RuntimeException(ex);
         }
         if(super.headers != null){
             for(NamedValue v: super.headers){

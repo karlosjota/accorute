@@ -16,7 +16,7 @@ def index(request):
             })
     if  request.user.groups.filter(name="moderators") :
         actions.append({
-                "link" : "/test1/make_warning", 
+                "link" : "/test1/make_warning/", 
                 "name" : "Make a warning"
                 })
     return render_to_response("base.html",{"actions":actions},context_instance=RequestContext(request))
@@ -30,24 +30,27 @@ def warnings(request, username):
             })
     if  request.user.groups.filter(name="moderators") :
         actions.append({
-                "link" : "/test1/make_warning", 
+                "link" : "/test1/make_warning/", 
                 "name" : "Make a warning"
                 })
-    if User.objects.all().filter(username=username):
-        wrns = warnin.objects.all().filter(toUser = User.objects.all().get(username=username))
-        return render_to_response("warnings.html",{"actions":actions,"warns":wrns},context_instance=RequestContext(request))
+    if request.user.username == username:
+        if User.objects.all().filter(username=username):
+            wrns = warnin.objects.all().filter(toUser = User.objects.all().get(username=username))
+            return render_to_response("warnings.html",{"actions":actions,"warns":wrns},context_instance=RequestContext(request))
+        else:
+            raise Http404
     else:
         raise Http404
 
 def warning(request, warnID):
     actions = []
     actions.append({
-            "link" : "warnings/%s/" % (request.user.username,),
+            "link" : "/test1/warnings/%s/" % (request.user.username,),
             "name" : "List your warnings"
             })
     if  request.user.groups.filter(name="moderators") :
         actions.append({
-                "link" : "make_warning", 
+                "link" : "/test1/make_warning/", 
                 "name" : "Make a warning"
                 })
     if warnin.objects.all().filter(id=warnID):

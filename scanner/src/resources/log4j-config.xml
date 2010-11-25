@@ -10,16 +10,30 @@
 
     <!-- Root Logger -->
     <root>
-        <priority value="trace" />
+        <priority value="info" />
         <appender-ref ref="console" />
     </root>
-    <logger name="org.apache">
-        <level value="trace"/>
+    <!-- <logger name="org.apache">
+        <level value="warn"/>
+    </logger>
+
+    <logger name="com.gargoylesoftware">
+        <level value="fatal"/>
     </logger>
     <logger name="httpclient">
         <level value="trace"/>
     </logger>
-    <logger name="com.gargoylesoftware">
-        <level value="fatal"/>
+    -->
+    <logger name="su.msu.cs.lvk.accorute.tasks.SessionValidityWatcher">
+        <level value="trace"/>
+    </logger>
+    <logger name="su.msu.cs.lvk.accorute.tasks.ResponseFetcher">
+        <level value="trace"/>
+    </logger>
+    <logger name="su.msu.cs.lvk.accorute.tasks.FormBasedAuthTask">
+        <level value="trace"/>
+    </logger>
+    <logger name="com.gargoylesoftware.htmlunit.javascript.background.JavaScriptExecutor">
+        <level value="warn"/>
     </logger>
 </log4j:configuration>

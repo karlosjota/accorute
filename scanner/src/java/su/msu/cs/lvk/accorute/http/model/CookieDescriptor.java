@@ -12,6 +12,7 @@ import org.apache.commons.httpclient.cookie.CookieSpec;
 import su.msu.cs.lvk.accorute.http.constants.HTTPHeader;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class CookieDescriptor {
@@ -29,6 +30,10 @@ public class CookieDescriptor {
     }
 
 
+    public CookieDescriptor(Collection<Cookie> cookies, CookieOrigin origin, EntityID ctxID) {
+        this(cookies, origin,"Set-Cookie",ctxID);
+    }
+
     /**
      * Creates a new instance of Cookie
      *
@@ -36,7 +41,7 @@ public class CookieDescriptor {
      * @param origin
      * @param cookieHeaderName
      */
-    public CookieDescriptor(List<Cookie> cookies, CookieOrigin origin, String cookieHeaderName, EntityID ctxID) {
+    public CookieDescriptor(Collection<Cookie> cookies, CookieOrigin origin, String cookieHeaderName, EntityID ctxID) {
         this.ctxID = ctxID;
         List<ContextCookie> list = new ArrayList<ContextCookie>();
         for(Cookie cook: cookies){

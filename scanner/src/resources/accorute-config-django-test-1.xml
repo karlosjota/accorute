@@ -30,14 +30,43 @@
     <bean id="simpleRCD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimpleRCD"/>
     <bean id="simplePVD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimplePVD"/>
     <bean id="dummyChState" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.DummyChStateDec"/>
-    <bean id="respClass" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimpleRespClassifier"/>
+    <bean id="notFoundRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
+        <constructor-arg value=".*404.*" />
+        <constructor-arg type="int" value="40"/> <!-- MuLTILINE and DOTALL-->
+    </bean>
+    <bean id="prohibRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
+        <constructor-arg value=".*403.*" />
+        <constructor-arg type="int" value="40"/>
+    </bean>
+    <bean id="expireRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
+        <constructor-arg value=".*You're not logged in.*" />
+        <constructor-arg type="int" value="40"/>
+    </bean>
+    <bean id="errorRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
+        <constructor-arg type="java.lang.String" value=".*500.*" />
+        <constructor-arg type="int" value="40"/>
+    </bean>
+    <bean id="respClass" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.PatternResponceClassifier">
+        <constructor-arg ref="notFoundRegex" />
+        <constructor-arg ref="prohibRegex" />
+        <constructor-arg ref="expireRegex" />
+        <constructor-arg ref="errorRegex" />
+    </bean>
     <bean id="pageEqD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimplePageEqDec"/>
     <bean id="acEqD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.ActionEqualsIfNameValueEquals"/>
     <bean id="scopeRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
-        <constructor-arg><value>.*127.0.0.1.*</value></constructor-arg>
+        <constructor-arg value=".*127.0.0.1.*" />
     </bean>
     <bean id="ffd" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimpleFormFill"/>
-
+    <bean id="loginPageURL" scope="prototype" class="java.net.URL" >
+        <constructor-arg value="http://127.0.0.1:8080/accounts/login/?next=/test1/"/>
+    </bean>
+    <bean id="authFactory" scope="prototype" class="su.msu.cs.lvk.accorute.tasks.FormBasedAuthTaskFactory">
+        <constructor-arg ref="loginPageURL" />
+        <constructor-arg value="0" />
+        <constructor-arg value="input[1]" />
+    </bean>
+    <bean id="simpleAGD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.LevensteinAGD" />
 
     <bean id="Properties" class="su.msu.cs.lvk.accorute.WebAppProperties" factory-method="getInstance">
         <property name="actionService" ref="actionService"/>
@@ -59,6 +88,8 @@
         <property name="acEqDec" ref="acEqD" />
         <property name="scope" ref="scopeRegex" />
         <property name="ffd" ref="ffd" />
+        <property name="authTaskFactory" ref="authFactory" />
+        <property name="agd" ref="simpleAGD" />
     </bean>
 
 </beans>

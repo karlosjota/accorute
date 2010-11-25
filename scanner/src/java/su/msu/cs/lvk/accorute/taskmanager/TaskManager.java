@@ -25,10 +25,9 @@ public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutio
             return taskID.get(t1) - taskID.get(t2);
         else return p1-p2;
     }
-    final int maxThreads = 200;
+    final int maxThreads = 400;
     final private Queue<Task> pendingTasks = new PriorityQueue<Task>(10,this);
     final private HashSet<Task> runningTasks = new HashSet<Task>();
-    final private HashMap<Task, Task> waitingTasks = new HashMap<Task, Task>(); //TODO:poor naming
     final private ThreadPoolExecutor executor = new  ThreadPoolExecutor(maxThreads/2,maxThreads,2,
                 TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
     final private HashMap<Task, Integer> taskPriority = new HashMap<Task, Integer>();
@@ -59,10 +58,20 @@ public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutio
     synchronized public void terminate(){
         isTerminating = true;
         logger.trace("Terminating task manager");
-        notify();
+        notifyAll();
     }
+    synchronized public void waitForFinish(){
+        if(!isTerminating){
+            logger.error("Cannot waitForFinish whilst not terminating! Call terminate() first.");
+            return;
+        }
+        while (getStatus() != TaskManagerStatus.NOT_STARTED  || isTerminating ){
+            try{
+                wait();
+            }catch(InterruptedException ex){}
+        }
 
-    
+    }
     synchronized public boolean addTask(Task pending){
         if(!isTerminating){
             logger.trace("Task added");
@@ -70,38 +79,39 @@ public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutio
             taskID.put(pending,nextID);
             nextID++;
             pendingTasks.add(pending);
-            notify();//wake up the running cycle
+            notifyAll();//wake up the running cycle
             return true;
         }
         logger.warn("tried to add task to terminating taskManager!");
         return false;
     }
-    synchronized public void taskFinished(){
+    synchronized void taskFinished(){
         logger.trace("Task was finished");
-        notify();//wake up the running cycle    
+        notifyAll();//wake up the running cycle
     }
 
-    synchronized public void addWaitedTask(Task waiting, Task pending){
+    synchronized public boolean addWaitedTask( Task pending){
         logger.trace("Waited task added");
-        if( (pending instanceof SerialTask) || (waiting instanceof  SerialTask) ){
-            throw new IllegalArgumentException("You can only wait from a non-serial task, and only for a non-serial task!!!");
+        if( pending.isSerial() ){
+            logger.error("You can only wait from a non-serial task, and only for a non-serial task!!!");
+            return false;
         }
         taskID.put(pending,nextID);
         nextID++;
         taskPriority.put(pending,1); // waited task
         pendingTasks.add(pending);
-        waitingTasks.put(waiting,pending);
-        notify();//wake up the running cycle
+        notifyAll();//wake up the running cycle
+        return true;
     }
     synchronized public void resume(){
         logger.trace("Resumed");
         setStatus(TaskManagerStatus.RUNNING);
-        notify();
+        notifyAll();
     }
     synchronized public void pause(){
         logger.trace("Paused");
         setStatus(TaskManagerStatus.PAUSED);
-        notify();
+        notifyAll();
     }
     synchronized public void run(){
         logger.trace("Stared to run");
@@ -141,7 +151,7 @@ public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutio
                         t.resume();                                                 
                     }
                 } */
-                if(t instanceof SerialTask){
+                if(t.isSerial()){
                     //if the serial task is running right now, we shouldn't go any further
                     serialRunning = true;
                 }
@@ -151,14 +161,14 @@ public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutio
                 //OK, here we go...
                 Task task = pendingTasks.peek();
                 if(task != null){
-                    if((task instanceof SerialTask) && runningTasks.isEmpty()){
+                    if((task.isSerial()) && runningTasks.isEmpty()){
                         task = pendingTasks.poll();
                         logger.trace("Execute new serial task");
                         runningTasks.add(task);
                         executor.execute(task);
                     }else{
                         //execute all asynchronous tasks...
-                        while(! (task instanceof SerialTask) && task != null){
+                        while(task != null && ! (task.isSerial())){
                             task = pendingTasks.poll();
                             logger.trace("Execute new task");
                             runningTasks.add(task);
@@ -181,6 +191,7 @@ public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutio
                         ". Completed: " + executor.getCompletedTaskCount()+
                         ". Overall: " + executor.getTaskCount());
                 setStatus(TaskManagerStatus.NOT_STARTED);
+                notifyAll();
                 isTerminating = false;
                 return;
             }
@@ -205,8 +216,8 @@ public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutio
         Logger logger = Logger.getLogger(TaskManager.class.getName());
         logger.debug("Started!");
         TaskManager t = new TaskManager();
-        t.addTask(new JoinTask(t,"FINISHED 1 part!"));
-        t.addTask(new JoinTask(t,"FINISHED 2 part!"));
+        t.addTask(new JoinTask(t));
+        t.addTask(new JoinTask(t));
         t.terminate();
         t.run();
     }

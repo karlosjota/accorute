@@ -36,10 +36,12 @@ public class HtmlPageParser extends Task implements DomChangeListener {
     private final WebClient webClient;
     private boolean wasRequest;
     private WebConnection falseWebConn;
+    private final EntityID ctxID;
     private final ArrayList<DomAction> curActionChain = new ArrayList<DomAction>();
-    public HtmlPageParser(TaskManager t, HtmlPage _page, Callback4<HtmlPage,  ArrayList<DomAction>, HttpAction, Boolean> cb) {
+    public HtmlPageParser(TaskManager t, HtmlPage _page, EntityID ctx, Callback4<HtmlPage,  ArrayList<DomAction>, HttpAction, Boolean> cb) {
         super(t);
         callback = cb;
+        ctxID = ctx;
         logger.trace("HtmlPageParser created");
         webClient = new WebClient();
         //TODO: requests here may follow, need to intercept and add cookies.
@@ -114,27 +116,26 @@ public class HtmlPageParser extends Task implements DomChangeListener {
     private void fillForms(HtmlElement el){
         List<HtmlElement> forms = el.getHtmlElementsByTagName("form");
         for(HtmlElement f: forms){
-            WebAppProperties.getInstance().getFfd().FillForm((HtmlForm)f);
+            WebAppProperties.getInstance().getFfd().FillForm((HtmlForm)f,ctxID);
         }
     }
     private void emulateUserActions(HtmlElement el) {
         fillForms(el);
         doJsActions(el);
-        List<HtmlElement> anchors = el.getHtmlElementsByTagName("a");
-        List<HtmlElement> inputs = el.getHtmlElementsByTagName("input");
+        List<HtmlAnchor> anchors = el.getHtmlElementsByTagName("a");
+        List<HtmlInput> inputs = el.getHtmlElementsByTagName("input");
         logger.trace("emulateUserActions on " + el);
         Iterable<HtmlElement> htmlChildren = el.getHtmlElementDescendants();
         Iterator<HtmlElement> it = htmlChildren.iterator();
         while (it.hasNext()) {
             doJsActions(it.next());
         }
-        for(HtmlElement a:anchors){
+        for(HtmlAnchor a:anchors){
             //only click anchors that has a href
-            if(((HtmlAnchor) a).getHrefAttribute() != DomElement.ATTRIBUTE_NOT_DEFINED)
+            if(a.getHrefAttribute() != DomElement.ATTRIBUTE_NOT_DEFINED)
                 tryClick(a);
         }
-        for(HtmlElement i: inputs){
-            HtmlInput inp = (HtmlInput) i;
+        for(HtmlInput inp: inputs){
             if(inp.getTypeAttribute().equalsIgnoreCase("submit"))
                 tryClick(inp);
         }

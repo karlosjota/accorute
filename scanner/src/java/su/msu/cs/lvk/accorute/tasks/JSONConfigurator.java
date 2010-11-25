@@ -11,7 +11,7 @@ import su.msu.cs.lvk.accorute.http.constants.ActionParameterDatatype;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterLocation;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterMeaning;
 import su.msu.cs.lvk.accorute.http.model.*;
-import su.msu.cs.lvk.accorute.taskmanager.SerialTask;
+import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 
 import java.io.*;
@@ -28,7 +28,7 @@ import org.json.JSONObject;
  * Time: 9:13:23
  * To change this template use File | Settings | File Templates.
  */
-public class JSONConfigurator extends SerialTask{
+public class JSONConfigurator extends Task {
     private static Logger logger = Logger.getLogger(JSONConfigurator.class.getName());
 
     private static class UnsupportedDOMEventTypeException extends Exception{
@@ -98,9 +98,8 @@ public class JSONConfigurator extends SerialTask{
     public final String filename;
     public final TestChain t = new TestChain();
     public JSONConfigurator(TaskManager t, String filename){
-        super(t);
+        super(t, true);
         this.filename = filename;
-        
     }
     public void start(){
         InputStream in = null;

@@ -16,6 +16,7 @@ import su.msu.cs.lvk.accorute.utils.HtmlUnitUtils;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,12 +28,20 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class HtmlElementActionPerformer extends Task {
+    public enum Result{
+        NOTFINISHED,
+        SUCCESSFUL,
+        FETCHERROR,
+        NOTHTML,
+        NOREQUEST
+    };
     final private HtmlPage page;
     final private ArrayList<DomAction> actions;
     final private EntityID ctx;
     final private Callback3<ArrayList<Conversation>, ArrayList<HttpAction>, HtmlPage> callback;
     final private WebClient webClient = new WebClient();
     private final WebConnection falseWebConn;
+    private Result result = Result.NOTFINISHED;
     private boolean wasReq = false;
     private final ArrayList<Conversation> convs = new ArrayList<Conversation>();
     private final ArrayList<HttpAction> acts = new ArrayList<HttpAction>();
@@ -78,9 +87,6 @@ public class HtmlElementActionPerformer extends Task {
                 logger.trace("Will request HttpAction " + act);
                 ResponseFetcher tsk = new ResponseFetcher(taskManager, act, ctx);
                 waitForTask(tsk);
-                while(tsk.getStatus()!=TaskStatus.FINISHED){
-                    ;
-                }
                 logger.trace("got responce from fetcher");
                 if(tsk.isSuccessful()){
                     Conversation conv = (Conversation) tsk.getResult();
@@ -95,7 +101,7 @@ public class HtmlElementActionPerformer extends Task {
     }
     @Override
     public Object getResult() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return result;
     }
 
     @Override
@@ -115,7 +121,9 @@ public class HtmlElementActionPerformer extends Task {
                     logger.trace("Will click on " + last.getXpathElString());
                     Page  newPage = el.click();
                     if(!wasReq){
+                        //This should never happen!
                         logger.error("No request intercepted!!!");
+                        result = Result.NOREQUEST;
                         setSuccessful(false);
                         return;
                     }
@@ -123,10 +131,12 @@ public class HtmlElementActionPerformer extends Task {
                         callback.CallMeBack(convs,acts,(HtmlPage)newPage);
                     }else{
                         logger.warn("Not a html page?!");
+                        result = Result.NOTHTML;
                         setSuccessful(false);
                         return;
                     }
                 }catch ( IOException ex){
+                    result = Result.FETCHERROR;
                     setSuccessful(false);
                     return;
                 }
@@ -134,11 +144,11 @@ public class HtmlElementActionPerformer extends Task {
             default:
                 throw new NotImplementedException("Actions other than click are not yet supported!");
             }
-            setSuccessful(true);
         }else if(startHttpAct != null){
             ResponseFetcher tsk = new ResponseFetcher(super.taskManager, startHttpAct, ctx);
             waitForTask(tsk);
             if(!tsk.isSuccessful()){
+                result = Result.FETCHERROR;
                 logger.error("Could not fetch responce!!!");
                 return; //no success
             }
@@ -156,18 +166,19 @@ public class HtmlElementActionPerformer extends Task {
                     callback.CallMeBack(convs,acts,(HtmlPage)newPage);
                 }else{
                     logger.warn("Not a html page?!");
+                    result = Result.NOTHTML;
                     setSuccessful(false);
                     return;
                 }
             }catch(MalformedURLException muex){
-                logger.error("Wrong url!");
-                setSuccessful(false);
-                return;
+                throw new InvalidParameterException("Wrong url in action");
             }catch(IOException ex){
                 setSuccessful(false);
                 return;
             }
 
         }
+        setSuccessful(true);
+        result = Result.SUCCESSFUL;
     }
 }

@@ -115,33 +115,15 @@ public class SimpleRCD extends RequestComposerDecomposer{
         return null;
     }
 
-    public Request compose(List<ActionParameter> params, UserContext ctx){
-        Request req = new Request();
+    public Request compose(List<ActionParameter> parameters, UserContext ctx){
+        //clone list and work with its copy
+        List<ActionParameter>  params = new ArrayList<ActionParameter> ();
+        params.addAll(parameters);
         URL url = getURL(params); //preliminary(for cookies)
-        WebAppUser user = WebAppProperties.getInstance().getUserService().getUserByID(ctx.getUserID());
-        Collection<ContextCookie> coll = WebAppProperties.getInstance().getCookieService().getCookiesForUrlInContext(ctx.getContextID(),url);
-        Map<String,String> cookieMap = new HashMap<String,String>();
-        if(coll!=null){
-            for(ContextCookie c : coll){
-                cookieMap.put(c.getName(),c.getValue());
-            }
+        if(ctx != null){
+            WebAppProperties.getInstance().getPvd().resolve(params,ctx, url);
         }
-        for(int i = 0; i< params.size(); i++){
-            ActionParameter param = params.get(i);
-            if(param.getLocation() == ActionParameterLocation.COOKIE){
-                cookieMap.remove(param.getName());
-            }
-        }
-        for(String additionalCookie:cookieMap.keySet()){
-            params.add(new ActionParameter(
-                    additionalCookie,
-                    "",
-                    ActionParameterLocation.COOKIE,
-                    ActionParameterMeaning.SESSIONTOKEN,//TODO: add a decision for this
-                    ActionParameterDatatype.STRING
-            ));
-        }
-        WebAppProperties.getInstance().getPvd().resolve(params,user);
+        Request req = new Request();
         url = getURL(params);
         String Body="";
         List<Cookie> cookies = new ArrayList<Cookie>();
@@ -160,10 +142,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
 
         for(ActionParameter param: params){
             if(param.getLocation() == ActionParameterLocation.COOKIE){
-                String value = param.getValue();
-                if(user.getDynamicCredentials().containsKey(param.getName()))
-                    value = user.getDynamicCredentials().get(param.getName());
-                cookies.add (new Cookie(url.getHost(),param.getName(), value));//TODO: "host" here is a stub!
+                cookies.add (new Cookie(url.getHost(),param.getName(), param.getValue()));//TODO: "host" here is a stub!
             }
         }
         req.setCookies(new CookieDescriptor(cookies,new CookieOrigin(url.getHost(),url.getPort(),"",false), "Cookie", EntityID.NOT_INITIALIZED));

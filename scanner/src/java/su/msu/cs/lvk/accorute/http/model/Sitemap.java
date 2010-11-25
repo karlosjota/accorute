@@ -111,6 +111,20 @@ public class Sitemap {
         nextNodeID ++;
         return n;
     }
+    public Map<HttpAction,Conversation> getValidHttpActions(){
+        Map<HttpAction,Conversation> res = new HashMap<HttpAction,Conversation>();
+        Set<SitemapEdge> edges = actionDepGraph.edgeSet();
+        for(SitemapEdge edge:edges){
+            if(edge.getV1() != invalidNode && edge.getV2() != invalidNode){
+                List<HttpAction> acts = edge.getLabel().getHttpActions();
+                List<Conversation> convs =  edge.getConvs();
+                for(int i=0;i<acts.size();i++){
+                    res.put(acts.get(i),convs.get(i));
+                }
+            }
+        }
+        return res;
+    }
     public SitemapNode getNodeByID(EntityID id){
          return nodeById.get(id);
     }
@@ -149,7 +163,17 @@ public class Sitemap {
     public static class SitemapEdge extends DefaultEdge {
         private final SitemapNode v1;
         private final SitemapNode v2;
+
+        public CorrespondentActions getLabel() {
+            return label;
+        }
+
         private final CorrespondentActions label;
+
+        public ArrayList<Conversation> getConvs() {
+            return convs;
+        }
+
         private final ArrayList<Conversation> convs;
 
 

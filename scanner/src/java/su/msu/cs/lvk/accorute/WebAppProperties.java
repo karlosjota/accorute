@@ -14,6 +14,7 @@ import su.msu.cs.lvk.accorute.http.model.HttpAction;
 import su.msu.cs.lvk.accorute.http.model.TestChain;
 import su.msu.cs.lvk.accorute.storage.*;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
+import su.msu.cs.lvk.accorute.tasks.ContextedTaskFactory;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -37,11 +38,31 @@ public class WebAppProperties {
     private String sessionTokenName;
     private ActionParameterLocation sessionTokenLocation;
 
+    public ContextedTaskFactory getAuthTaskFactory() {
+        return authTaskFactory;
+    }
+
+    public void setAuthTaskFactory(ContextedTaskFactory authTaskFactory) {
+        this.authTaskFactory = authTaskFactory;
+    }
+
+    private ContextedTaskFactory authTaskFactory;
+
     private URL startPage = null;
     private TestChain testChain;
     private final Collection<HttpAction> stateChangingHttpActions = new ArrayList<HttpAction>();
     private ParameterValueDecision pvd;
     private RequestComposerDecomposer rcd;
+
+    public AccessGrantedDecision getAgd() {
+        return agd;
+    }
+
+    public void setAgd(AccessGrantedDecision agd) {
+        this.agd = agd;
+    }
+
+    private AccessGrantedDecision agd;
 
     public FormFillDecision getFfd() {
         return ffd;

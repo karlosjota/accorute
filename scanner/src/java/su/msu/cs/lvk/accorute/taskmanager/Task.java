@@ -19,6 +19,12 @@ import java.util.List;
  */
 public abstract class Task implements Runnable{
     final public TaskManager taskManager;
+
+    public boolean isSerial() {
+        return serial;
+    }
+
+    final private boolean serial;
     
     public enum TaskStatus {
         NOT_STARTED,RUNNING, BLOCKED, FINISHED
@@ -66,6 +72,14 @@ public abstract class Task implements Runnable{
      */
     public Task(TaskManager t){
         taskManager = t;
+        serial = false;
+    }
+    /**
+     * @param t - TaskManager that invoked this task.
+     */
+    public Task(TaskManager t, boolean  ser){
+        taskManager = t;
+        serial = ser;
     }
 
     /**
@@ -76,6 +90,9 @@ public abstract class Task implements Runnable{
      */
     protected boolean addTask(Task tsk){
         return taskManager.addTask(tsk);
+    }
+    protected boolean addWaitedTask(Task tsk){
+        return taskManager.addWaitedTask(tsk);
     }
 
     /**
@@ -95,7 +112,7 @@ public abstract class Task implements Runnable{
             };
             myCallback cb = new myCallback();
             tsk.registerCallback(cb);
-            taskManager.addWaitedTask(this,tsk);
+            taskManager.addWaitedTask(tsk);
             while (getStatus() == TaskStatus.BLOCKED){
                 try{
                     wait();
@@ -142,10 +159,8 @@ public abstract class Task implements Runnable{
         logger.trace("Task " +this.getClass().getName()+ " was STARTED at thread " + Thread.currentThread().getId());
         setStatus(TaskStatus.RUNNING);
         start();
-        synchronized (this){
-            setStatus(TaskStatus.FINISHED);
-            taskManager.taskFinished();
-        }
+        setStatus(TaskStatus.FINISHED);
+        taskManager.taskFinished();
         for (int i=0; i< Callbacks.size(); i++){
 		  Callbacks.get(i).CallMeBack();
         }

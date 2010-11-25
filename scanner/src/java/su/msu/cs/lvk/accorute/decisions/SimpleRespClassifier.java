@@ -10,7 +10,6 @@ import su.msu.cs.lvk.accorute.http.model.Conversation;
  * To change this template use File | Settings | File Templates.
  */
 public class SimpleRespClassifier implements ResponseClassificator{
-
     public ResponseType getResponseType(Conversation conv) {
         String code = conv.getResponse().getStatusCode();
         if(code.equals("404"))

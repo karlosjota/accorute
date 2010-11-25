@@ -1,6 +1,7 @@
 package su.msu.cs.lvk.accorute.decisions;
 
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import su.msu.cs.lvk.accorute.http.model.EntityID;
 
 /**
  * Created by IntelliJ IDEA.
@@ -10,5 +11,9 @@ import com.gargoylesoftware.htmlunit.html.HtmlForm;
  * To change this template use File | Settings | File Templates.
  */
 public interface FormFillDecision {
-    void FillForm(HtmlForm f);
+    /**
+     * The only requirement is: if given a login form, this should fill it with valid credentials
+     * @param f
+     */
+    void FillForm(HtmlForm f, EntityID ctxID);
 }

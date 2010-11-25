@@ -127,7 +127,7 @@ public class SitemapCrawler extends Task implements Callback0{
                 }
         );
         tsk.registerCallback(this);
-        if(addTask(tsk))
+        if(addWaitedTask(tsk))
             spawnedTasks++;
         else{
             logger.error("Could not add task!");
@@ -167,6 +167,7 @@ public class SitemapCrawler extends Task implements Callback0{
                 HtmlPageParser tsk = new HtmlPageParser(
                         super.taskManager,
                         p,
+                        contextID,
                         new Callback4<HtmlPage,  ArrayList<DomAction>, HttpAction, Boolean>(){
                             public void CallMeBack(HtmlPage p, ArrayList<DomAction> domActs, HttpAction httpAction, Boolean isAjax){
                                 ArrayList<HttpAction> acts = new  ArrayList<HttpAction>();
@@ -176,7 +177,7 @@ public class SitemapCrawler extends Task implements Callback0{
                         }
                 );
                 tsk.registerCallback(this);
-                if(addTask(tsk))
+                if(addWaitedTask(tsk))
                     spawnedTasks++;
                 else{
                     logger.error("Could not add task!");
@@ -188,14 +189,12 @@ public class SitemapCrawler extends Task implements Callback0{
         }else if(respType == ResponseClassificator.ResponseType.NOT_FOUND
                 || respType == ResponseClassificator.ResponseType.ERROR
                 || respType == ResponseClassificator.ResponseType.PROHIBITED
+                || respType == ResponseClassificator.ResponseType.EXPIRED
         ){
             logger.trace("action leads to not found page!");
             resultingNode = siteMap.getInvalidNode();
-        }else if(respType == ResponseClassificator.ResponseType.EXPIRED){
-            throw new NotImplementedException("expired sessions are not yes supported");
-            //TODO: do smth here!
         }else{
-            throw new NotImplementedException("not yes supported");
+            throw new NotImplementedException("not yet supported");
         }
         logger.trace(from.getNodeID() + " -> " + resultingNode.getNodeID());
         HttpAction equalHttpAction = null;
@@ -247,11 +246,11 @@ public class SitemapCrawler extends Task implements Callback0{
                 }
         );
         tsk.registerCallback(this);
-        if(addTask(tsk))
+        if(addWaitedTask(tsk))
             spawnedTasks++;
         else{
             logger.error("Could not add task!");
-            setSuccessful(true);
+            setSuccessful(false);
             return;
         }
         synchronized(this){
