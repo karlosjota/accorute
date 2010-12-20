@@ -1,6 +1,7 @@
 package su.msu.cs.lvk.accorute.utils;
 
 import org.apache.http.HttpHost;
+import org.apache.http.HttpVersion;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.scheme.PlainSocketFactory;
@@ -12,6 +13,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
+import org.apache.http.params.CoreProtocolPNames;
+
 
 /**
  * Created by IntelliJ IDEA.
@@ -38,6 +41,7 @@ public class HttpClientProxyFactory {
                 new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
         ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
         AbstractHttpClient httpClient = new DefaultHttpClient(cm, params);
+        params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
         if(proxy != null){
             httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         }

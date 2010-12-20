@@ -261,8 +261,8 @@ public class Request extends Message {
         }
         if(super.headers != null){
             for(NamedValue v: super.headers){
-                if(!v.getName().equalsIgnoreCase("Content-length"))
-                    res.addHeader(v.getName(),v.getValue());
+                //if(!v.getName().equalsIgnoreCase("Content-length"))
+                res.addHeader(v.getName(),v.getValue());
             }
         }
         return res;
