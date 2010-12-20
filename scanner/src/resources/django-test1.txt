@@ -69,7 +69,7 @@
       "to":"public : pub1"
     },
     {
-      "from":"make_warn : moder1",
+      "from":"make_warning : moder1",
       "to":"login : moder1"
     },
     {
@@ -81,12 +81,12 @@
       "to":"public : pub1"
     },
     {
-      "from":"view_warn : user1",
+      "from":"view_warning : user1",
       "to":"login : user1"
     },
     {
-      "from":"view_warn : user1",
-      "to":"make_warn : moder1"
+      "from":"view_warning : user1",
+      "to":"make_warning : moder1"
     },
     {
       "from":"logout : user1",
@@ -95,11 +95,11 @@
   ],
   "cancellations":[{
       "from":"logout : moder1",
-      "to":"make_warn : moder1"
+      "to":"make_warning : moder1"
     },
     {
       "from":"logout : user1",
-      "to":"view_warn : user1"
+      "to":"view_warning : user1"
     }
   ],
   "trace":[[{
@@ -238,7 +238,7 @@
     ],
     [{
         "type":"SessionCreated",
-        "name":"make_warn",
+        "name":"make_warning",
         "user":"moder1",
         "time":1274776912145,
         "dependencies":[{
@@ -446,7 +446,7 @@
         "user":"user1",
         "time":1274776992185,
         "dependencies":[{
-            "usecase":"make_warn",
+            "usecase":"make_warning",
             "user":"moder1"
           },
           {

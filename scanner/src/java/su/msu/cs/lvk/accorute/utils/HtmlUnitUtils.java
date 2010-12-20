@@ -1,17 +1,10 @@
 package su.msu.cs.lvk.accorute.utils;
 
-import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebWindow;
-import com.gargoylesoftware.htmlunit.WebWindowImpl;
 import com.gargoylesoftware.htmlunit.html.*;
-import com.gargoylesoftware.htmlunit.javascript.SimpleScriptable;
-import com.gargoylesoftware.htmlunit.javascript.host.Window;
-import net.sourceforge.htmlunit.corejs.javascript.ScriptableObject;
 import org.w3c.dom.NamedNodeMap;
-import org.xml.sax.SAXException;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.

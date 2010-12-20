@@ -76,6 +76,7 @@ public abstract class Task implements Runnable{
     }
     /**
      * @param t - TaskManager that invoked this task.
+     * @param ser - set to true iff serial 
      */
     public Task(TaskManager t, boolean  ser){
         taskManager = t;
@@ -102,6 +103,9 @@ public abstract class Task implements Runnable{
      * @param tsk -
      */
     synchronized protected void waitForTask(Task tsk){
+        if(tsk.isSerial()){
+            logger.error("Will not wait for a serial task!");
+        }
         logger.trace("Task  WILL WAIT for other task at thread " + Thread.currentThread().getId());
         while(true){
             setStatus(TaskStatus.BLOCKED);

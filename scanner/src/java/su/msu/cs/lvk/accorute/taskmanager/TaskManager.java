@@ -1,13 +1,13 @@
 package su.msu.cs.lvk.accorute.taskmanager;
 
-import java.util.*;
-import java.util.concurrent.*;
-
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -60,6 +60,13 @@ public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutio
         logger.trace("Terminating task manager");
         notifyAll();
     }
+    synchronized public void waitForEmptyQueue(){
+        while (pendingTasks.size() + runningTasks.size() != 0){
+            try{
+                wait();
+            }catch(InterruptedException ex){}
+        }
+    }
     synchronized public void waitForFinish(){
         if(!isTerminating){
             logger.error("Cannot waitForFinish whilst not terminating! Call terminate() first.");
@@ -70,7 +77,6 @@ public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutio
                 wait();
             }catch(InterruptedException ex){}
         }
-
     }
     synchronized public boolean addTask(Task pending){
         if(!isTerminating){
@@ -92,10 +98,10 @@ public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutio
 
     synchronized public boolean addWaitedTask( Task pending){
         logger.trace("Waited task added");
-        if( pending.isSerial() ){
+        /*if( pending.isSerial() ){
             logger.error("You can only wait from a non-serial task, and only for a non-serial task!!!");
             return false;
-        }
+        }*/
         taskID.put(pending,nextID);
         nextID++;
         taskPriority.put(pending,1); // waited task
@@ -196,6 +202,7 @@ public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutio
                 return;
             }
             try{
+                notifyAll(); // wake waiting
                 logger.trace("Sleep until next action...");
                 wait();
             }catch (InterruptedException e){}

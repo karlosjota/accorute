@@ -1,0 +1,56 @@
+<html> 
+<head>
+	<title>JavaScript Menu - Demo #6</title>
+	<!-- styles for demo menu #1-->
+	<link rel="stylesheet" href="menu.css">
+</head>
+
+<body>
+
+<!-- comments begin -->
+<p style="margin-top:200px">This sample demonstrates accessing the properties of the individual elements
+	of the Tigra Menu. Note that this can be considered the advanced topic because it requires
+	good understanding of CSS.</p>
+
+<p>Each Menu item contains in two nested &lt;div&gt; tags with the item's text inside them.
+	Each of those DIVs is assigned unique ID. This ID can be referenced in CSS file to override the level settings.
+	The naming convention for the outer tag is e&lt;menu_index&gt;_&lt;item_index&gt;o for the inner tag it
+	is: e&lt;menu_index&gt;_&lt;item_index&gt;i where &lt;menu_index&gt; is zero based index of the menu
+	(i.e. 0 for first menu on the page) and &lt;item_index&gt; is zero based index of the item in the
+	menu as they appear in items structure (i.e. 0 for first root item, 1 for first sub-items of
+	first root item etc.).</p>
+<ul>
+	<li>Background property of the first root item (index=0) changed to red (see menu.css)</li>
+	<li>Font properties of the second root item (index=22) changed to color=yellow, weight=bold (see menu.css)</li>
+</ul>
+<p>Note that indexes shift as items are added or removed from the hierarchy so if this feature is used then adjustments to the CSS may be needed.</p>
+<p>Note that any directly assigned properties will override conflicting rollover effects (i.e. no light blue background on rollover of the red item)</p>
+<p>Item IDs can also be used to access the menu properties programmatically from custom JavaScript code (i.e. dynamically gray out item and disable its click event handler)</p>
+<!-- comments end -->
+
+<!-- menu script itself. you should not modify this file -->
+<script language="JavaScript" src="menu.js"></script>
+<!-- items structure. menu hierarchy and links are stored there -->
+<script language="JavaScript" src="menu_items.js"></script>
+<!-- files with geometry and styles structures -->
+<script language="JavaScript" src="menu_tpl.js"></script>
+<script language="JavaScript">
+	<!--//
+	// Make sure the menu initialization is right above the closing </body> tag
+	// Moving it inside other tags will not affect the position of the menu on
+	// the page. If you need this feature please consider Tigra Menu GOLD.
+
+	// each menu gets two parameters (see demo files)
+	// 1. items structure
+	// 2. geometry structure
+
+	new menu (MENU_ITEMS, MENU_TPL);
+
+	// If you don't see the menu then check JavaScript console of the browser for the error messages
+	// "Variable is not defined" error indicates that there's syntax error in that variable's definition
+	// or the file with that variable isn't properly linked to the HTML document
+	//-->
+</script>
+
+</body>
+</html>

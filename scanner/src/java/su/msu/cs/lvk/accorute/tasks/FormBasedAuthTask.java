@@ -1,16 +1,22 @@
 package su.msu.cs.lvk.accorute.tasks;
 
+import com.gargoylesoftware.htmlunit.CookieManager;
+import com.gargoylesoftware.htmlunit.HttpWebConnection;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.cookie.CookieOrigin;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.HttpHost;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.cookie.CookieOrigin;
+import org.apache.http.impl.client.AbstractHttpClient;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import su.msu.cs.lvk.accorute.WebAppProperties;
-import su.msu.cs.lvk.accorute.decisions.ResponseClassificator;
-import su.msu.cs.lvk.accorute.http.model.*;
+import su.msu.cs.lvk.accorute.http.model.CookieDescriptor;
+import su.msu.cs.lvk.accorute.http.model.EntityID;
+import su.msu.cs.lvk.accorute.http.model.UserContext;
+import su.msu.cs.lvk.accorute.http.model.WebAppUser;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 
@@ -18,7 +24,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -50,7 +55,14 @@ public class FormBasedAuthTask extends Task {
     @Override
     protected void start() {
         setSuccessful(false);
+
         WebClient client = new WebClient();
+        client.setJavaScriptEnabled(true);
+        client.setThrowExceptionOnFailingStatusCode(false);
+        client.setThrowExceptionOnScriptError(false);
+        HttpHost pr = WebAppProperties.getInstance().getProxy();
+        client.getProxyConfig().setProxyHost(pr.getHostName());
+        client.getProxyConfig().setProxyPort(pr.getPort());
         try{
             logger.trace("Login task spawned");
             Page lPage = client.getPage(url);
@@ -72,13 +84,22 @@ public class FormBasedAuthTask extends Task {
                 logger.error("Submit button not present");
                 return;
             }
-            submitButton.click();
+            Page p = submitButton.click();
+            if(! (p instanceof HtmlPage)){
+                logger.error("Auth task received not an html page");
+                setSuccessful(false);
+                return;
+            }
+            HtmlPage newPage = (HtmlPage) p;
+            UserContext contx = WebAppProperties.getInstance().getContextService().getContextByID(ctxID);
+            WebAppProperties.getInstance().getDynCredUpd().updateCredentials(contx.getUserID(),newPage);
             Set<com.gargoylesoftware.htmlunit.util.Cookie> cooks = client.getCookieManager().getCookies();
+            //TODO: Use dynamic cred updater for cookie updates here!
             URL u = loginPage.getUrl();
             CookieOrigin origin = new CookieOrigin(u.getHost(), u.getPort(),u.getPath(),false); // TODO: false here
             List<Cookie> cookies = new ArrayList<Cookie>();
             for(com.gargoylesoftware.htmlunit.util.Cookie cook: cooks){
-                cookies.add(new Cookie(cook.getDomain(),cook.getName(), cook.getValue(), cook.getPath(),cook.getExpires(), cook.isSecure()));
+                cookies.add(new BasicClientCookie(cook.getName(), cook.getValue()));
             }
             CookieDescriptor desc = new CookieDescriptor(cookies,origin,ctxID);
             WebAppProperties.getInstance().getCookieService().setCookies(desc);
@@ -91,7 +112,6 @@ public class FormBasedAuthTask extends Task {
             }
             logger.trace("Login task finished successfully");
             setSuccessful(true);
-
         } catch (IOException e) {
             logger.error("Fatal transport error: " + e.getMessage());
             return;

@@ -1,13 +1,20 @@
 package su.msu.cs.lvk.accorute.tasks;
 
-import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.HttpException;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.cookie.MalformedCookieException;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.SyncBasicHttpContext;
 import su.msu.cs.lvk.accorute.WebAppProperties;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 
 import java.io.IOException;
+import java.nio.charset.MalformedInputException;
 
 
 /**
@@ -21,7 +28,7 @@ public class ResponseFetcher extends Task {
     final private HttpAction action;
     final private EntityID contextID;
     private Conversation res;
-    final static private HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
+    final static private HttpClient client = WebAppProperties.getInstance().getHttpClient();
     public ResponseFetcher(TaskManager t, HttpAction act, EntityID ctxID) {
         super(t);
         action = act;
@@ -38,47 +45,40 @@ public class ResponseFetcher extends Task {
         WebAppUser u = WebAppProperties.getInstance().getUserService().getUserByID(
                 WebAppProperties.getInstance().getContextService().getContextByID(contextID).getUserID()
         );
-        HttpMethod httpM = null;
+        boolean isPublic = u.getUserRole().getRoleName().equals("public");
+        HttpUriRequest httpUriReq;
         try{
             SessionValidityWatcher.RespCheckStatus respCheckStatus;
             Response resp;
             boolean tried=false;
+            Request req;
             do{
-                SessionValidityWatcher.getInstanceForContext(contextID).prepareForRequest(tried);
-                Request req = WebAppProperties.getInstance().getRcd().compose(action.getActionParameters(), WebAppProperties.getInstance().getContextService().getContextByID(contextID));
-                httpM = req.genHTTPClientMethod();
-                if(httpM instanceof PostMethod){
-                    PostMethod pm = (PostMethod) httpM;
-                    logger.trace(pm.getRequestHeader("Content-length"));
-                    logger.trace(pm.getParameters());
-                }
+                if(!isPublic)
+                    SessionValidityWatcher.getInstanceForContext(contextID).prepareForRequest(tried);
+                req = WebAppProperties.getInstance().getRcd().compose(action.getActionParameters(), WebAppProperties.getInstance().getContextService().getContextByID(contextID));
+                httpUriReq = req.genHTTPClientMethod();
                 logger.trace("Will perform " + req);
-                client.getState().clear();
-                int statusCode = client.executeMethod(httpM);
-                resp = new Response(httpM);
+                HttpResponse responce = client.execute(httpUriReq, new BasicHttpContext());
+                resp = new Response(responce);
                 logger.trace("Got: " + resp);
                 resp.setRequest(req);
                 resp.setCtxID(contextID);
                 res = new Conversation(req, resp);
-                respCheckStatus = SessionValidityWatcher.getInstanceForContext(contextID).analyzeResponce(res, taskManager);
+                if(!isPublic)
+                    respCheckStatus = SessionValidityWatcher.getInstanceForContext(contextID).analyzeResponce(res, taskManager);
+                else
+                    respCheckStatus = SessionValidityWatcher.RespCheckStatus.NOT_EXPIRED;
                 tried = true;
             }while(respCheckStatus == SessionValidityWatcher.RespCheckStatus.RETRY);
             if(respCheckStatus == SessionValidityWatcher.RespCheckStatus.NOT_EXPIRED ){
-                CookieDescriptor desc = resp.getCookieDescriptor();
-                //Save cookies
-                WebAppProperties.getInstance().getCookieService().setCookies(desc);
-                //Update dynamic credentials
-                for(Cookie c: desc.getCookies()){
-                    u.getDynamicCredentials().put(c.getName(),c.getValue());
-                }
+                res = new Conversation(req,resp);
+                WebAppProperties.getInstance().getDynCredUpd().updateCredentials(u.getUserID(),res);
             }
             setSuccessful(true);
-        } catch (HttpException e) {
-            logger.error("Fatal protocol violation: " + e.getMessage());
+        /*} catch (HttpException e) {
+            logger.error("Fatal protocol violation: " + e.getMessage());*/
         } catch (IOException e) {
             logger.error("Fatal transport error: " + e.getMessage());
-        } finally {
-            httpM.releaseConnection();
         }
     }
 }

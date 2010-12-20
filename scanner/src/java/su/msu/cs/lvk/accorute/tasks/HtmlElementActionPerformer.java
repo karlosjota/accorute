@@ -6,7 +6,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.util.FalsifyingWebConnection;
 import org.apache.commons.lang.NotImplementedException;
 import su.msu.cs.lvk.accorute.WebAppProperties;
-import su.msu.cs.lvk.accorute.http.model.DomAction;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
@@ -128,6 +127,8 @@ public class HtmlElementActionPerformer extends Task {
                         return;
                     }
                     if(newPage instanceof HtmlPage){
+                        UserContext contx = WebAppProperties.getInstance().getContextService().getContextByID(ctx);
+                        WebAppProperties.getInstance().getDynCredUpd().updateCredentials(contx.getUserID(),(HtmlPage)newPage);
                         callback.CallMeBack(convs,acts,(HtmlPage)newPage);
                     }else{
                         logger.warn("Not a html page?!");
@@ -163,6 +164,9 @@ public class HtmlElementActionPerformer extends Task {
             try{
                 Page newPage=webClient.loadWebResponseInto(resp, baseWindow);
                 if(newPage instanceof HtmlPage){
+                    UserContext contx = WebAppProperties.getInstance().getContextService().getContextByID(ctx);
+                    WebAppProperties.getInstance().getDynCredUpd().updateCredentials(contx.getUserID(),conv);
+                    WebAppProperties.getInstance().getDynCredUpd().updateCredentials(contx.getUserID(),(HtmlPage)newPage);
                     callback.CallMeBack(convs,acts,(HtmlPage)newPage);
                 }else{
                     logger.warn("Not a html page?!");

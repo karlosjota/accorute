@@ -6,31 +6,28 @@
        	<conf name="runtime" description="Runtime dependencies" />
     </configurations>
 
-   <publications>
-         <artifact name="scanner" type="jar" conf="compile,runtime"/>
-    </publications>
+  <publications>
+        <artifact name="scanner" type="jar" conf="compile,runtime"/>
+   </publications>
 
-   <dependencies>
-        <!--Spring -->
-        <dependency org="org.springframework" name="spring" rev="2.5.6" conf="*->default"/>
-        <dependency org="org.springframework" name="spring-context" rev="2.5.6" conf="*->default"/>
-        <dependency org="org.springframework" name="spring-beans" rev="2.5.6" conf="*->default"/>
+  <dependencies>
+       <!--Spring -->
+       <dependency org="org.springframework" name="spring" rev="2.5.6" conf="*->default"/>
+       <dependency org="org.springframework" name="spring-context" rev="2.5.6" conf="*->default"/>
+       <dependency org="org.springframework" name="spring-beans" rev="2.5.6" conf="*->default"/>
 
-        <dependency org="log4j" name="log4j" rev="1.2.16" conf="*->default"/>
+       <dependency org="log4j" name="log4j" rev="1.2.16" conf="*->default"/>
 
-        <dependency org="net.sourceforge.htmlunit" name="htmlunit" rev="2.8" conf="*->default"/>
-        <dependency org="net.sourceforge.htmlunit" name="htmlunit-core-js" rev="2.8" conf="*->default"/>
+       <dependency org="net.sourceforge.htmlunit" name="htmlunit" rev="2.8" conf="*->default"/>
+       <dependency org="net.sourceforge.htmlunit" name="htmlunit-core-js" rev="2.8" conf="*->default"/>
 
-        <dependency org="commons-httpclient" name="commons-httpclient" rev="3.1" conf="*->default"/>
-        <dependency org="commons-lang" name="commons-lang" rev="2.5" conf="*->default"/>
-        <dependency org="commons-collections" name="commons-collections" rev="3.2.1" conf="*->default"/>
-        
-        <dependency org="html-cleaner" name="html-cleaner" rev="2.1" conf="*->default"/>
-        <dependency org="net.sourceforge.jchardet" name="jchardet" rev="1.0" conf="*->default"/>
+       <!-- <dependency org="org.apache.httpcomponents" name="httpclient" rev="4.0.3"/> --> 
+       <dependency org="commons-lang" name="commons-lang" rev="2.5" conf="*->default"/>
+       <dependency org="commons-collections" name="commons-collections" rev="3.2.1" conf="*->default"/>
 
-        <dependency org="org.json" name="json" rev="20090211" conf="*->default"/>
+       <dependency org="html-cleaner" name="html-cleaner" rev="2.1" conf="*->default"/>
+       <dependency org="net.sourceforge.jchardet" name="jchardet" rev="1.0" conf="*->default"/>
 
-        <dependency org="org.jgrapht" name="jgrapht-jdk1.5" rev="0.7.3" conf="*->default"/>
-
-    </dependencies>
+       <dependency org="org.json" name="json" rev="20090211" conf="*->default"/>
+  </dependencies>
 </ivy-module>

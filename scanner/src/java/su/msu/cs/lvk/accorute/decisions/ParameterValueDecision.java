@@ -2,7 +2,6 @@ package su.msu.cs.lvk.accorute.decisions;
 
 import su.msu.cs.lvk.accorute.http.model.ActionParameter;
 import su.msu.cs.lvk.accorute.http.model.UserContext;
-import su.msu.cs.lvk.accorute.http.model.WebAppUser;
 
 import java.net.URL;
 import java.util.List;

@@ -39,22 +39,32 @@
 
 package su.msu.cs.lvk.accorute.http.model;
 
-import com.gargoylesoftware.htmlunit.*;
-import org.apache.commons.httpclient.Cookie;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.cookie.CookieOrigin;
-import org.apache.commons.httpclient.cookie.MalformedCookieException;
-import org.apache.commons.httpclient.cookie.RFC2965Spec;
+import com.gargoylesoftware.htmlunit.DownloadedContent;
+import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.WebResponse;
+import com.gargoylesoftware.htmlunit.WebResponseData;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.cookie.CookieOrigin;
+import org.apache.http.cookie.CookieSpec;
+import org.apache.http.cookie.MalformedCookieException;
+import org.apache.http.impl.cookie.BestMatchSpec;
+import org.apache.http.impl.cookie.RFC2109Spec;
+import org.apache.http.impl.cookie.RFC2965Spec;
+import org.apache.http.message.BasicHeader;
 import su.msu.cs.lvk.accorute.http.constants.HTTPHeader;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Represents a HTTP response as sent by an HTTP server
@@ -92,16 +102,15 @@ public class Response extends Message {
         setHeaders(resp.getHeaders());
         setContent(resp.getContent());
     }
-    public Response(HttpMethod method) throws IOException{
-        for(Header h:method.getResponseHeaders()){
+    public Response(HttpResponse resp) throws IOException{
+        for(Header h:resp.getAllHeaders()){
             addHeader(h.getName(),h.getValue());
         }
-        byte [] body = method.getResponseBody();
-        setContent(body);
-        setStatusCode(Integer.toString(method.getStatusCode()));
-        setStatusMessage(method.getStatusText());
-
-
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        resp.getEntity().writeTo(os);
+        setContent(os.toByteArray());
+        setStatusCode(Integer.toString(resp.getStatusLine().getStatusCode()));
+        setStatusMessage(resp.getStatusLine().getReasonPhrase());
     }
     
     public WebResponse genWebResponse(URL url, long loadTime, WebRequest request){
@@ -260,17 +269,13 @@ public class Response extends Message {
         List<Cookie> result = new ArrayList<Cookie>();
         String headerName = HTTPHeader.HTTP_SET_COOKIE;
         for (int i = 0; i < headers.length; i++) {
-            if (headers[i].getName().equalsIgnoreCase(HTTPHeader.HTTP_SET_COOKIE) || headers[i].getName().equalsIgnoreCase(HTTPHeader.HTTP_SET_COOKIE2)) {
-                RFC2965Spec rfcSpec = new RFC2965Spec();
-                Header cookieHeader = new Header(headers[i].getName(), headers[i].getValue());
-
-                Cookie[] cookies = rfcSpec.parse(request.getURL().getHost(),
-                        request.getURL().getPort() > 0 ? request.getURL().getPort() : (request.getURL().getProtocol().equalsIgnoreCase("https") ? 443 : 80),
-                        request.getURL().getPath(),
-                        request.getURL().getProtocol().equalsIgnoreCase("https"),
-                        cookieHeader);
-
-                result.addAll((Arrays.asList(cookies)));
+            if(headers[i].getName().equalsIgnoreCase(HTTPHeader.HTTP_SET_COOKIE)
+                    || headers[i].getName().equalsIgnoreCase(HTTPHeader.HTTP_SET_COOKIE2) )
+            {
+                CookieSpec spec = new BestMatchSpec();
+                Header cookieHeader = new BasicHeader(headers[i].getName(), headers[i].getValue());
+                List<Cookie> cookies = spec.parse(cookieHeader,origin);
+                result.addAll(cookies);
                 headerName = headers[i].getName();
             }
         }

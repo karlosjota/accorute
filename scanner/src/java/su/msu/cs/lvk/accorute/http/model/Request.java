@@ -40,23 +40,23 @@
 package su.msu.cs.lvk.accorute.http.model;
 
 import com.gargoylesoftware.htmlunit.WebRequest;
-import com.gargoylesoftware.htmlunit.WebResponse;
-import org.apache.commons.httpclient.Cookie;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.URI;
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.lang.NotImplementedException;
-import su.msu.cs.lvk.accorute.http.constants.HTTPContentType;
+import org.apache.http.Header;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 import su.msu.cs.lvk.accorute.http.constants.HTTPHeader;
 import su.msu.cs.lvk.accorute.http.constants.HTTPMethod;
-import su.msu.cs.lvk.accorute.http.utils.Encoder;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -191,9 +191,15 @@ public class Request extends Message {
         deleteHeader(HTTPHeader.HTTP_COOKIE);
 
         if (cookies.getCookies().size() > 0) {
-
-            setHeader(new NamedValue(HTTPHeader.HTTP_COOKIE,
-                    cookies.getSpec().formatCookies(cookies.getCookies().toArray(new Cookie[cookies.getCookies().size()]))));
+            List<Header> headers = cookies.getSpec().formatCookies(cookies.getCookies());
+            for(Header h: headers){
+                addHeader(
+                        new NamedValue(
+                                h.getName(),
+                                h.getValue()
+                        )
+                );
+            }
         }
     }
 
@@ -206,7 +212,7 @@ public class Request extends Message {
 
                 for(NamedValue nv : nvs) {
                     if (!nv.getName().startsWith("$")) {
-                        result.add(new Cookie(getURL().getHost(), nv.getName().trim(), nv.getValue().trim()));
+                        result.add(new BasicClientCookie(nv.getName().trim(), nv.getValue().trim()));
                     }
                 }
            }
@@ -226,30 +232,37 @@ public class Request extends Message {
         //TODO: add more code here!
         return req;
     }
-    public HttpMethod genHTTPClientMethod(){
-        HttpMethod res;
+    public HttpUriRequest genHTTPClientMethod(){
+        HttpUriRequest res;
+        URI uri;
+        try{
+           uri = new URI(url.toString());
+        }catch(URISyntaxException ex){
+            throw new RuntimeException(ex);
+        }
         if(method.equalsIgnoreCase("GET")){
-            res = new GetMethod();
+            res = new HttpGet(uri);
         }else if(method.equalsIgnoreCase("POST")){
-            PostMethod postMeth = new PostMethod();
+            HttpPost postMeth = new HttpPost(uri);
             String [] params = URLDecoder.decode(getCharsetDecodedBody().toString()).split("&");
+            List <NameValuePair> nvps = new ArrayList <NameValuePair>();
             for(String param:params){
                 String [] namevalue = param.split("=",2);
-                postMeth.addParameter(namevalue[0],(namevalue.length > 1) ? namevalue[1]:"");
+                nvps.add(new BasicNameValuePair(namevalue[0], namevalue[1]));
+            }
+            try{
+                postMeth.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+            }catch(UnsupportedEncodingException ex){
+                throw new RuntimeException(ex);
             }
             res = postMeth;
         }else{
             throw new NotImplementedException("cannot convert " + method + " method request to httpclient HttpMethod");
         }
-        try{
-            res.setURI(new URI(url.toString(),true));
-        }catch(URIException ex){
-            throw new RuntimeException(ex);
-        }
         if(super.headers != null){
             for(NamedValue v: super.headers){
                 if(!v.getName().equalsIgnoreCase("Content-length"))
-                    res.addRequestHeader(v.getName(),v.getValue());
+                    res.addHeader(v.getName(),v.getValue());
             }
         }
         return res;

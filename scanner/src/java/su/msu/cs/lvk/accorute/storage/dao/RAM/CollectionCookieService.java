@@ -1,17 +1,15 @@
 package su.msu.cs.lvk.accorute.storage.dao.RAM;
 
-import org.apache.commons.httpclient.cookie.CookieOrigin;
+import org.apache.commons.collections.map.MultiValueMap;
 import su.msu.cs.lvk.accorute.http.model.ContextCookie;
 import su.msu.cs.lvk.accorute.http.model.CookieDescriptor;
 import su.msu.cs.lvk.accorute.http.model.EntityID;
-import su.msu.cs.lvk.accorute.http.model.UserContext;
 import su.msu.cs.lvk.accorute.storage.CookieService;
 
 import java.net.URL;
-import java.util.*;
-
-import org.apache.commons.collections.map.MultiValueMap;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -51,15 +49,13 @@ public class CollectionCookieService implements CookieService{
     public void setCookies(CookieDescriptor cookies){
         EntityID ctx = cookies.getCtxID();
         List<ContextCookie> toAdd = new ArrayList<ContextCookie>();
-        for(ContextCookie cook: cookies.getCookies()){
+        for(ContextCookie cook: cookies.getCtxCookies()){
             ContextCookie newcook = new ContextCookie(cook);
-            if(newcook.getDomain()==null || newcook.getDomain()==""){
+            if(newcook.getDomain()==null || newcook.getDomain().equals("")){
                 newcook.setDomain(cookies.getOrigin().getHost());
-                newcook.setDomainAttributeSpecified(true);
             }
-            if(newcook.getPath()==null || newcook.getPath()==""){
-                newcook.setPath(cookies.getOrigin().getPath());
-                newcook.setPathAttributeSpecified(true);
+            if(newcook.getPath()==null || newcook.getPath().equals("")){
+                newcook.setPath("/");
             }
             newcook.setCtxID(ctx);
             toAdd.add(newcook);
@@ -69,8 +65,9 @@ public class CollectionCookieService implements CookieService{
             Collection<ContextCookie> existingCooks = database.getCollection(ctx);
             for(ContextCookie newcook: toAdd){
                 for(ContextCookie cook: existingCooks){
-                    if(cook.getDomain() == newcook.getDomain() &&
-                            cook.getPath() == newcook.getPath()){
+                    if(cook.getDomain().equals(newcook.getDomain()) &&
+                            cook.getPath().equals(newcook.getPath()) &&
+                            cook.getName().equals(newcook.getName())){
                         match.add(cook);
                         break;
                     }

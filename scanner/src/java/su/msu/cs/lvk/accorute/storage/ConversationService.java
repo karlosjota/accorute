@@ -3,9 +3,6 @@ package su.msu.cs.lvk.accorute.storage;
 import su.msu.cs.lvk.accorute.http.model.Conversation;
 import su.msu.cs.lvk.accorute.http.model.EntityID;
 
-import java.net.URL;
-import java.util.List;
-
 /**
  * Created by IntelliJ IDEA.
  * User: george

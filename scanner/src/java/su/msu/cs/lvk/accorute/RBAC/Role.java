@@ -71,4 +71,6 @@ public interface Role {
      * @return the object representing the requested role. Null if there is no role with the specified name.
      */
     public Role getChildRole(String rolename);
+
+    public boolean equals(Object o);
 }

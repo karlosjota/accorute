@@ -3,9 +3,7 @@ package su.msu.cs.lvk.accorute.http.model;
 import su.msu.cs.lvk.accorute.RBAC.Role;
 import su.msu.cs.lvk.accorute.RBAC.User;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -54,5 +52,14 @@ public class WebAppUser implements User {
      */
     public void setUserID(EntityID userID) {
         this.userID = userID;
+    }
+
+    @Override
+    public String toString() {
+        return "WebAppUser{" +
+                "userID=" + userID +
+                ", role=" + role +
+                ", staticCredentials=" + staticCredentials +
+                '}';
     }
 }

@@ -1,5 +1,6 @@
 package su.msu.cs.lvk.accorute.http.model;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import org.apache.log4j.Logger;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedMultigraph;
 import su.msu.cs.lvk.accorute.WebAppProperties;
@@ -19,6 +20,7 @@ public class Sitemap {
     private final SitemapNode entryNode = genNode();
     private final SitemapNode invalidNode = genNode();
     private final SitemapNode exitNode = genNode();
+    private Logger logger = Logger.getLogger(Sitemap.class.getName());
 
     public SitemapNode getInvalidNode() {
         return invalidNode;
@@ -115,11 +117,16 @@ public class Sitemap {
         Map<HttpAction,Conversation> res = new HashMap<HttpAction,Conversation>();
         Set<SitemapEdge> edges = actionDepGraph.edgeSet();
         for(SitemapEdge edge:edges){
-            if(edge.getV1() != invalidNode && edge.getV2() != invalidNode){
+            if(edge.getV1() != invalidNode && edge.getV2() != invalidNode
+            ){
                 List<HttpAction> acts = edge.getLabel().getHttpActions();
                 List<Conversation> convs =  edge.getConvs();
                 for(int i=0;i<acts.size();i++){
-                    res.put(acts.get(i),convs.get(i));
+                    if(convs != null){
+                        res.put(acts.get(i),convs.get(i));
+                    }else{
+                        res.put(acts.get(i),null);
+                    }
                 }
             }
         }

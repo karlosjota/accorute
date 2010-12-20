@@ -3,11 +3,10 @@ package su.msu.cs.lvk.accorute.decisions;
 import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.util.NameValuePair;
-import org.apache.commons.httpclient.Cookie;
-import org.apache.commons.httpclient.cookie.CookieOrigin;
-import org.apache.commons.httpclient.cookie.MalformedCookieException;
-import org.apache.commons.httpclient.cookie.RFC2965Spec;
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.cookie.CookieOrigin;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import su.msu.cs.lvk.accorute.WebAppProperties;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterDatatype;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterLocation;
@@ -19,7 +18,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -83,7 +83,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
                             nameval[0],
                             nameval[1],
                             ActionParameterLocation.BODY,
-                            ActionParameterMeaning.USERCONTROLLABLE,//TODO: this is temporary
+                            ActionParameterMeaning.UNKNOWN,//TODO: this is temporary
                             ActionParameterDatatype.STRING
                     ));
                 }
@@ -94,7 +94,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
                             URLDecoder.decode(nvp.getName()),
                             URLDecoder.decode(nvp.getValue()),
                             ActionParameterLocation.BODY,
-                            ActionParameterMeaning.USERCONTROLLABLE,//TODO: this is temporary
+                            ActionParameterMeaning.UNKNOWN,//TODO: this is temporary
                             ActionParameterDatatype.STRING
                     ));
                 }
@@ -125,6 +125,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
         }
         Request req = new Request();
         url = getURL(params);
+        req.setURL(url);
         String Body="";
         List<Cookie> cookies = new ArrayList<Cookie>();
         for(ActionParameter param: params){
@@ -136,13 +137,8 @@ public class SimpleRCD extends RequestComposerDecomposer{
                 );
             } else if(param.getLocation() == ActionParameterLocation.HEADER){
                 req.addHeader(param);
-            }
-        }
-        req.setURL(url);
-
-        for(ActionParameter param: params){
-            if(param.getLocation() == ActionParameterLocation.COOKIE){
-                cookies.add (new Cookie(url.getHost(),param.getName(), param.getValue()));//TODO: "host" here is a stub!
+            } else if (param.getLocation() == ActionParameterLocation.COOKIE){
+                cookies.add (new BasicClientCookie(param.getName(), param.getValue()));
             }
         }
         req.setCookies(new CookieDescriptor(cookies,new CookieOrigin(url.getHost(),url.getPort(),"",false), "Cookie", EntityID.NOT_INITIALIZED));
@@ -198,7 +194,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
         return params;
     }
 
-    public List<ActionParameter> decomposeCookies(String cookies) throws MalformedCookieException {
+    public List<ActionParameter> decomposeCookies(String cookies){
         ArrayList<ActionParameter> params = new ArrayList<ActionParameter>();
         String [] cooks = cookies.split("[,;]");
         for(String cook: cooks){

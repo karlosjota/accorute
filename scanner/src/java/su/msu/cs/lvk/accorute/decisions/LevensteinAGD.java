@@ -14,19 +14,23 @@ import su.msu.cs.lvk.accorute.utils.LevenshteinDistance;
  */
 public class LevensteinAGD implements AccessGrantedDecision{
     public boolean accessWasGranted(Conversation benignOne, Conversation checkedOne) {
-        Response check = checkedOne.getResponse();
-        Response benign = benignOne.getResponse();
-        if(WebAppProperties.getInstance().getRespClassificator().getResponseType(checkedOne)!=ResponseClassificator.ResponseType.OKAY){
-            return false;
-        }
-        String s1 = check.getTotallyDecodedBody();
-        String s2 = benign.getTotallyDecodedBody();
+        if(benignOne != null){
+            Response check = checkedOne.getResponse();
+            Response benign = benignOne.getResponse();
+            if(WebAppProperties.getInstance().getRespClassificator().getResponseType(checkedOne)!=ResponseClassificator.ResponseType.OKAY){
+                return false;
+            }
+            String s1 = check.getTotallyDecodedBody();
+            String s2 = benign.getTotallyDecodedBody();
 
-        int distance = LevenshteinDistance.getLevenshteinDistance(
-            s1,
-            s2
-        );
-        int avglen = (s1.length() + s2.length())/2;
-        return ((double) avglen / (double)distance) > 0.5 ;
+            int distance = LevenshteinDistance.getLevenshteinDistance(
+                s1,
+                s2
+            );
+            int avglen = (s1.length() + s2.length())/2;
+            return ((double) avglen / (double)distance) > 0.5 ;
+        }else{
+            return WebAppProperties.getInstance().getRespClassificator().getResponseType(checkedOne) ==  ResponseClassificator.ResponseType.OKAY;
+        }
     }
 }

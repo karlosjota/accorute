@@ -36,6 +36,7 @@ public class SessionValidityWatcher {
     private int yetUntestedFetches = 0;
     private int yetUnjoinedFetches = 0;
     private boolean finishedReauth;
+    private boolean singleRetryFinished = true;
     private  Logger logger = Logger.getLogger(this.getClass().getName());
     static private final Map<EntityID, SessionValidityWatcher> instances = new HashMap<EntityID, SessionValidityWatcher>();
     private SessionValidityWatcher(EntityID ctxID){
@@ -51,7 +52,7 @@ public class SessionValidityWatcher {
     }
 
     synchronized private void syncReAuth(TaskManager tm){
-        logger.trace("will reauth");
+        logger.trace(ctx + ":will reauth");
         Task tsk = WebAppProperties.getInstance().getAuthTaskFactory().genContextedTask(ctx, tm);
         finishedReauth = false;
         final SessionValidityWatcher _this = this;
@@ -60,7 +61,7 @@ public class SessionValidityWatcher {
                 public void CallMeBack(){
                     synchronized(_this){
                         finishedReauth = true;
-                        logger.trace("will notify reauth complete");
+                        logger.trace(ctx + ":will notify reauth complete");
                         _this.notifyAll();
                     }
                 }
@@ -72,7 +73,7 @@ public class SessionValidityWatcher {
                 wait();
             }catch(InterruptedException ex){}
         }
-        logger.trace("reauth complete");
+        logger.trace(ctx + ":reauth complete");
     }
 
     /**
@@ -87,58 +88,71 @@ public class SessionValidityWatcher {
         if(curState == SessionWatcherState.TESTING){
             yetUntestedFetches--;
             notifyAll();
-            logger.trace(yetUntestedFetches + "left to test");
+            logger.trace(ctx + ":"+yetUntestedFetches + " left to test");
             RespCheckStatus res;
             if(type == ResponseClassificator.ResponseType.EXPIRED){
                 syncReAuth(tm);
-                res = RespCheckStatus.EXPIRED;
             }
             res = RespCheckStatus.NOT_EXPIRED;
             if(yetUntestedFetches == 0){
                 curState = SessionWatcherState.NORMAL;
+                concurrentFetches = 0;
                 notifyAll();
             }
-            logger.trace("I'm returning from analyzeResponce after a retry");
+            logger.trace(ctx + ":I'm returning from analyzeResponce after a retry");
+            singleRetryFinished = true;
             return res;
         }
         if(curState == SessionWatcherState.JOINING ){
+             while(!finishedReauth){
+                try{
+                    wait();
+                }catch(InterruptedException ex){}
+            }
             yetUnjoinedFetches--;
+            if(yetUnjoinedFetches == 0){
+                curState = SessionWatcherState.TESTING;
+                singleRetryFinished = true;
+                notifyAll();
+            }
             notifyAll();
-            logger.trace(yetUntestedFetches + "left to join");
+            logger.trace(ctx + ":" + yetUnjoinedFetches + " left to join");
             while(yetUnjoinedFetches > 0){
                 try{
                     wait();
                 }catch(InterruptedException ex){}
             }
-            logger.trace("I'm returning from analyzeResponce for a retry");
+            logger.trace(ctx + ":I'm returning from analyzeResponse for a retry");
             return RespCheckStatus.RETRY;
         }
         // NORMAL
         concurrentFetches--;
         if(type != ResponseClassificator.ResponseType.EXPIRED){
-            logger.trace("I'm returning from analyzeResponce cause I'm not expired and state is normal");
+            logger.trace(ctx + ":I'm returning from analyzeResponse cause I'm not expired and state is normal");
             return RespCheckStatus.NOT_EXPIRED;
         }
-        logger.trace("Expiration detected!");
-        curState = SessionWatcherState.JOINING;
-        syncReAuth(tm);
+        logger.trace(ctx + ":Expiration detected! Concurrent fetches " + concurrentFetches  );
+        finishedReauth = false;
         //Expired session detected!!!
         if(concurrentFetches == 0){
             //I'm all alone and all is clear
+            syncReAuth(tm);
             curState = SessionWatcherState.NORMAL;
-            logger.trace("I'm returning from analyzeResponce cause I'm alone");
+            logger.trace(ctx + ":I'm returning from analyzeResponce cause I'm alone");
             notifyAll();
             return RespCheckStatus.EXPIRED;
         }
+        curState = SessionWatcherState.JOINING;
         yetUnjoinedFetches = concurrentFetches;
-        logger.trace(yetUnjoinedFetches + "left to join");
-        yetUntestedFetches = concurrentFetches;
+        logger.trace(ctx + ":"+yetUnjoinedFetches + " left to join");
+        yetUntestedFetches = concurrentFetches + 1;
+        syncReAuth(tm);
         while(yetUnjoinedFetches > 0){
             try{
                 wait();
             }catch(InterruptedException ex){}
         }
-        logger.trace("I'm returning from analyzeResponce for a retry");
+        logger.trace(ctx + ":I'm returning from analyzeResponce for a retry");
         return RespCheckStatus.RETRY;
     }
 
@@ -147,13 +161,16 @@ public class SessionValidityWatcher {
      * Waits for a valid session. Returns immediately, iff the session is currently valid
      */
     synchronized public void prepareForRequest(boolean retry){
-        logger.trace("prepareForRequest");
-        while(! retry && curState != SessionWatcherState.NORMAL){
+        logger.trace(ctx + ":prepareForRequest , retry = " + retry);
+        while(!retry && curState != SessionWatcherState.NORMAL || retry && !singleRetryFinished){
             try{
                 wait();
             } catch(InterruptedException ex){}
         }
-        concurrentFetches++;
-        logger.trace("DoIt!");
+        if(!retry)
+            concurrentFetches++;
+        else
+            singleRetryFinished = false;
+        logger.trace(ctx + ":DoIt! Concurrent " + concurrentFetches);
     }
 }

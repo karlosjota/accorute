@@ -4,7 +4,6 @@ import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
 import org.apache.commons.lang.NotImplementedException;
 
-import javax.xml.bind.NotIdentifiableEvent;
 import java.io.Serializable;
 import java.util.Date;
 

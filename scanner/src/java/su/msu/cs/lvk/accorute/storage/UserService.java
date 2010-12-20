@@ -3,7 +3,6 @@ package su.msu.cs.lvk.accorute.storage;
 import su.msu.cs.lvk.accorute.http.model.EntityID;
 import su.msu.cs.lvk.accorute.http.model.WebAppUser;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -40,6 +39,8 @@ public interface UserService {
      * @throws IllegalArgumentException if there are multiple users with the same name
      */
     public List<WebAppUser> getUsersByCredential(String name, String Value);
+
+    public List<WebAppUser> getUsersByRole(String roleName);
 
 
 

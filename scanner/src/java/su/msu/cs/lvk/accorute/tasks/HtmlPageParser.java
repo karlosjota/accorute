@@ -7,11 +7,9 @@ import com.gargoylesoftware.htmlunit.util.FalsifyingWebConnection;
 import net.sourceforge.htmlunit.corejs.javascript.EcmaError;
 import net.sourceforge.htmlunit.corejs.javascript.ScriptableObject;
 import su.msu.cs.lvk.accorute.WebAppProperties;
-import su.msu.cs.lvk.accorute.http.model.DomAction;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
-import su.msu.cs.lvk.accorute.utils.Callback3;
 import su.msu.cs.lvk.accorute.utils.Callback4;
 import su.msu.cs.lvk.accorute.utils.HtmlUnitUtils;
 

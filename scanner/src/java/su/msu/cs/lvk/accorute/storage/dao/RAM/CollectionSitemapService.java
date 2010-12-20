@@ -2,7 +2,6 @@ package su.msu.cs.lvk.accorute.storage.dao.RAM;
 
 import su.msu.cs.lvk.accorute.http.model.EntityID;
 import su.msu.cs.lvk.accorute.http.model.Sitemap;
-import su.msu.cs.lvk.accorute.http.model.UserContext;
 import su.msu.cs.lvk.accorute.storage.SitemapService;
 
 import java.util.HashMap;

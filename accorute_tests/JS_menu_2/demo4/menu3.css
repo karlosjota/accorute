@@ -1,0 +1,52 @@
+/*
+ menu styles
+ note: not all browsers render styles the same way so try out your style sheet
+ in different browsers before publishing
+*/
+
+/* all states, root level */
+.minner,
+.minner table td {
+	font: 12px Tahoma, Verdana, sans-serif;
+	margin: 4px;
+	color: white;
+}
+
+/* all level, all states, outer */
+.moout {
+	border: 1px solid #6699cc;
+	background-color: #336699;
+}
+.moover {
+	border: 1px solid #6699cc;
+	background-color: #6699cc;
+}
+.modown {
+	border: 1px solid #6699cc;
+	background-color: #99ccff;
+}
+
+/* css for inner HTML elements */
+.tableForm {
+	border: 1px solid green;
+}
+.tableForm td {
+	padding: 2px;
+	color: white;
+	font: 12px Tahoma, Verdana, sans-serif;
+}
+
+.tableForm th {
+	color: white;
+	font-size: 14px;
+	background-color: green;
+	padding: 3px;
+}
+.tableForm td input {
+	width: 150px;
+	font: 12px Tahoma, Verdana, sans-serif;
+}
+.tableForm th input {
+	font: 12px Tahoma, Verdana, sans-serif;
+	margin: -2px;
+}

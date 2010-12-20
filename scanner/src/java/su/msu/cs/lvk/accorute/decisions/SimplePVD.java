@@ -4,7 +4,10 @@ import su.msu.cs.lvk.accorute.WebAppProperties;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterDatatype;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterLocation;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterMeaning;
-import su.msu.cs.lvk.accorute.http.model.*;
+import su.msu.cs.lvk.accorute.http.model.ActionParameter;
+import su.msu.cs.lvk.accorute.http.model.ContextCookie;
+import su.msu.cs.lvk.accorute.http.model.UserContext;
+import su.msu.cs.lvk.accorute.http.model.WebAppUser;
 
 import java.net.URL;
 import java.util.Collection;
@@ -45,7 +48,7 @@ public class SimplePVD implements ParameterValueDecision{
             ));
         }
         for(ActionParameter param:params){
-            if(param.getLocation() == ActionParameterLocation.COOKIE && user.getDynamicCredentials().containsKey(param.getName())){
+            if(user.getDynamicCredentials().containsKey(param.getName())){ //TODO: name clashes in param names!
                 param.setValue(user.getDynamicCredentials().get(param.getName()));
             }else{
                 Map<String, String> creds = user.getStaticCredentials();

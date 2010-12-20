@@ -1,11 +1,13 @@
 package su.msu.cs.lvk.accorute.storage.dao.RAM;
 
 import su.msu.cs.lvk.accorute.http.model.EntityID;
-import su.msu.cs.lvk.accorute.http.model.NamedValue;
 import su.msu.cs.lvk.accorute.http.model.WebAppUser;
 import su.msu.cs.lvk.accorute.storage.UserService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -47,6 +49,12 @@ public class CollectionUserService implements UserService {
         }
         return matches;
     }
-
-    
+    public List<WebAppUser> getUsersByRole(String roleName){
+        ArrayList<WebAppUser> matches = new ArrayList<WebAppUser>();
+        for(WebAppUser u: database.values()){
+            if(u.getUserRole().getRoleName().equals(roleName))
+                matches.add(u);
+        }
+        return matches;
+    }
 }

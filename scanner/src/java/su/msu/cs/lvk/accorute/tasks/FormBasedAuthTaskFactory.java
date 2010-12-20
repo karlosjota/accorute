@@ -1,7 +1,6 @@
 package su.msu.cs.lvk.accorute.tasks;
 
 import su.msu.cs.lvk.accorute.http.model.EntityID;
-import su.msu.cs.lvk.accorute.http.model.HttpAction;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 

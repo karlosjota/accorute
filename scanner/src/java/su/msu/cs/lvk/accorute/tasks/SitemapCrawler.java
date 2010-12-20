@@ -1,13 +1,8 @@
 package su.msu.cs.lvk.accorute.tasks;
 
-import com.gargoylesoftware.htmlunit.Page;
-import com.gargoylesoftware.htmlunit.TopLevelWindow;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.commons.lang.NotImplementedException;
 import su.msu.cs.lvk.accorute.WebAppProperties;
-import su.msu.cs.lvk.accorute.http.model.DomAction;
 import su.msu.cs.lvk.accorute.decisions.ResponseClassificator;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
@@ -16,9 +11,11 @@ import su.msu.cs.lvk.accorute.utils.Callback0;
 import su.msu.cs.lvk.accorute.utils.Callback3;
 import su.msu.cs.lvk.accorute.utils.Callback4;
 
-import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 
 /**
@@ -42,12 +39,12 @@ public class SitemapCrawler extends Task implements Callback0{
     private boolean wasErr;
     synchronized public void CallMeBack(){
         spawnedTasks--;
-        logger.trace("task finished; "+spawnedTasks+" left");
+        logger.trace(contextID + ":task finished; "+spawnedTasks+" left");
         notify();
     }
     public SitemapCrawler(TaskManager t, HttpAction startReq, EntityID ctxID){
         super(t);
-        siteMap = WebAppProperties.getInstance().getSitemapService().getSitemapForContext(ctxID);
+        siteMap = new Sitemap(ctxID);
         startingAct = startReq;
         contextID = ctxID;
         spawnedTasks = 0;
@@ -62,19 +59,19 @@ public class SitemapCrawler extends Task implements Callback0{
     ){
         ArrayList<HttpAction> httpActs = acts.getHttpActions();
         if(httpActs.size() != 1){
-            logger.error("addNewAction: trying to add multiple actions at once, ignoring!");
+            logger.error(contextID + ":addNewAction: trying to add multiple actions at once, ignoring!");
             return;
         }
         HttpAction httpAct = httpActs.get(0);
         String url = WebAppProperties.getInstance().getRcd().getURL(httpAct.getActionParameters()).toString();
         Matcher m = WebAppProperties.getInstance().getScope().matcher(url);
         if(!m.matches()){
-            logger.trace("Will not access url "+ url+" because it's out of scope");
+            logger.trace(contextID + ":Will not access url "+ url+" because it's out of scope");
             siteMap.addEdge(siteMap.getNodeByID(fromNodeID), siteMap.getExitNode(), acts, null);
             return;
         }
         if(WebAppProperties.getInstance().getChStateDec().changesState(httpAct)){
-            logger.trace("Will not perform action because it will change the state");
+            logger.trace(contextID + ":Will not perform action because it will change the state");
             final Sitemap.SitemapNode from = siteMap.getNodeByID(fromNodeID);
             siteMap.addEdge(from, siteMap.getExitNode(), acts, null);
             return;
@@ -91,7 +88,7 @@ public class SitemapCrawler extends Task implements Callback0{
                     }
                 }
                 if(equalHttpAction != null){
-                    logger.trace("Will not perform action " + httpAct + " that was already performed");
+                    logger.trace(contextID + ":Will not perform action " + httpAct + " that was already performed");
                     ArrayList<Conversation>  c = actionConversationMap.get(equalHttpAction);
                     ArrayList<HttpAction> chain = actionActionChainMap.get(equalHttpAction);
                     EntityID nId = actionNodeMap.get(equalHttpAction);
@@ -130,7 +127,7 @@ public class SitemapCrawler extends Task implements Callback0{
         if(addWaitedTask(tsk))
             spawnedTasks++;
         else{
-            logger.error("Could not add task!");
+            logger.error(contextID + ":Could not add task!");
             wasErr = true;
         }
     }
@@ -144,16 +141,16 @@ public class SitemapCrawler extends Task implements Callback0{
     ){
         final ArrayList<DomAction> domActs = corActs.getDomActions();
         if(domActs.size() < 0 || convs.size() < 0 || corActs.getHttpActions().size() != convs.size()){
-            logger.error("invalid params: " +domActs + " " + convs);
+            logger.error(contextID + ":invalid params: " +domActs + " " + convs);
             return;
         }
-        logger.trace("addConversationForActionFromNode: node " + fromNodeID
+        logger.trace(contextID + ":addConversationForActionFromNode: node " + fromNodeID
                 + " actions " + corActs.getHttpActions()
                 + " page " + p
                 + " convs " + convs
         );
         if(convs.size() > 1){
-            logger.info("Multi-request action, will take into account only first one");
+            logger.info(contextID + ":Multi-request action, will take into account only first one");
         }
         Conversation conv = convs.get(convs.size() - 1);
         ResponseClassificator.ResponseType respType =  WebAppProperties.getInstance().getRespClassificator().getResponseType(conv);
@@ -180,18 +177,18 @@ public class SitemapCrawler extends Task implements Callback0{
                 if(addWaitedTask(tsk))
                     spawnedTasks++;
                 else{
-                    logger.error("Could not add task!");
+                    logger.error(contextID + ":Could not add task!");
                     wasErr = true;
                 }
             }else{
-                logger.trace("Node already exists.");
+                logger.trace(contextID + ":Node already exists.");
             }
         }else if(respType == ResponseClassificator.ResponseType.NOT_FOUND
                 || respType == ResponseClassificator.ResponseType.ERROR
                 || respType == ResponseClassificator.ResponseType.PROHIBITED
                 || respType == ResponseClassificator.ResponseType.EXPIRED
         ){
-            logger.trace("action leads to not found page!");
+            logger.trace(contextID + ":action leads to page that isn't OK!");
             resultingNode = siteMap.getInvalidNode();
         }else{
             throw new NotImplementedException("not yet supported");
@@ -249,7 +246,7 @@ public class SitemapCrawler extends Task implements Callback0{
         if(addWaitedTask(tsk))
             spawnedTasks++;
         else{
-            logger.error("Could not add task!");
+            logger.error(contextID + ":Could not add task!");
             setSuccessful(false);
             return;
         }
@@ -261,6 +258,7 @@ public class SitemapCrawler extends Task implements Callback0{
                 }
            }
         }
+        WebAppProperties.getInstance().getSitemapService().setSitemapForContext(contextID,siteMap);
         setSuccessful(wasErr);
     }
     public Object getResult(){

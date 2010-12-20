@@ -3,12 +3,9 @@ package su.msu.cs.lvk.accorute.storage.dao.RAM;
 import org.apache.commons.collections.map.MultiValueMap;
 import su.msu.cs.lvk.accorute.http.model.Conversation;
 import su.msu.cs.lvk.accorute.http.model.EntityID;
-import su.msu.cs.lvk.accorute.http.model.WebAppUser;
 import su.msu.cs.lvk.accorute.storage.ConversationService;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.

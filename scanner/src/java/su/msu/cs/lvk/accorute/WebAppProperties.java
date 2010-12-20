@@ -7,11 +7,14 @@
  */
 package su.msu.cs.lvk.accorute;
 
+import org.apache.http.HttpHost;
+import org.apache.http.impl.client.AbstractHttpClient;
 import su.msu.cs.lvk.accorute.RBAC.Role;
 import su.msu.cs.lvk.accorute.decisions.*;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterLocation;
 import su.msu.cs.lvk.accorute.http.model.HttpAction;
 import su.msu.cs.lvk.accorute.http.model.TestChain;
+import su.msu.cs.lvk.accorute.http.model.UseCaseGraph;
 import su.msu.cs.lvk.accorute.storage.*;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 import su.msu.cs.lvk.accorute.tasks.ContextedTaskFactory;
@@ -24,6 +27,35 @@ import java.util.regex.Pattern;
 
 public class WebAppProperties {
     private static WebAppProperties ourInstance = new WebAppProperties();
+    private DynamicCredentialsUpdater dynCredUpd;
+
+    public DynamicCredentialsUpdater getDynCredUpd() {
+        return dynCredUpd;
+    }
+
+    public void setDynCredUpd(DynamicCredentialsUpdater dynCredUpd) {
+        this.dynCredUpd = dynCredUpd;
+    }
+
+    public HttpHost getProxy() {
+        return proxy;
+    }
+
+    public void setProxy(HttpHost proxy) {
+        this.proxy = proxy;
+    }
+
+    private HttpHost proxy;
+    public AbstractHttpClient getHttpClient() {
+        return httpClient;
+    }
+
+    public void setHttpClient(AbstractHttpClient httpClient) {
+        this.httpClient = httpClient;
+    }
+
+    private AbstractHttpClient httpClient;
+
 
     public Pattern getScope() {
         return scope;
@@ -35,8 +67,8 @@ public class WebAppProperties {
 
     private Pattern scope;
 
-    private String sessionTokenName;
-    private ActionParameterLocation sessionTokenLocation;
+    private List<String> dynamicTokenNames = new ArrayList<String>();
+    private List<ActionParameterLocation> dynamicTokenLocations = new ArrayList<ActionParameterLocation>();
 
     public ContextedTaskFactory getAuthTaskFactory() {
         return authTaskFactory;
@@ -130,21 +162,26 @@ public class WebAppProperties {
     private UserService userService;
     private ContextService contextService;
     private TaskManager taskManager;
+    private final UseCaseGraph ucGraph = new UseCaseGraph();
 
-    public String getSessionTokenName() {
-        return sessionTokenName;
+    public UseCaseGraph getUcGraph() {
+        return ucGraph;
     }
 
-    public void setSessionTokenName(String sessionTokenName) {
-        this.sessionTokenName = sessionTokenName;
+    public List<String> getDynamicTokenNames() {
+        return dynamicTokenNames;
     }
 
-    public ActionParameterLocation getSessionTokenLocation() {
-        return sessionTokenLocation;
+    public void setDynamicTokenNames(List<String> dynamicTokenNames) {
+        this.dynamicTokenNames = dynamicTokenNames;
     }
 
-    public void setSessionTokenLocation(ActionParameterLocation sessionTokenLocation) {
-        this.sessionTokenLocation = sessionTokenLocation;
+    public List<ActionParameterLocation> getDynamicTokenLocations() {
+        return dynamicTokenLocations;
+    }
+
+    public void setDynamicTokenLocations(List<ActionParameterLocation> dynamicTokenLocations) {
+        this.dynamicTokenLocations = dynamicTokenLocations;
     }
 
     public URL getStartPage() {
@@ -226,6 +263,11 @@ public class WebAppProperties {
     public void setContextService(ContextService contextService) {
         this.contextService = contextService;
     }
+
+    public Collection<HttpAction> getStateChangingHttpActions() {
+        return stateChangingHttpActions;
+    }
+
     public void addStateChangingAction(HttpAction act){
         stateChangingHttpActions.add(act);
     }

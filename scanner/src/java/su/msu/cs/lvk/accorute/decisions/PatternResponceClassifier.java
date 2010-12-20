@@ -1,6 +1,7 @@
 package su.msu.cs.lvk.accorute.decisions;
 
 import su.msu.cs.lvk.accorute.http.model.Conversation;
+
 import java.util.regex.Pattern;
 
 /**

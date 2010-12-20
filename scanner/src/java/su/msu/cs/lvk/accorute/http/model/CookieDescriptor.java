@@ -5,10 +5,11 @@
 
 package su.msu.cs.lvk.accorute.http.model;
 
-import org.apache.commons.httpclient.Cookie;
-import org.apache.commons.httpclient.cookie.CookieOrigin;
-import org.apache.commons.httpclient.cookie.CookiePolicy;
-import org.apache.commons.httpclient.cookie.CookieSpec;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.cookie.CookieOrigin;
+import org.apache.http.cookie.CookieSpec;
+import org.apache.http.impl.cookie.RFC2109Spec;
+import org.apache.http.impl.cookie.RFC2965Spec;
 import su.msu.cs.lvk.accorute.http.constants.HTTPHeader;
 
 import java.util.ArrayList;
@@ -52,10 +53,15 @@ public class CookieDescriptor {
         this.cookies = list;
         this.origin = origin;
         this.headerName = cookieHeaderName;
-        this.spec = CookiePolicy.getCookieSpec((HTTPHeader.HTTP_SET_COOKIE2.equalsIgnoreCase(cookieHeaderName) ? CookiePolicy.RFC_2965 : CookiePolicy.RFC_2109));
+        this.spec = HTTPHeader.HTTP_SET_COOKIE2.equalsIgnoreCase(cookieHeaderName) ?  new RFC2965Spec() : new RFC2109Spec();
     }
 
-    public List<ContextCookie> getCookies() {
+    public List<Cookie> getCookies() {
+        List<Cookie> cooks = new ArrayList<Cookie>();
+        cooks.addAll(cookies);
+        return cooks;
+    }
+    public List<ContextCookie> getCtxCookies() {
         return cookies;
     }
 

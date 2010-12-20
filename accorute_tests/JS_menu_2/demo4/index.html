@@ -1,0 +1,55 @@
+<html> 
+<head>
+	<title>JavaScript Menu - Demo #4</title>
+	<!-- styles for demo menu #1-->
+	<link rel="stylesheet" href="menu1.css">
+	<!-- styles for demo menu #2-->
+	<link rel="stylesheet" href="menu2.css">
+	<!-- styles for demo menu #3-->
+	<link rel="stylesheet" href="menu3.css">
+</head>
+
+<body>
+<!-- comments begin -->
+<p style="margin-top:250px">This sample demonstrates how multiple independently configured Tigra Menus can work on the same page:</p>
+<ul>
+	<li>All the menus use the same script file (menu.js)</li>
+	<li>Configuration files are renamed to make sure they have unique names (i.e. menu_tpl1.js, menu_tpl2.js, menu_tpl3.js)</li>
+	<li>Configuration variables are renamed to make sure they do not conflict (i.e. MENU_TPL1, MENU_TPL2, MENU_TPL3)</li>
+	<li>Adjustments are made to the names of the CSS classes to resolve naming conflict (see *.css files)
+	<li>Several menus share the same configuration variable (MENU_ITEMS1 is shared by horizontal menu at the top and diagonal white menu)</li>
+</ul>
+<!-- comments end -->
+
+
+<!-- menu script itself. you should not modify this file -->
+<script language="JavaScript" src="menu.js"></script>
+<!-- items structure. you can see same structure is shared by 1-st and 2-nd menu -->
+<script language="JavaScript" src="menu_items.js"></script>
+<script language="JavaScript" src="menu_items3.js"></script>
+<!-- files with geometry and styles structures for coresponding menus -->
+<script language="JavaScript" src="menu_tpl1.js"></script>
+<script language="JavaScript" src="menu_tpl2.js"></script>
+<script language="JavaScript" src="menu_tpl3.js"></script>
+<script language="JavaScript">
+	<!--//
+	// Make sure the menu initialization is right above the closing </body> tag
+	// Moving it inside other tags will not affect the position of the menu on
+	// the page. If you need this feature please consider Tigra Menu GOLD.
+
+	// each menu gets two parameters (see demo files)
+	// 1. items structure
+	// 2. geometry structure
+
+	new menu (MENU_ITEMS, MENU_TPL1);
+	new menu (MENU_ITEMS, MENU_TPL2);
+	new menu (MENU_ITEMS3, MENU_TPL3);
+
+	// If you don't see the menu then check JavaScript console of the browser for the error messages
+	// "Variable is not defined" error indicates that there's syntax error in that variable's definition
+	// or the file with that variable isn't properly linked to the HTML document
+	//-->
+</script>
+
+</body>
+</html>

@@ -10,7 +10,7 @@
 
     <!-- Root Logger -->
     <root>
-        <priority value="info" />
+        <priority value="warn" />
         <appender-ref ref="console" />
     </root>
     <!-- <logger name="org.apache">
@@ -32,6 +32,12 @@
     </logger>
     <logger name="su.msu.cs.lvk.accorute.tasks.FormBasedAuthTask">
         <level value="trace"/>
+    </logger>
+    <logger name="su.msu.cs.lvk.accorute.tasks.SimpleDetectSpikes">
+        <level value="trace"/>
+    </logger>
+    <logger name="su.msu.cs.lvk.accorute.tasks.SitemapCrawler">
+        <level value="debug"/>
     </logger>
     <logger name="com.gargoylesoftware.htmlunit.javascript.background.JavaScriptExecutor">
         <level value="warn"/>

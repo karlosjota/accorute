@@ -8,6 +8,10 @@ package su.msu.cs.lvk.accorute.taskmanager;
  * To change this template use File | Settings | File Templates.
  */
 public class JoinTask extends Task{
+    public JoinTask(TaskManager t, boolean ser) {
+        super(t, ser);
+    }
+
     public void start(){
     }
     public JoinTask(TaskManager t){

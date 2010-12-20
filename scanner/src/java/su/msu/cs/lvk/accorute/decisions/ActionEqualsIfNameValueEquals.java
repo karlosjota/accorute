@@ -1,9 +1,8 @@
 package su.msu.cs.lvk.accorute.decisions;
 
-import su.msu.cs.lvk.accorute.http.constants.ActionParameterLocation;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterMeaning;
-import su.msu.cs.lvk.accorute.http.model.HttpAction;
 import su.msu.cs.lvk.accorute.http.model.ActionParameter;
+import su.msu.cs.lvk.accorute.http.model.HttpAction;
 
 import java.util.HashSet;
 import java.util.List;
@@ -35,12 +34,22 @@ public class ActionEqualsIfNameValueEquals implements ActionEqualityDecision{
         List<ActionParameter> bParams = b.getActionParameters();
         Set<String> names = new HashSet<String>();
         for(ActionParameter aParam:aParams){
-            if(aParam.getMeaning() != ActionParameterMeaning.SESSIONTOKEN && aParam.getMeaning() != ActionParameterMeaning.ONETIMETOKEN)
-                names.add(aParam.getName());
+            names.add(aParam.getName());
+        }
+        for(ActionParameter bParam:bParams){names.add(bParam.getName());
+            names.add(bParam.getName());
+        }
+        for(ActionParameter aParam:aParams){
+            if(aParam.getMeaning() == ActionParameterMeaning.SESSIONTOKEN
+                    || aParam.getMeaning() == ActionParameterMeaning.ONETIMETOKEN
+                    || aParam.getMeaning() == ActionParameterMeaning.USERCONTROLLABLE)
+                names.remove(aParam.getName());
         }
         for(ActionParameter bParam:bParams){
-            if(bParam.getMeaning() != ActionParameterMeaning.SESSIONTOKEN && bParam.getMeaning() != ActionParameterMeaning.ONETIMETOKEN)
-                names.add(bParam.getName());
+            if(bParam.getMeaning() == ActionParameterMeaning.SESSIONTOKEN
+                    || bParam.getMeaning() == ActionParameterMeaning.ONETIMETOKEN
+                    || bParam.getMeaning() == ActionParameterMeaning.USERCONTROLLABLE)
+                names.remove(bParam.getName());
         }
         for(String name : names){
             ActionParameter aParam = getParamByName(aParams,name);

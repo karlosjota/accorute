@@ -1,9 +1,10 @@
 package su.msu.cs.lvk.accorute.tasks;
 
-import org.apache.commons.httpclient.cookie.MalformedCookieException;
+
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import su.msu.cs.lvk.accorute.RBAC.Role;
 import su.msu.cs.lvk.accorute.RBAC.SimpleRBACRole;
 import su.msu.cs.lvk.accorute.WebAppProperties;
@@ -16,10 +17,10 @@ import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 
 import java.io.*;
 import java.net.MalformedURLException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-
-import org.json.JSONObject;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -29,8 +30,6 @@ import org.json.JSONObject;
  * To change this template use File | Settings | File Templates.
  */
 public class JSONConfigurator extends Task {
-    private static Logger logger = Logger.getLogger(JSONConfigurator.class.getName());
-
     private static class UnsupportedDOMEventTypeException extends Exception{
         public UnsupportedDOMEventTypeException(){
             super();
@@ -40,7 +39,7 @@ public class JSONConfigurator extends Task {
         }
     }
     private static class JSONEventParser{
-        public static HttpAction parse(JSONObject event) throws JSONException, MalformedURLException, MalformedCookieException,UnsupportedDOMEventTypeException {
+        public static HttpAction parse(JSONObject event) throws JSONException, MalformedURLException,UnsupportedDOMEventTypeException {
             String type = event.getString("type");
             HttpAction act;
             if(type.equals("pageLoaded")){
@@ -112,16 +111,21 @@ public class JSONConfigurator extends Task {
                 f.read(buffer);
                 String contents = new String(buffer);
                 JSONObject obj = new JSONObject(contents);
-                String loc = obj.getString("sessTokenLocation");
-                if(loc.equalsIgnoreCase("query")){
-                   WebAppProperties.getInstance().setSessionTokenLocation(ActionParameterLocation.QUERY);
-                }else if(loc.equalsIgnoreCase("body")){
-                   WebAppProperties.getInstance().setSessionTokenLocation(ActionParameterLocation.BODY);
-                }else if(loc.equalsIgnoreCase("cookie")){
-                   WebAppProperties.getInstance().setSessionTokenLocation(ActionParameterLocation.COOKIE);
+                JSONArray tokens = obj.getJSONArray("dynamicTokens");
+                for(int i=0;i < tokens.length();i++){
+                    JSONObject token = tokens.getJSONObject(i);
+                    String loc = token.getString("location");
+                    if(loc.equalsIgnoreCase("query")){
+                       WebAppProperties.getInstance().getDynamicTokenLocations().add(ActionParameterLocation.QUERY);
+                    }else if(loc.equalsIgnoreCase("body")){
+                       WebAppProperties.getInstance().getDynamicTokenLocations().add(ActionParameterLocation.BODY);
+                    }else if(loc.equalsIgnoreCase("cookie")){
+                       WebAppProperties.getInstance().getDynamicTokenLocations().add(ActionParameterLocation.COOKIE);
+                    }else{
+                        throw new RuntimeException(loc +" location is not supported");
+                    }
+                    WebAppProperties.getInstance().getDynamicTokenNames().add(token.getString("name"));
                 }
-                WebAppProperties.getInstance().setSessionTokenName(obj.getString("sessTokenName"));
-
                 JSONArray roles = obj.getJSONArray("roles");
                 for(int i=0;i < roles.length();i++){
                     JSONObject user = roles.getJSONObject(i);
@@ -150,6 +154,7 @@ public class JSONConfigurator extends Task {
                     for(Role role : WebAppProperties.getInstance().getRoles()){
                         if(role.getRoleName().equalsIgnoreCase(roleName)){
                             r = role;
+                            break;
                         }
                     }
                     WebAppUser u = new WebAppUser();
@@ -165,11 +170,11 @@ public class JSONConfigurator extends Task {
                     WebAppProperties.getInstance().getUserService().addOrModifyUser(u);
                     logger.trace("Added user " + userName + " of role " + r.getRoleName());
                 }
-
                 //parse the trace...
                 JSONArray sessions = obj.getJSONArray("trace");
                 logger.trace("The config contains " + sessions.length() + " recorded sessions");
                 int counter = 0;
+                final Map<String, UseCase> nameUseCaseMap = new HashMap<String, UseCase> ();  // TODO: refactor this shit out!
                 for(int i = 0; i < sessions.length();i++){
                     JSONArray evts = sessions.getJSONArray(i);
                     JSONObject sessionCreatedEvt = evts.getJSONObject(0);
@@ -187,8 +192,11 @@ public class JSONConfigurator extends Task {
                             try{
                                 HttpAction act = JSONEventParser.parse(firstAction);
                                 if(act.getName().equals("")){
-                                    act.setName("#" + new Integer(counter++).toString()+"("+sessname  +")" ) ;
+                                    act.setName(sessname) ;
                                 }
+                                UseCase uc = new UseCase(u.getUserRole(),act);
+                                nameUseCaseMap.put(sessname + " : " + uname, uc);
+                                WebAppProperties.getInstance().getUcGraph().addUCIfNotPresent(uc);
                                 WebAppProperties.getInstance().getActionService().addOrUpdateAction(act);
                                 WebAppProperties.getInstance().addStateChangingAction(act);
                                 logger.trace("Recorded state-changing action:\n" +act);
@@ -199,6 +207,24 @@ public class JSONConfigurator extends Task {
                             }
                         }
                     }
+                }
+                JSONArray dependencies = obj.getJSONArray("dependencies");
+                for(int i=0;i < dependencies.length();i++){
+                    JSONObject dep = dependencies.getJSONObject(i);
+                    String from = dep.getString("from");
+                    String to = dep.getString("to");
+                    UseCase fromUC = nameUseCaseMap.get(from);
+                    UseCase toUC = nameUseCaseMap.get(to);
+                    WebAppProperties.getInstance().getUcGraph().addDependency(toUC, fromUC);
+                }
+                JSONArray cancellations = obj.getJSONArray("cancellations");
+                for(int i=0;i < cancellations.length();i++){
+                    JSONObject canc = cancellations.getJSONObject(i);
+                    String from = canc.getString("from");
+                    String to = canc.getString("to");
+                    UseCase fromUC = nameUseCaseMap.get(from);
+                    UseCase toUC = nameUseCaseMap.get(to);
+                    WebAppProperties.getInstance().getUcGraph().addCancellation(fromUC, toUC);
                 }
                 WebAppProperties.getInstance().setTestChain(t);
                 setSuccessful(true);

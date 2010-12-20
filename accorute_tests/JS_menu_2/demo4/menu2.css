@@ -1,0 +1,21 @@
+/*
+ menu styles
+ note: not all browsers render styles the same way so try out your style sheet
+ in different browsers before publishing
+*/
+
+/* all levels inner */
+.minner2 {
+	font: 12px Tahoma,Verdana,sans-serif;
+	color: black;
+	margin: 3px;
+}
+/* all levels outer */
+.moout2 {
+	border : 1px solid #666666;
+	background-color: #ffffff;
+}
+.moover2 {
+	border: 1px solid #666666;
+	background-color: #cccccc;
+}

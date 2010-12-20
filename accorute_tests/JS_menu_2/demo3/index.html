@@ -1,0 +1,42 @@
+<html> 
+<head>
+	<title>JavaScript Menu - Demo #3</title>
+	<!-- styles for demo menu #1-->
+	<link rel="stylesheet" href="menu.css">
+</head>
+
+<body>
+
+<!-- comments begin -->
+<p style="margin-top:250px">This sample demonstrates how Tigra Menu items can contain HTML code:</p>
+<ul>
+	<li>HTML code can be inserted right into the text of the menu items (see menu_items.js)</li>
+	<li>Wrapper function is created to reuse the same html code with different content (see menu_items.js)</li>
+</ul>
+<!-- comments end -->
+
+<!-- menu script itself. you should not modify this file -->
+<script language="JavaScript" src="menu.js"></script>
+<!-- items structure. menu hierarchy and links are stored there -->
+<script language="JavaScript" src="menu_items.js"></script>
+<!-- files with geometry and styles structures -->
+<script language="JavaScript" src="menu_tpl.js"></script>
+<script language="JavaScript">
+	<!--//
+	// Make sure the menu initialization is right above the closing </body> tag
+	// Moving it inside other tags will not affect the position of the menu on
+	// the page. If you need this feature please consider Tigra Menu GOLD.
+
+	// each menu gets two parameters (see demo files)
+	// 1. items structure
+	// 2. geometry structure
+
+	new menu (MENU_ITEMS, MENU_TPL);
+	// If you don't see the menu then check JavaScript console of the browser for the error messages
+	// "Variable is not defined" error indicates that there's syntax error in that variable's definition
+	// or the file with that variable isn't properly linked to the HTML document
+	//-->
+</script>
+
+</body>
+</html>

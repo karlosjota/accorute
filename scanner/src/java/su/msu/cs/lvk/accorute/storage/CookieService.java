@@ -1,11 +1,11 @@
 package su.msu.cs.lvk.accorute.storage;
 
-import java.net.URL;
-import java.util.Collection;
-
 import su.msu.cs.lvk.accorute.http.model.ContextCookie;
 import su.msu.cs.lvk.accorute.http.model.CookieDescriptor;
 import su.msu.cs.lvk.accorute.http.model.EntityID;
+
+import java.net.URL;
+import java.util.Collection;
 
 /**
  * Created by IntelliJ IDEA.
