@@ -43,6 +43,7 @@ import com.gargoylesoftware.htmlunit.DownloadedContent;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.WebResponseData;
+import com.gargoylesoftware.htmlunit.util.NameValuePair;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.cookie.Cookie;
@@ -111,6 +112,15 @@ public class Response extends Message {
         setContent(os.toByteArray());
         setStatusCode(Integer.toString(resp.getStatusLine().getStatusCode()));
         setStatusMessage(resp.getStatusLine().getReasonPhrase());
+
+    }
+    public Response(WebResponse resp) throws IOException{
+        for(NameValuePair h:resp.getResponseHeaders()){
+            addHeader(h.getName(),h.getValue());
+        }
+        setContent(resp.getContentAsString().getBytes());
+        setStatusCode(Integer.toString(resp.getStatusCode()));
+        setStatusMessage(resp.getStatusMessage());
     }
     
     public WebResponse genWebResponse(URL url, long loadTime, WebRequest request){

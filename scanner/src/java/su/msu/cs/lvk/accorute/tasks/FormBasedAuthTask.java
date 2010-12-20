@@ -13,10 +13,7 @@ import org.apache.http.cookie.CookieOrigin;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import su.msu.cs.lvk.accorute.WebAppProperties;
-import su.msu.cs.lvk.accorute.http.model.CookieDescriptor;
-import su.msu.cs.lvk.accorute.http.model.EntityID;
-import su.msu.cs.lvk.accorute.http.model.UserContext;
-import su.msu.cs.lvk.accorute.http.model.WebAppUser;
+import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 
@@ -71,6 +68,10 @@ public class FormBasedAuthTask extends Task {
                 return;
             }
             HtmlPage loginPage = (HtmlPage) lPage;
+            WebAppProperties.getInstance().getDynCredUpd().updateCredentials(
+                    WebAppProperties.getInstance().getContextService().getContextByID(ctxID).getUserID(),
+                    (HtmlPage)lPage
+            );
             List<HtmlForm> forms = loginPage.getForms();
             if(forms.size() <= formIndex){
                 logger.error("Form index out of range!");
@@ -91,8 +92,10 @@ public class FormBasedAuthTask extends Task {
                 return;
             }
             HtmlPage newPage = (HtmlPage) p;
-            UserContext contx = WebAppProperties.getInstance().getContextService().getContextByID(ctxID);
-            WebAppProperties.getInstance().getDynCredUpd().updateCredentials(contx.getUserID(),newPage);
+            WebAppProperties.getInstance().getDynCredUpd().updateCredentials(
+                    WebAppProperties.getInstance().getContextService().getContextByID(ctxID).getUserID(),
+                    (HtmlPage)newPage
+            );
             Set<com.gargoylesoftware.htmlunit.util.Cookie> cooks = client.getCookieManager().getCookies();
             //TODO: Use dynamic cred updater for cookie updates here!
             URL u = loginPage.getUrl();
@@ -108,8 +111,9 @@ public class FormBasedAuthTask extends Task {
             WebAppUser user = WebAppProperties.getInstance().getUserService().getUserByID(id);
             for(Cookie c: desc.getCookies()){
                 user.getDynamicCredentials().put(c.getName(),c.getValue());
-                logger.trace("Added cookie: " + c.getName() + ":" + c.getValue());
+                logger.trace(user.getUserID()+"Updated creds: " + c.getName() + ":" + c.getValue());
             }
+            WebAppProperties.getInstance().getUserService().addOrModifyUser(user);
             logger.trace("Login task finished successfully");
             setSuccessful(true);
         } catch (IOException e) {

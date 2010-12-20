@@ -95,6 +95,12 @@ public class Request extends Message {
             setContent(req.getContent());
         }
     }
+
+    public Request(WebRequest req) {
+        method = req.getHttpMethod().toString();
+        url = req.getUrl();
+        //TODO: the rest is not copied!!!!
+    }
     
     /**
      * Sets the request method

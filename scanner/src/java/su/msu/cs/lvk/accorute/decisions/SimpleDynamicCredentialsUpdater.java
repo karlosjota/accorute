@@ -36,6 +36,7 @@ public class SimpleDynamicCredentialsUpdater implements DynamicCredentialsUpdate
             int pos = dynCredNames.indexOf(name);
             if(pos>=0 && dynCredLocs.get(pos) == p.getLocation()){
                 u.getDynamicCredentials().put(name, p.getValue());
+                logger.trace(userID + "Updated cred: " + name + ": " + p.getValue());
             }
         }
         WebAppProperties.getInstance().getUserService().addOrModifyUser(u);
@@ -73,6 +74,8 @@ public class SimpleDynamicCredentialsUpdater implements DynamicCredentialsUpdate
             //Update dynamic credentials
             for(Cookie c: desc.getCookies()){
                 u.getDynamicCredentials().put(c.getName(),c.getValue());
+
+                logger.trace(userID + "Updated cred: " + c.getName() + ": " + c.getValue());
             }
             WebAppProperties.getInstance().getCookieService().setCookies(desc);
         }catch (MalformedCookieException ex){
