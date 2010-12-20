@@ -72,7 +72,7 @@ public class JSONConfigurator extends Task {
                         name,
                         value,
                         method.equalsIgnoreCase("GET") ? ActionParameterLocation.QUERY : ActionParameterLocation.BODY,
-                        (eltype.equalsIgnoreCase("hidden") || eltype.equalsIgnoreCase("submit")) ?
+                        (eltype.equalsIgnoreCase("hidden")) ?
                                 ActionParameterMeaning.AUTOMATIC : ActionParameterMeaning.USERCONTROLLABLE,
                         ActionParameterDatatype.STRING)
                     );//TODO: be more specific here!!!

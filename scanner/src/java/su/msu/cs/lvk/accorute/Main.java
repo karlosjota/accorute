@@ -9,10 +9,7 @@ import su.msu.cs.lvk.accorute.RBAC.Role;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
-import su.msu.cs.lvk.accorute.tasks.HtmlElementActionPerformer;
-import su.msu.cs.lvk.accorute.tasks.JSONConfigurator;
-import su.msu.cs.lvk.accorute.tasks.SimpleDetectSpikes;
-import su.msu.cs.lvk.accorute.tasks.SitemapCrawler;
+import su.msu.cs.lvk.accorute.tasks.*;
 import su.msu.cs.lvk.accorute.utils.Callback3;
 import su.msu.cs.lvk.accorute.utils.RoleCompare;
 
@@ -85,18 +82,8 @@ public class Main{
                 UseCase uc = it.next();
                 EntityID ctxID = users1.get(uc.getUserRole().getRoleName());
                 HttpAction action = uc.getHttpAct();
-                //1. Perform action
-                Task ucTask = new HtmlElementActionPerformer(
-                    taskman,
-                    action,
-                    ctxID,
-                    new Callback3<ArrayList<Conversation>, ArrayList<HttpAction>, HtmlPage>(){
-                        public void CallMeBack(ArrayList<Conversation> c , ArrayList<HttpAction> a, HtmlPage p){
-                            // do nothing
-                        }
-                    }
-                );
-                taskman.addTask(ucTask);
+                Task t = new HttpActionPerformerWithPrecedingActions(taskman,ctxID,action);
+                taskman.addTask(t);
                 taskman.waitForEmptyQueue();
             }
             started = true;

@@ -83,7 +83,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
                             nameval[0],
                             nameval[1],
                             ActionParameterLocation.BODY,
-                            ActionParameterMeaning.UNKNOWN,//TODO: this is temporary
+                            ActionParameterMeaning.USERCONTROLLABLE,//TODO: this is temporary
                             ActionParameterDatatype.STRING
                     ));
                 }
@@ -94,7 +94,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
                             URLDecoder.decode(nvp.getName()),
                             URLDecoder.decode(nvp.getValue()),
                             ActionParameterLocation.BODY,
-                            ActionParameterMeaning.UNKNOWN,//TODO: this is temporary
+                            ActionParameterMeaning.USERCONTROLLABLE,//TODO: this is temporary
                             ActionParameterDatatype.STRING
                     ));
                 }
@@ -203,7 +203,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
                     namevalue[0].trim(),
                     namevalue[1].trim(),
                     ActionParameterLocation.COOKIE,
-                    ActionParameterMeaning.AUTOMATIC,
+                    ActionParameterMeaning.SESSIONTOKEN, // TODO: this is a stub
                     ActionParameterDatatype.STRING)
             );
         }

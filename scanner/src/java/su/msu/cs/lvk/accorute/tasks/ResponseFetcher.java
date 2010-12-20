@@ -28,7 +28,12 @@ public class ResponseFetcher extends Task {
     final private HttpAction action;
     final private EntityID contextID;
     private Conversation res;
+    private boolean updateCreds = true;
     final static private HttpClient client = WebAppProperties.getInstance().getHttpClient();
+    public ResponseFetcher(TaskManager t, HttpAction act, EntityID ctxID, boolean updateCreds) {
+        this(t,act,ctxID);
+        this.updateCreds = updateCreds;
+    }
     public ResponseFetcher(TaskManager t, HttpAction act, EntityID ctxID) {
         super(t);
         action = act;
@@ -70,7 +75,7 @@ public class ResponseFetcher extends Task {
                     respCheckStatus = SessionValidityWatcher.RespCheckStatus.NOT_EXPIRED;
                 tried = true;
             }while(respCheckStatus == SessionValidityWatcher.RespCheckStatus.RETRY);
-            if(respCheckStatus == SessionValidityWatcher.RespCheckStatus.NOT_EXPIRED ){
+            if(updateCreds){
                 res = new Conversation(req,resp);
                 WebAppProperties.getInstance().getDynCredUpd().updateCredentials(u.getUserID(),res);
             }

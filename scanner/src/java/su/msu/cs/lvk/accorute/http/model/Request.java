@@ -198,14 +198,12 @@ public class Request extends Message {
 
         if (cookies.getCookies().size() > 0) {
             List<Header> headers = cookies.getSpec().formatCookies(cookies.getCookies());
+            String val = "";
             for(Header h: headers){
-                addHeader(
-                        new NamedValue(
-                                h.getName(),
-                                h.getValue()
-                        )
-                );
+                val = val + h.getValue() + ";";
             }
+            val = val.substring(0,val.length() - 1);
+            setHeader("Cookie",val);
         }
     }
 

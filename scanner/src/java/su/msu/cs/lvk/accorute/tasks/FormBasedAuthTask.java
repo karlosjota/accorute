@@ -96,24 +96,7 @@ public class FormBasedAuthTask extends Task {
                     WebAppProperties.getInstance().getContextService().getContextByID(ctxID).getUserID(),
                     (HtmlPage)newPage
             );
-            Set<com.gargoylesoftware.htmlunit.util.Cookie> cooks = client.getCookieManager().getCookies();
-            //TODO: Use dynamic cred updater for cookie updates here!
-            URL u = loginPage.getUrl();
-            CookieOrigin origin = new CookieOrigin(u.getHost(), u.getPort(),u.getPath(),false); // TODO: false here
-            List<Cookie> cookies = new ArrayList<Cookie>();
-            for(com.gargoylesoftware.htmlunit.util.Cookie cook: cooks){
-                cookies.add(new BasicClientCookie(cook.getName(), cook.getValue()));
-            }
-            CookieDescriptor desc = new CookieDescriptor(cookies,origin,ctxID);
-            WebAppProperties.getInstance().getCookieService().setCookies(desc);
-            //Update dynamic credentials
-            EntityID id = WebAppProperties.getInstance().getContextService().getContextByID(ctxID).getUserID();
-            WebAppUser user = WebAppProperties.getInstance().getUserService().getUserByID(id);
-            for(Cookie c: desc.getCookies()){
-                user.getDynamicCredentials().put(c.getName(),c.getValue());
-                logger.trace(user.getUserID()+"Updated creds: " + c.getName() + ":" + c.getValue());
-            }
-            WebAppProperties.getInstance().getUserService().addOrModifyUser(user);
+
             logger.trace("Login task finished successfully");
             setSuccessful(true);
         } catch (IOException e) {

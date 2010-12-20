@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedMultigraph;
 import su.msu.cs.lvk.accorute.WebAppProperties;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
 
@@ -46,7 +47,7 @@ public class Sitemap {
                 "\n}";
     }
 
-    public static class SitemapNode{
+    public static class SitemapNode {
         public EntityID getNodeID() {
             return nodeID;
         }
@@ -83,6 +84,10 @@ public class Sitemap {
             return WebAppProperties.getInstance().getPageEqDec().pagesEqual(pages.get(0),p);
         }
 
+        public Iterator<Conversation> getInConvIter(){
+            return  inConversation.iterator();
+        }
+
         private final Set<HttpAction> httpActions = new HashSet<HttpAction>();
         private final List<Conversation> inConversation  = new ArrayList<Conversation> ();
         private final List<HtmlPage> pages  = new ArrayList<HtmlPage> ();
@@ -105,6 +110,16 @@ public class Sitemap {
                     /*", inConversation=" + inConversation +*/
                     '}';
         }
+    }
+    public Set<HttpAction> getInbound(SitemapNode n){
+        Set<HttpAction> rez = new HashSet<HttpAction>();
+        Iterator<SitemapEdge> edges = actionDepGraph.incomingEdgesOf(n).iterator();
+        while (edges.hasNext()){
+            SitemapEdge e = edges.next();
+            if(e.getLabel().getHttpActions().size() != 0)
+                rez.add(e.getLabel().getHttpActions().get(0));
+        }
+        return rez;
     }
     synchronized public SitemapNode genNode(){
         EntityID eid = new EntityID(nextNodeID);
@@ -131,6 +146,19 @@ public class Sitemap {
             }
         }
         return res;
+    }
+    public SitemapNode getNodePreceedingNeededAction(HttpAction act){
+        Iterator<SitemapEdge> edges = actionDepGraph.edgeSet().iterator();
+        while (edges.hasNext()){
+            SitemapEdge e = edges.next();
+            List<HttpAction> acts =  e.getLabel().getHttpActions();
+            if(acts.size() != 0){
+                if(WebAppProperties.getInstance().getAcEqDec().ActionEquals(acts.get(0), act)){
+                    return e.getV1();
+                }
+            }
+        }
+        return null;
     }
     public SitemapNode getNodeByID(EntityID id){
          return nodeById.get(id);
