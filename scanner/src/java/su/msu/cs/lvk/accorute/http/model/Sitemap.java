@@ -4,8 +4,7 @@ import org.apache.log4j.Logger;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedMultigraph;
 import su.msu.cs.lvk.accorute.WebAppProperties;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
+import org.apache.commons.lang.NotImplementedException;
 import java.util.*;
 
 /**

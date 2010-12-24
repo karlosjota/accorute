@@ -12,6 +12,9 @@
         <fileset dir="lib/compile">
             <include name="**/*.jar"/>
         </fileset>
+        <fileset dir="lib">
+            <include name="*.jar"/>
+        </fileset>
         <pathelement location="${out.dir}/scanner"/>
      </path>
 
@@ -147,7 +150,7 @@
                     
     <target name="ivy-resolve" depends="init, ivy-configure">
         <ivy:retrieve pattern="${lib.dir}/compile/[artifact]-[revision].[ext]"
-            conf="compile" transitive="false" sync="true"/>
+            conf="compile" transitive="true" sync="true"/>
         <ivy:retrieve pattern="${lib.dir}/runtime/[artifact]-[revision].[ext]"
             conf="runtime" transitive="true" sync="true"/>
     </target>        
