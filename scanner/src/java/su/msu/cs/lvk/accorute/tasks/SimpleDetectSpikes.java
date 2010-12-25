@@ -41,9 +41,9 @@ public class SimpleDetectSpikes extends Task{
             ResponseFetcher fetcher = new ResponseFetcher(taskManager, act,attackCtx);
             waitForTask(fetcher);
             if(fetcher.isSuccessful()){
-                Conversation сonv = (Conversation) fetcher.getResult();
-                if(WebAppProperties.getInstance().getAgd().accessWasGranted(map.get(act),сonv))
-                    successful = true;    
+                Conversation conv = (Conversation) fetcher.getResult();
+                if(WebAppProperties.getInstance().getAgd().accessWasGranted(map.get(act), conv))
+                    successful = true;
             }
             if(successful){
                 spikes.add(act);
