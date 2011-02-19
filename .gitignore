@@ -1,3 +1,6 @@
 scanner/lib
 scanner/out
-.pyc
+*.pyc
+*.iml
+.idea
+accorute_test.db
