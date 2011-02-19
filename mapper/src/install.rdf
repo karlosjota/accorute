@@ -13,12 +13,12 @@
     <em:description>AcCoRuTe web application mapper.</em:description>
     <!-- Name of extension's primary developer. Change to your name -->
     <em:creator>Noseevich George</em:creator>
-    <!-- This section gives details of the target application for the extension (in this case: Firefox 2) -->
+    <!-- This section gives details of the target application for the extension -->
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
         <em:minVersion>3.5</em:minVersion>
-        <em:maxVersion>3.7</em:maxVersion>
+        <em:maxVersion>4.*</em:maxVersion>
       </Description>
     </em:targetApplication>
   </Description>
