@@ -1,15 +1,23 @@
 <?xml version="1.0"?>
+<?xul-overlay href="chrome://webappmapper/content/wizard.xul"?>
 <overlay id="webappmapper" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  <script type="application/javascript" src="chrome://webappmapper/content/starter.js"/>
-  <toolbar id="nav-bar">
-    <button id="openCapWin"
-	label="open capconsole" tooltiptext="start"
-	oncommand="openCapWin();"/>
-  </toolbar>
-  <!-- <popup id="contentAreaContextMenu">
-      <menuitem
-              id="my_option"
-              label="Start new session and activate"
-              oncommand="addevt();"/>
-    </popup> -->
+    <script type="application/javascript" src="chrome://webappmapper/content/starter.js"/>
+    <script type="application/javascript" src="chrome://webappmapper/content/usecaseui.js" />
+    <script type="application/javascript" src="chrome://webappmapper/content/capturer.js" />
+
+    <toolbar id="nav-bar">
+        <button id="openCapWin"
+                label="toggle capconsole" tooltiptext="start"
+                oncommand="toggleCapConsole();"/>
+    </toolbar>
+    <statusbar id="status-bar"> <!-- overlay firefox statusbar -->
+        <statusbarpanel id="wam_Status"
+                        context="wam_StatusContextMenu"
+                        onmousedown="toggleCapConsole();"
+                        label="capconsole"/>
+    </statusbar>
+    <vbox id="appcontent"> <!-- overlay firefox content window -->
+        <splitter id="wam_PanelSplitter" collapsed="true" persist="height" />
+        <vbox id="wam_PanelNormal" collapsed="true" persist="height" />
+    </vbox>
 </overlay>

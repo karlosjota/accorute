@@ -37,7 +37,7 @@ Capturer.prototype = {
         };
         cur_sess[cur_sess.length] = {type: "UCCreated", time: now.getTime()};
 
-        },
+    },
     finishSession: function(){
         this.unregister();
         var cur_sess = this.sessions[this.sessions.length - 1];
@@ -49,7 +49,7 @@ Capturer.prototype = {
             clicks : this.clicks_count,
             submits: this.submits_count,
             pages: this.pageload_count
-	    };
+        };
         this.dumpCurSession();
         return {clicks : this.clicks_count, submits: this.submits_count, pages: this.pageload_count };
     },
@@ -57,14 +57,14 @@ Capturer.prototype = {
     register : function(){
         dumpLN("Capturer::register\n");
         var observerService = Components.classes["@mozilla.org/observer-service;1"]
-        .getService(Components.interfaces.nsIObserverService);
+                .getService(Components.interfaces.nsIObserverService);
         observerService.addObserver(this, "xul-window-visible", false);
         observerService.addObserver(this, "xul-window-destroyed", false);
         this.observe();
     },
     observe : function(subject, topic, data) {
         var windowManager = Components.classes['@mozilla.org/appshell/window-mediator;1']
-        .getService(Components.interfaces.nsIWindowMediator);
+                .getService(Components.interfaces.nsIWindowMediator);
         var enumerator = windowManager.getEnumerator("navigator:browser");
         this.opened_tabs = new Array();
         while(enumerator.hasMoreElements()){
@@ -78,9 +78,9 @@ Capturer.prototype = {
             }
         }
         for(var k = 0; k< this.opened_tabs.length; k++){
-                var doc = this.opened_tabs[k].contentDocument;
-                var links = doc.links;
-                for(var i=0 ; i < links.length ; i++){
+            var doc = this.opened_tabs[k].contentDocument;
+            var links = doc.links;
+            for(var i=0 ; i < links.length ; i++){
                 links[i].addEventListener("click",this,  true);
             }
             var forms = doc.forms;
@@ -99,7 +99,7 @@ Capturer.prototype = {
         this.listening = false;
         dumpLN("Capturer::unregister\n");
         var observerService = Components.classes["@mozilla.org/observer-service;1"]
-        .getService(Components.interfaces.nsIObserverService);
+                .getService(Components.interfaces.nsIObserverService);
         observerService.removeObserver(this, "xul-window-visible");
         observerService.removeObserver(this, "xul-window-destroyed");
     },
@@ -134,7 +134,7 @@ Capturer.prototype = {
             event_record.document = { location: doc.location.href };
         } else if(evt.type == "click") {
             var link = evt.currentTarget;
-            if(link.tagName != "A"){                
+            if(link.tagName != "A"){
                 return;
             }
             this.clicks_count ++;
@@ -143,20 +143,20 @@ Capturer.prototype = {
             event_record.cookie = link.ownerDocument.cookie;
             // what is the number of the document that produced the click?
             /*var rootdoc = link.ownerDocument;
-            for(var i = 0; i< this.opened_tabs.length && event_record.rootdoc == null; i++){
-                wnd = this.opened_tabs[i];
-                if(wnd.contentDocument == rootdoc){
-                    event_record.rootdoc = { tab: i, frame: -1 };
-                    break;
-                }
-                var frames = wnd.contentWindow.frames;
-                for(var j=0; j< frames.length; j++){
-                    if(frames[j].document == rootdoc){
-                    event_record.rootdoc = { tab: i, frame: j };
-                    break;
-                    }
-                }
-            }*/
+             for(var i = 0; i< this.opened_tabs.length && event_record.rootdoc == null; i++){
+             wnd = this.opened_tabs[i];
+             if(wnd.contentDocument == rootdoc){
+             event_record.rootdoc = { tab: i, frame: -1 };
+             break;
+             }
+             var frames = wnd.contentWindow.frames;
+             for(var j=0; j< frames.length; j++){
+             if(frames[j].document == rootdoc){
+             event_record.rootdoc = { tab: i, frame: j };
+             break;
+             }
+             }
+             }*/
             event_record.document = event_record.document = { location: link.ownerDocument.location.href };
         } else if(evt.type == "submit") {
             this.submits_count ++;
@@ -167,30 +167,30 @@ Capturer.prototype = {
             event_record.method = form.method;
             event_record.elements = new Array();
             for(var i = 0; i< form.length; i++){
-            event_record.elements[i] = {
-                name:form.elements[i].name,
-                value: form.elements[i].value,
-                type: form.elements[i].type,
-                checked: form.elements[i].checked
+                event_record.elements[i] = {
+                    name:form.elements[i].name,
+                    value: form.elements[i].value,
+                    type: form.elements[i].type,
+                    checked: form.elements[i].checked
                 };
             }
             /*var rootdoc = form.ownerDocument;
-            for(var i = 0; i< this.opened_tabs.length && event_record.rootdoc == null; i++){
-                wnd = this.opened_tabs[i];
-                if(wnd.contentDocument == rootdoc){
-                    event_record.rootdoc = { tab: i, frame: -1 };
-                    break;
-                }
-                var frames = wnd.contentWindow.frames;
-                for(var j=0; j< frames.length; j++){
-                    if(frames[j].document == rootdoc){
-                    event_record.rootdoc = { tab: i, frame: j };
-                    break;
-                    }
-                }
-            }
-            */
-            event_record.document = event_record.document = { location: form.ownerDocument.location.href };            
+             for(var i = 0; i< this.opened_tabs.length && event_record.rootdoc == null; i++){
+             wnd = this.opened_tabs[i];
+             if(wnd.contentDocument == rootdoc){
+             event_record.rootdoc = { tab: i, frame: -1 };
+             break;
+             }
+             var frames = wnd.contentWindow.frames;
+             for(var j=0; j< frames.length; j++){
+             if(frames[j].document == rootdoc){
+             event_record.rootdoc = { tab: i, frame: j };
+             break;
+             }
+             }
+             }
+             */
+            event_record.document = event_record.document = { location: form.ownerDocument.location.href };
         }
     }
 }

@@ -1,208 +1,201 @@
 <?xml version="1.0"?>
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <vbox id="wam_PanelNormal" persist="height" >
+        <tabbox id="wam_Tablist" flex="1" >
+            <tabs id="wam_mapperTabs" onselect="selectionChange_tabs();">
+                <tab label="Basic" />
+                <tab label="Roles" />
+                <tab label="Users" />
+                <tab label="UseCases" />
+                <tab label="Dependencies" />
+                <tab label="Cancellations" />
+            </tabs>
+            <tabpanels flex="1">
+                <tabpanel id="wam_basicTab" orient="vertical" flex="1">
+                    <hbox flex="1">
+                        <grid>
+                            <rows>
+                                <row align="center">
+                                    <label value="Scope regexp:"/>
+                                    <textbox id="webappScopeRegexp" value=".*"/>
+                                </row>
+                                <row align="center">
+                                    <label value="Session token location:"/>
+                                    <menulist id = "webappSessTokenLocSelect">
+                                        <menupopup >
+                                            <menuitem label="query" id="sessTokenLocQuery"/>
+                                            <menuitem label="body" id="sessTokenLocBody"/>
+                                            <menuitem label="cookie" id="sessTokenLocCookie"/>
+                                        </menupopup>
+                                    </menulist>
+                                </row>
+                                <row align="center">
+                                    <label value="Session token name:"/>
+                                    <textbox id="webappSessTokenName"/>
+                                </row>
+                            </rows>
+                        </grid>
+                    </hbox>
+                </tabpanel>
+                <tabpanel id="wam_rolesTab" orient="vertical" flex="1">
+                    <caption label="New role"/>
+                    <grid>
+                        <rows>
+                            <row align="center">
+                                <label value="Name:"/>
+                                <textbox id="roleName"/>
+                                <label value="Parent role:"/>
+                                <menulist id = "parentRoleSelect">
+                                    <menupopup >
+                                        <menuitem label="public" id="publicRole"/>
+                                    </menupopup>
+                                </menulist>
+                                <button id="addRoleButton" oncommand = "addRole();" label="add role" />
+                            </row>
+                        </rows>
+                    </grid>
 
-<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+                    <caption label="Existing roles" />
+                    <listbox id = "roleList" flex="1">
+                        <listhead>
+                            <listheader label="Role Name" flex="1"/>
+                            <listheader label="Parent role" flex="1"/>
+                        </listhead>
+                        <listitem>
+                            <listcell label="public" />
+                            <listcell label="N/A" />
+                        </listitem>
 
-<wizard id="theWizard" title="Web Application Analysis"
-	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" onwizardfinish = "return saveToFile();" >
-  <script type="application/javascript" src="chrome://webappmapper/content/usecaseui.js" />
-  <script type="application/javascript" src="chrome://webappmapper/content/capturer.js" />
-  
-  <wizardpage description="Enter basic Web Application Settings">
-    <grid>
-      <rows>
-	<row align="center">
-	  <label value="Scope regexp:"/>
-	  <textbox id="webappScopeRegexp" value=".*"/>
-	</row>
-	<row align="center">
-	  <label value="Session token location:"/>
-	  <menulist id = "webappSessTokenLocSelect">
-	    <menupopup >
-	      <menuitem label="query" id="sessTokenLocQuery"/>
-	      <menuitem label="body" id="sessTokenLocBody"/>
-	      <menuitem label="cookie" id="sessTokenLocCookie"/>
-	    </menupopup>
-	  </menulist>	  
-	</row>
-	<row align="center">
-	  <label value="Session token name:"/>
-	  <textbox id="webappSessTokenName"/>
-	</row>
-      </rows>
-    </grid>
-  </wizardpage>  
-
-  <wizardpage description="Create Roles">
-    <caption label="New role"/>
-    <grid>
-      <rows>
-	<row align="center">
-	  <label value="Name:"/>
-	  <textbox id="roleName"/>
-	  <label value="Parent role:"/>
-	  <menulist id = "parentRoleSelect">
-	    <menupopup >
-	      <menuitem label="public" id="publicRole"/>
-	    </menupopup>
-	  </menulist>
-	  <button id="addRoleButton" oncommand = "addRole();" label="add role" />
-	</row>
-      </rows>
-    </grid>
-
-    <caption label="Existing roles" />
-    <listbox id = "roleList">
-      <listhead>
-	<listheader label="Role Name" />
-	<listheader label="Parent role" />
-      </listhead>
-      <listitem label = "public">
-	<listcell label="public" />
-	<listcell label="N/A" />
-      </listitem>
-
-    </listbox>
-  </wizardpage>
-
-  <wizardpage description="Create Users" onpageshow = "enumerateRoles();">
-    <caption label="New user"/>
-    <grid>
-      <columns>
-	<column flex="" />
-	<column flex="1" />
-      </columns>      
-      <rows>
-	<row align="center">
-	  <label value="Name:"/>
-	  <textbox id="userName"/>
-	</row>
-	<row>
-	  <label value="Role:"/>
-	  <menulist id = "userRoleSelect">
-	    <menupopup >
-	      <menuitem label="public" />
-	    </menupopup>
-	  </menulist>
-	</row>
-	<row>
-	  <label value="password:"/>
-	  <textbox id="userPassword"/>
-	</row>
-      </rows>      
-    </grid>
-    <button id="addUserButton" oncommand = "addUser();" label="add user"/>
-    <caption label="Existing users" />
-    <listbox id = "userList">
-      <listhead>
-	<listheader label="Name" />
-	<listheader label="Role" />
-	<listheader label="Password" />
-      </listhead>
-    </listbox>
-  </wizardpage>
-  <wizardpage description="Record UseCases" onpageshow = "enumerateUsers();" >
-    <hbox>
-      <grid>
-	<columns>
-	  <column/>
-	  <column flex="1"/>
-	</columns>
-	<rows>
-	  <row align="center">
-	    <label value="Session name:"/>
-	    <textbox id="sessName"/>
-	  </row>
-	  <row align="center">
-	    <label value="User:"/>
-	    <menulist id = "userSelect">
-	      <menupopup >
-	      </menupopup>
-	    </menulist>
-	  </row>
-	</rows>
-      </grid>
-      <button id="start-stop-button" onclick = "startUC();" label="Start session capture" />
-    </hbox>
-    <groupbox>
-      <caption label="Recorded Sessions" />
-      <listbox id = "sessList">
-	<listhead>
-	  <listheader label="Session Name" />
-	  <listheader label="User" />
-	</listhead>
-      </listbox>
-    </groupbox>
-  </wizardpage>
-
-  <wizardpage description="Specify dependencies" onpageshow = "enumerateUCForDeps();" >
-    <hbox pack="center">
-      <grid>
-	<columns>
-	  <column/>
-	  <column flex="1"/>
-	  <column />
-	</columns>
-	<rows>
-	  <row>
-	    <menulist id = "UCFromSelect">
-	      <menupopup >
-	      </menupopup>
-	    </menulist>
-	    <label value="depends on" align="center"/>
-	    <menulist id = "UCToSelect">
-	      <menupopup >
-	      </menupopup>
-	    </menulist>
-	  </row>
-	</rows>
-      </grid>
-    </hbox>
-    <button id="depButton" onclick = "formDependency();" label="form dependency" />
-    <groupbox>
-      <caption label="Dependencies" />
-      <listbox id = "depList" >
-	<listhead>
-	  <listheader label="Dependent UC" />
-	  <listheader label="Dependency UC" />
-	</listhead>
-      </listbox>
-    </groupbox>
-  </wizardpage>
-
-  <wizardpage description="Specify cancellations" onpageshow = "enumerateUCForCanc();" >
-    <hbox pack="center">
-      <grid >
-	<columns>
-	  <column/>
-	  <column flex = "1"/>
-	  <column />
-	</columns>
-	<rows>
-	  <row>
-	    <menulist id = "UCFromSelect2">
-	      <menupopup >
-	      </menupopup>
-	    </menulist>
-	    <label value="cancels" align="center"/>
-	    <menulist id = "UCToSelect2">
-	      <menupopup >
-	      </menupopup>
-	    </menulist>
-	  </row>
-	</rows>
-      </grid>      
-    </hbox>
-    <button id="cancelButton" onclick = "formCancellation();" label="form cancellation" />
-    <groupbox>
-      <caption label="Cancellations" />
-      <listbox id = "cancelList" >
-	<listhead>
-	  <listheader label="Cancelling UC" />
-	  <listheader label="Cancelled UC" />
-	</listhead>
-      </listbox>
-    </groupbox>
-  </wizardpage>
-
-
-</wizard>
+                    </listbox>
+                </tabpanel>
+                <tabpanel id="wam_usersTab" orient="vertical" flex="1">
+                    <caption label="New user"/>
+                    <grid>
+                        <rows>
+                            <row align="center">
+                                <label value="Name:"/>
+                                <textbox id="userName"/>
+                                <label value="Role:"/>
+                                <menulist id = "userRoleSelect">
+                                    <menupopup >
+                                        <menuitem label="public" />
+                                    </menupopup>
+                                </menulist>
+                                <label value="password:"/>
+                                <textbox id="userPassword"/>
+                                <button id="addUserButton" oncommand = "addUser();" label="add user"/>
+                            </row>
+                        </rows>
+                    </grid>
+                    <caption label="Existing users" />
+                    <listbox id = "userList" flex="1" >
+                        <listhead>
+                            <listheader label="Name" flex="1"/>
+                            <listheader label="Role" flex="1"/>
+                            <listheader label="Password" flex="1"/>
+                        </listhead>
+                    </listbox>
+                </tabpanel>
+                <tabpanel id="wam_useCaseTab" orient="vertical" flex="1">
+                    <hbox>
+                        <grid>
+                            <columns>
+                                <column/>
+                                <column flex="1"/>
+                            </columns>
+                            <rows>
+                                <row align="center">
+                                    <label value="Session name:"/>
+                                    <textbox id="sessName"/>
+                                </row>
+                                <row align="center">
+                                    <label value="User:"/>
+                                    <menulist id = "userSelect">
+                                        <menupopup >
+                                        </menupopup>
+                                    </menulist>
+                                </row>
+                            </rows>
+                        </grid>
+                        <button id="start-stop-button" onclick = "startUC();" label="Start session capture" />
+                    </hbox>
+                    <caption label="Recorded Sessions" />
+                    <listbox id = "sessList" flex="1" >
+                        <listhead>
+                            <listheader label="Session Name" flex="1"/>
+                            <listheader label="User" flex="1"/>
+                        </listhead>
+                    </listbox>
+                </tabpanel>
+                <tabpanel id="wam_dependenciesTab" orient="vertical" flex="1">
+                    <hbox>
+                        <grid>
+                            <columns>
+                                <column/>
+                                <column flex="1"/>
+                                <column />
+                            </columns>
+                            <rows>
+                                <row>
+                                    <menulist id = "UCFromSelect">
+                                        <menupopup >
+                                        </menupopup>
+                                    </menulist>
+                                    <label value="depends on" align="center"/>
+                                    <menulist id = "UCToSelect">
+                                        <menupopup >
+                                        </menupopup>
+                                    </menulist>
+                                    <button id="depButton" onclick = "formDependency();" label="form dependency" />
+                                </row>
+                            </rows>
+                        </grid>
+                    </hbox>
+                    <caption label="Dependencies" />
+                    <listbox id = "depList" flex="1">
+                        <listhead>
+                            <listheader label="Dependent UC" flex="1"/>
+                            <listheader label="Dependency UC" flex="1"/>
+                        </listhead>
+                    </listbox>
+                </tabpanel>
+                <tabpanel id="wam_cancellationsTab" orient="vertical" flex="1">
+                    <hbox>
+                        <grid >
+                            <columns>
+                                <column/>
+                                <column flex = "1"/>
+                                <column />
+                            </columns>
+                            <rows>
+                                <row>
+                                    <menulist id = "UCFromSelect2">
+                                        <menupopup >
+                                        </menupopup>
+                                    </menulist>
+                                    <label value="cancels" align="center"/>
+                                    <menulist id = "UCToSelect2">
+                                        <menupopup >
+                                        </menupopup>
+                                    </menulist>
+                                    <button id="cancelButton" onclick = "formCancellation();" label="form cancellation" />
+                                </row>
+                            </rows>
+                        </grid>
+                    </hbox>
+                    <caption label="Cancellations" />
+                    <listbox id = "cancelList" flex="1" >
+                        <listhead>
+                            <listheader label="Cancelling UC" flex="1"/>
+                            <listheader label="Cancelled UC" flex="1"/>
+                        </listhead>
+                    </listbox>
+                </tabpanel>
+            </tabpanels>
+        </tabbox>
+        <hbox flex="1">
+            <button id="saveToFile" oncommand = "saveToFile();" label="Export to file" />
+            <button id="loadFromFile" oncommand = "loadFile();" label="Import from file" />
+        </hbox>
+    </vbox>
+</overlay>
