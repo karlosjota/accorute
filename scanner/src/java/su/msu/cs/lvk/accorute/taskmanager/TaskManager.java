@@ -189,7 +189,8 @@ public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutio
                 boolean finished = false;
                 while(!finished){
                     try{
-                        finished = executor.awaitTermination(1,TimeUnit.MILLISECONDS); 
+                        wait(1);
+                        finished = executor.isTerminated();
                     }catch (InterruptedException iex){}
                 }
                 logger.debug("All tasks are finished, switching back to not_started. " +
