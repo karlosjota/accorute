@@ -32,6 +32,8 @@ public class RoleCompare {
         }
         int minSize = (c1 > c2) ? c2 : c1;
         int i;
+        java.util.Collections.reverse(routeOne);
+        java.util.Collections.reverse(routeOther);
         for(i=0; i<minSize; i++){
             if(!routeOne.get(i).equals(routeOther.get(i)))
                 break;
