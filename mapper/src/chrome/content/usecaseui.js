@@ -7,6 +7,12 @@ function populateMenuFromList(menu, list){
     menu.selectedItem = menu.getItemAtIndex(0);
 }
 
+function clearListBox(list){
+    for(var i = 0; i < list.itemCount; i++){
+        list.removeItemAt(i);
+    }
+}
+
 function addRole(){
     var list =  document.getElementById("roleList");
     var row = document.createElement('listitem');
@@ -108,6 +114,8 @@ function finishUC(){
             "Start";
     document.getElementById("sessName").disabled = false;
     document.getElementById("userSelect").disabled = false;
+    document.getElementById("saveToFileButton").disabled = false;
+    document.getElementById("loadFromFileButton").disabled = false;
     /*    var list = document.getElementById("SessList");
      var item = list.getItemAtIndex(list.getRowCount() - 1);
      var actions = capturer.finishSession();
@@ -147,6 +155,8 @@ function startUC(){
     list.appendChild(row);
     document.getElementById("sessName").disabled = true;
     document.getElementById("userSelect").disabled = true;
+    document.getElementById("saveToFileButton").disabled = true;
+    document.getElementById("loadFromFileButton").disabled = true;
     capturer.newSession(document.getElementById("sessName").value,
             document.getElementById("userSelect").selectedItem.label);
 }
@@ -160,6 +170,7 @@ function dumpSettingsToFile(file){
         users: new Array(),
         dependencies: new Array(),
         cancellations: new Array(),
+        useCases: new Array(),
         trace: capturer.sessions
     };
     var list = document.getElementById("depList");
@@ -203,6 +214,15 @@ function dumpSettingsToFile(file){
             parent: parent
         }
     }
+    list = document.getElementById("sessList");
+    for(var i=0;i<list.itemCount;i++){
+        var name = list.getItemAtIndex(i).childNodes[0].getAttribute("label");
+        var user = list.getItemAtIndex(i).childNodes[1].getAttribute("label");
+        settings.useCases[settings.useCases.length] = {
+            name: name,
+            user: user
+        }
+    }
 
     try {
         var foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].
@@ -220,39 +240,102 @@ function dumpSettingsToFile(file){
 }
 
 function importSettingsFromFile(file){
-    var settings = {
-        /*scope: document.getElementById("webappScopeRegexp").value,
-        sessTokenLocation: document.getElementById("webappSessTokenLocSelect").selectedItem.label,
-        sessTokenName: document.getElementById("webappSessTokenName").value,
-        roles: new Array(),
-        users: new Array(),
-        dependencies: new Array(),
-        cancellations: new Array(),
-        trace: capturer.sessions */
-    };
+    var settings;
     try {
         var data = "";
         var foStream = Components.classes["@mozilla.org/network/file-input-stream;1"].
-                createInstance(Components.interfaces.nsIFileOutputStream);
+                createInstance(Components.interfaces.nsIFileInputStream);
         var cstream = Components.classes["@mozilla.org/intl/converter-input-stream;1"].
               createInstance(Components.interfaces.nsIConverterInputStream);
         foStream.init(file,-1 , 0, 0);
         cstream.init(foStream, "UTF-8", 0, 0); // you can use another encoding here if you wish
-        var str = {}
+        var str = {} ;
         var read = 0;
         do {
             read = cstream.readString(0xffffffff, str); // read as much as we can and put it in str.value
             data += str.value;
         } while (read != 0);
-        cstream.close(); // this closes fstream
+        cstream.close(); // this closes foStream
         settings = JSON.parse(data);
     } catch (ex) {
         alert(ex);
         return false;
     }
-    capturer.sessions = settings.trace; //TODO : dangerous when in the middle of the capture
+    capturer.sessions = settings.trace;
+    //basic
+    document.getElementById("webappScopeRegexp").value = settings.scope;
+    document.getElementById("webappSessTokenName").value = settings.sessTokenName;
+    var menulst = document.getElementById("webappSessTokenLocSelect");
+    for(var i = 0; i < menulst.itemCount; i++){
+        if(menulst.getItemAtIndex(i).label == settings.sessTokenLocation){
+            document.getElementById("webappSessTokenLocSelect").selectedIndex = i;
+            break;
+        }
+    }
     capturer.listening = false;
-    //TODO: populate the UI from the dump!
+    var list = document.getElementById("depList");
+    clearListBox(list);
+    for(var i=0;i<settings.dependencies.length;i++){
+        var row = document.createElement('listitem');
+        var cell = document.createElement("listcell");
+        cell.setAttribute("label",settings.dependencies[i].from);
+        row.appendChild(cell);
+        cell = document.createElement("listcell");
+        cell.setAttribute("label",settings.dependencies[i].to);
+        row.appendChild(cell);
+        list.appendChild(row);
+    }
+    list = document.getElementById("cancelList");
+    clearListBox(list);
+    for(var i=0;i<settings.cancellations.length;i++){
+        var row = document.createElement('listitem');
+        var cell = document.createElement("listcell");
+        cell.setAttribute("label",settings.cancellations[i].from);
+        row.appendChild(cell);
+        cell = document.createElement("listcell");
+        cell.setAttribute("label",settings.cancellations[i].to);
+        row.appendChild(cell);
+        list.appendChild(row);
+    }
+    list = document.getElementById("userList");
+    clearListBox(list);
+    for(var i=0;i<settings.users.length;i++){
+        var row = document.createElement('listitem');
+        var cell = document.createElement("listcell");
+        cell.setAttribute("label",settings.users[i].name);
+        row.appendChild(cell);
+        cell = document.createElement("listcell");
+        cell.setAttribute("label",settings.users[i].name);
+        row.appendChild(cell);
+        cell = document.createElement("listcell");
+        cell.setAttribute("label",settings.users[i].credentials.password);
+        row.appendChild(cell);
+        list.appendChild(row);
+    }
+    list = document.getElementById("roleList");
+    clearListBox(list);
+    for(var i=0;i<settings.roles.length;i++){
+        var row = document.createElement('listitem');
+        var cell = document.createElement("listcell");
+        cell.setAttribute("label",settings.roles[i].name);
+        row.appendChild(cell);
+        cell = document.createElement("listcell");
+        cell.setAttribute("label",settings.roles[i].parent);
+        row.appendChild(cell);
+        list.appendChild(row);
+    }
+    list = document.getElementById("sessList");
+    clearListBox(list);
+    for(var i=0;i<settings.useCases.length;i++){
+        var row = document.createElement('listitem');
+        var cell = document.createElement("listcell");
+        cell.setAttribute("label",settings.useCases[i].name);
+        row.appendChild(cell);
+        cell = document.createElement("listcell");
+        cell.setAttribute("label",settings.useCases[i].user);
+        row.appendChild(cell);
+        list.appendChild(row);
+    }
     return true;
 }
 

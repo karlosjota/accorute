@@ -193,9 +193,9 @@
                 </tabpanel>
             </tabpanels>
         </tabbox>
-        <hbox flex="1">
-            <button id="saveToFile" oncommand = "saveToFile();" label="Export to file" />
-            <button id="loadFromFile" oncommand = "loadFile();" label="Import from file" />
+        <hbox>
+            <button id="saveToFileButton" oncommand = "saveToFile();" label="Export to file" />
+            <button id="loadFromFileButton" oncommand = "loadFile();" label="Import from file" />
         </hbox>
     </vbox>
 </overlay>
