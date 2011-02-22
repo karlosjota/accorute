@@ -1,5 +1,11 @@
 package su.msu.cs.lvk.accorute.http.model;
 
+import com.gargoylesoftware.htmlunit.javascript.host.xml.XMLDocument;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.util.List;
 
 /**
@@ -25,6 +31,27 @@ public class HttpAction {
                 ", actionParameters=" + actionParameters +
                 ", actionID=" + actionID +
                 '}';
+    }
+
+    public void appendToElement(Element el) {
+        Document doc = el.getOwnerDocument();
+        Element a = doc.createElement("action");
+        el.appendChild(a);
+        a.setAttribute("name",name);
+        a.setAttribute("id",actionID.getId().toString());
+        Element paramSet = doc.createElement("params");
+        a.appendChild(paramSet);
+        for(int i=0; i < actionParameters.size(); i++){
+            Element param = doc.createElement("param");
+            ActionParameter ap = actionParameters.get(i);
+            param.setAttribute("name",ap.getName());
+            param.setAttribute("value",ap.getValue());
+            param.setAttribute("type",ap.getDatatype().toString());
+            param.setAttribute("location",ap.getLocation().toString());
+            param.setAttribute("meaning",ap.getMeaning().toString());
+            param.setAttribute("role",ap.getRole().toString());
+            paramSet.appendChild(param);
+        }
     }
 
     public EntityID getActionID() {

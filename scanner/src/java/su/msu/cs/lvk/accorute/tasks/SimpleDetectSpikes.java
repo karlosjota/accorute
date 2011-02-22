@@ -31,7 +31,7 @@ public class SimpleDetectSpikes extends Task{
 
     @Override
     public Object getResult() {
-        return res;  //To change body of implemented methods use File | Settings | File Templates.
+        return res;
     }
 
     private Set<HttpAction> detectSpikes(EntityID attackCtx, Set<HttpAction> testActs, Map<HttpAction,Conversation> map){

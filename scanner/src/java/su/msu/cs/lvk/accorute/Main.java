@@ -1,19 +1,33 @@
 package su.msu.cs.lvk.accorute;
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.w3c.dom.Document;
 import su.msu.cs.lvk.accorute.RBAC.Role;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 import su.msu.cs.lvk.accorute.tasks.*;
+import su.msu.cs.lvk.accorute.utils.Callback0;
 import su.msu.cs.lvk.accorute.utils.Callback3;
 import su.msu.cs.lvk.accorute.utils.RoleCompare;
 
+import org.w3c.dom.*;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.StringWriter;
 import java.util.*;
+import javax.xml.parsers.*;
+
+import javax.xml.transform.*;
+import javax.xml.transform.dom.*;
+import javax.xml.transform.stream.*;
+
 
 /**
  * Created by IntelliJ IDEA.
@@ -77,9 +91,26 @@ public class Main{
         }
         taskman.waitForEmptyQueue();
         boolean started = false;
+        Document rootDocument;
+        Element rootElement;
+        try {
+            DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = dbfac.newDocumentBuilder();
+            rootDocument = docBuilder.newDocument();
+            rootElement = rootDocument.createElement("WebApp");
+            rootDocument.appendChild(rootElement);
+        }  catch (Exception e) {
+            logger.fatal(e);
+            return;
+        }
         while(it.hasNext()){
+            final Element curState = rootDocument.createElement("usecase");
+            rootElement.appendChild(curState);
             if(started){
                 UseCase uc = it.next();
+                curState.setAttribute("name",uc.getHttpAct().getName());
+                curState.setAttribute("role",uc.getUserRole().getRoleName());
+                uc.getHttpAct().appendToElement(curState);
                 EntityID ctxID = users1.get(uc.getUserRole().getRoleName());
                 HttpAction action = uc.getHttpAct();
                 Task t = new HttpActionPerformerWithPrecedingActions(taskman,ctxID,action);
@@ -96,22 +127,62 @@ public class Main{
             }
             taskman.waitForEmptyQueue();
             //3. Perform spike detection
-            for(Role r1: WebAppProperties.getInstance().getRoles()){
-                for(Role r2: WebAppProperties.getInstance().getRoles()){
+            for(final Role r1: WebAppProperties.getInstance().getRoles()){
+                for(final Role r2: WebAppProperties.getInstance().getRoles()){
                     EntityID ctxID1 = users1.get(r2.getRoleName());
                     EntityID ctxID2 = users2.get(r1.getRoleName());
-                    if(RoleCompare.less(r2,r1) >= 0)
-                        taskman.addTask(new SimpleDetectSpikes(taskman,ctxID1,ctxID2));
+                    if(RoleCompare.less(r2,r1) >= 0){
+                        final Task t = new SimpleDetectSpikes(taskman,ctxID1,ctxID2);
+                        t.registerCallback(
+                                new Callback0(){
+                                    public void CallMeBack() {
+                                        Set<HttpAction> acts = (Set<HttpAction>)t.getResult();
+                                        Element spikeSet = curState.getOwnerDocument().createElement("spikeset");
+                                        curState.appendChild(spikeSet);
+                                        spikeSet.setAttribute("from",r1.getRoleName());
+                                        spikeSet.setAttribute("to",r2.getRoleName());
+                                        Iterator<HttpAction> it = acts.iterator();
+                                        while(it.hasNext()){
+                                            HttpAction act = it.next();
+                                            act.appendToElement(spikeSet);
+                                        }
+                                    }
+                                }
+                        );
+                        taskman.addTask(t);
+                    }
                 }                                                                                                                           
             }
             taskman.waitForEmptyQueue();
         }
         WebAppProperties.getInstance().getTaskManager().terminate();
         WebAppProperties.getInstance().getTaskManager().waitForFinish();
-        if(!configTask.isSuccessful()){
-            logger.trace("smth went wrong!");
-        }      
         System.out.print(WebAppProperties.getInstance().getUcGraph());
+        try{
+            ////////////////
+            //Output the XML
+            //set up a transformer
+            TransformerFactory transfac = TransformerFactory.newInstance();
+            Transformer trans = transfac.newTransformer();
+            trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            trans.setOutputProperty(OutputKeys.INDENT, "yes");
+            trans.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+
+            //create string from xml tree
+              // get the supporting classes for the transformer
+            FileWriter writer = new FileWriter("report.xml");
+            StreamResult result = new StreamResult(writer);
+            DOMSource    source = new DOMSource(rootDocument);
+
+            // transform the xml document into a string
+            trans.transform(source, result);
+
+            // close the output file
+            writer.close();
+        }catch(Exception ex){
+            logger.fatal(ex);
+            return;
+        }
         /*TestChain testChain = WebAppProperties.getInstance().getTestChain();
         for(int i=0; i < testChain.size(); i++){
             logger.trace("UC: " + testChain.get(i).action + " by role " +testChain.get(i).user.getUserRole().getRoleName());
