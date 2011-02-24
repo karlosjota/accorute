@@ -127,20 +127,20 @@ public class Main{
             }
             taskman.waitForEmptyQueue();
             //3. Perform spike detection
-            for(final Role r1: WebAppProperties.getInstance().getRoles()){
-                for(final Role r2: WebAppProperties.getInstance().getRoles()){
-                    EntityID ctxID1 = users1.get(r2.getRoleName());
-                    EntityID ctxID2 = users2.get(r1.getRoleName());
-                    if(RoleCompare.less(r2,r1) >= 0){
-                        final Task t = new SimpleDetectSpikes(taskman,ctxID1,ctxID2);
+            for(final Role attackRole: WebAppProperties.getInstance().getRoles()){
+                for(final Role victimRole: WebAppProperties.getInstance().getRoles()){
+                    EntityID attacker = users2.get(attackRole.getRoleName());
+                    EntityID victim = users1.get(victimRole.getRoleName());
+                    if(RoleCompare.less(victimRole,attackRole) >= 0){
+                        final Task t = new SimpleDetectSpikes(taskman,attacker,victim);
                         t.registerCallback(
                                 new Callback0(){
                                     public void CallMeBack() {
                                         Set<HttpAction> acts = (Set<HttpAction>)t.getResult();
                                         Element spikeSet = curState.getOwnerDocument().createElement("spikeset");
                                         curState.appendChild(spikeSet);
-                                        spikeSet.setAttribute("from",r1.getRoleName());
-                                        spikeSet.setAttribute("to",r2.getRoleName());
+                                        spikeSet.setAttribute("from",attackRole.getRoleName());
+                                        spikeSet.setAttribute("to",victimRole.getRoleName());
                                         Iterator<HttpAction> it = acts.iterator();
                                         while(it.hasNext()){
                                             HttpAction act = it.next();
