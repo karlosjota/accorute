@@ -9,6 +9,7 @@ import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -63,7 +64,18 @@ public class SimpleDetectSpikes extends Task{
         Set<HttpAction> acts1 = map1.keySet();
         Set<HttpAction> acts2 = map2.keySet();
         Set<HttpAction> test12 = new HashSet<HttpAction>(acts2);
-        test12.removeAll(acts1);
+        Iterator<HttpAction> it = acts1.iterator();
+        Set<HttpAction> toDelete = new HashSet<HttpAction>();
+        while(it.hasNext()){
+            HttpAction act = it.next();
+            Iterator<HttpAction> it2 = test12.iterator();
+            while(it2.hasNext()){
+                HttpAction act2 = it2.next();
+                if(WebAppProperties.getInstance().getAcEqDec().ActionEquals(act,act2))
+                    toDelete.add(act2);
+            }
+            test12.removeAll(toDelete);
+        }
         logger.trace("Test set "+ctxID1 + "->" + ctxID2+ test12);
         Set<HttpAction> sp1 = detectSpikes(ctxID1,test12,map2);
         logger.trace("Spikes "+ctxID1 + "->" + ctxID2+ sp1);
