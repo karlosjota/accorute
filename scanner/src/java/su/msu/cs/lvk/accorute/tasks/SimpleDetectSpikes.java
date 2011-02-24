@@ -57,8 +57,6 @@ public class SimpleDetectSpikes extends Task{
     protected void start() {
         Sitemap s1 = WebAppProperties.getInstance().getSitemapService().getSitemapForContext(ctxID1);
         Sitemap s2 = WebAppProperties.getInstance().getSitemapService().getSitemapForContext(ctxID2);
-        logger.trace("S1 :" + s1);
-        System.out.println("S2 :" + s2);
         Map<HttpAction,Conversation> map1 = s1.getValidHttpActions();
         Map<HttpAction,Conversation> map2 = s2.getValidHttpActions();
         Set<HttpAction> acts1 = map1.keySet();
@@ -66,6 +64,8 @@ public class SimpleDetectSpikes extends Task{
         Set<HttpAction> test12 = new HashSet<HttpAction>(acts2);
         Iterator<HttpAction> it = acts1.iterator();
         Set<HttpAction> toDelete = new HashSet<HttpAction>();
+        logger.trace("acts1 :" + acts1);
+        logger.trace("acts2 :" + acts2);
         while(it.hasNext()){
             HttpAction act = it.next();
             Iterator<HttpAction> it2 = test12.iterator();
