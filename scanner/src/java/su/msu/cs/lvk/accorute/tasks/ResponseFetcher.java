@@ -75,10 +75,10 @@ public class ResponseFetcher extends Task {
                     respCheckStatus = SessionValidityWatcher.RespCheckStatus.NOT_EXPIRED;
                 tried = true;
             }while(respCheckStatus == SessionValidityWatcher.RespCheckStatus.RETRY);
-            if(updateCreds){
+            /*if(updateCreds){
                 res = new Conversation(req,resp);
                 WebAppProperties.getInstance().getDynCredUpd().updateCredentials(u.getUserID(),res);
-            }
+            }*/
             setSuccessful(true);
         /*} catch (HttpException e) {
             logger.error("Fatal protocol violation: " + e.getMessage());*/

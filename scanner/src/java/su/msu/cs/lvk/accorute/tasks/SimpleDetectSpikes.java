@@ -1,17 +1,13 @@
 package su.msu.cs.lvk.accorute.tasks;
 
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import su.msu.cs.lvk.accorute.WebAppProperties;
-import su.msu.cs.lvk.accorute.http.model.Conversation;
-import su.msu.cs.lvk.accorute.http.model.EntityID;
-import su.msu.cs.lvk.accorute.http.model.HttpAction;
-import su.msu.cs.lvk.accorute.http.model.Sitemap;
+import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
+import su.msu.cs.lvk.accorute.utils.Callback3;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -39,10 +35,20 @@ public class SimpleDetectSpikes extends Task{
         Set<HttpAction> spikes = new HashSet<HttpAction>();
         for(HttpAction act: testActs){
             boolean successful = false;
-            ResponseFetcher fetcher = new ResponseFetcher(taskManager, act,attackCtx);
-            waitForTask(fetcher);
-            if(fetcher.isSuccessful()){
-                Conversation conv = (Conversation) fetcher.getResult();
+            final List<Conversation> convs = new ArrayList<Conversation>();
+            HtmlElementActionPerformer performer = new HtmlElementActionPerformer(
+                taskManager,
+                act,
+                attackCtx,
+                    new Callback3<ArrayList<Conversation>, ArrayList<HttpAction>, HtmlPage>(){
+                        public void CallMeBack(ArrayList<Conversation> convers, ArrayList<HttpAction> acts, HtmlPage page) {
+                            convs.add(convers.get(0));
+                        }
+                    }
+            );
+            waitForTask(performer);
+            if(performer.isSuccessful()){
+                Conversation conv = convs.get(0);
                 if(WebAppProperties.getInstance().getAgd().accessWasGranted(map.get(act), conv))
                     successful = true;
             }

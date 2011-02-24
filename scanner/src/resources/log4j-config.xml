@@ -39,6 +39,9 @@
     <logger name="su.msu.cs.lvk.accorute.tasks.SimpleDetectSpikes">
         <level value="trace"/>
     </logger>
+    <logger name="su.msu.cs.lvk.accorute.tasks.HtmlElementActionPerformer">
+        <level value="trace"/>
+    </logger>
     <!--<logger name="org.apache.http" >
         <level value="trace" />
     </logger>-->
@@ -48,4 +51,12 @@
     <logger name="com.gargoylesoftware.htmlunit.javascript.background.JavaScriptExecutor">
         <level value="warn"/>
     </logger>
+
+    <logger name="su.msu.cs.lvk.accorute.http.model.Sitemap">
+        <level value="trace"/>
+    </logger>      <!--
+    <logger name="su.msu.cs.lvk.accorute.decisions.ActionEqualsIfNameValueEquals">
+        <level value="trace"/>
+    </logger>
+    -->
 </log4j:configuration>

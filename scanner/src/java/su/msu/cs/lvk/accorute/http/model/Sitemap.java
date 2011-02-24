@@ -22,20 +22,20 @@ public class Sitemap {
     private final SitemapNode exitNode = genNode();
     private Logger logger = Logger.getLogger(Sitemap.class.getName());
 
-    public SitemapNode getInvalidNode() {
+    synchronized public SitemapNode getInvalidNode() {
         return invalidNode;
     }
 
-    public SitemapNode getExitNode() {
+    synchronized public SitemapNode getExitNode() {
         return exitNode;
     }
 
-    public SitemapNode getEntryNode() {
+    synchronized public SitemapNode getEntryNode() {
         return entryNode;
     }
 
     @Override
-    public String toString() {
+    synchronized public String toString() {
         return "Sitemap{" +
                 "\nctxID=" + ctxID +
                 ",\nNodes=" + actionDepGraph.vertexSet() +
@@ -110,7 +110,7 @@ public class Sitemap {
                     '}';
         }
     }
-    public Set<HttpAction> getInbound(SitemapNode n){
+    synchronized public Set<HttpAction> getInbound(SitemapNode n){
         Set<HttpAction> rez = new HashSet<HttpAction>();
         Iterator<SitemapEdge> edges = actionDepGraph.incomingEdgesOf(n).iterator();
         while (edges.hasNext()){
@@ -129,23 +129,30 @@ public class Sitemap {
     }
     synchronized public Map<HttpAction,Conversation> getValidHttpActions(){
         Map<HttpAction,Conversation> res = new HashMap<HttpAction,Conversation>();
+        logger.trace("getValidHttpActions for " + ctxID + "");
         Set<SitemapEdge> edges = actionDepGraph.edgeSet();
-        for(SitemapEdge edge:edges){
+        Iterator<SitemapEdge> edgeIter = edges.iterator();
+        while(edgeIter.hasNext()){
+            SitemapEdge edge = edgeIter.next();
             if(edge.getV1() != invalidNode && edge.getV2() != invalidNode){
                 List<HttpAction> acts = edge.getLabel().getHttpActions();
                 List<Conversation> convs =  edge.getConvs();
                 for(int i=0;i<acts.size();i++){
                     boolean alreadyThere = false;
-                    for(Map.Entry<HttpAction,Conversation> entry : res.entrySet()){
-                        if(WebAppProperties.getInstance().getAcEqDec().ActionEquals(entry.getKey(), acts.get(i))){
-                            if(entry.getValue() == null && convs != null)
-                                entry.setValue(convs.get(i));
+                    logger.trace("trying to add " + acts.get(i));
+                    Iterator<HttpAction> resIter = res.keySet().iterator();
+                    while(resIter.hasNext()){
+                        HttpAction act = resIter.next();
+                        if(WebAppProperties.getInstance().getAcEqDec().ActionEquals(act, acts.get(i))){
                             alreadyThere = true;
                             break;
                         }
                     }
-                    if(alreadyThere)
+                    if(alreadyThere){
+                        logger.trace("Not added!");
                         continue;
+                    }
+                    logger.trace("Added!");
                     if(convs != null){
                         res.put(acts.get(i),convs.get(i));
                     }else{
@@ -154,6 +161,7 @@ public class Sitemap {
                 }
             }
         }
+
         return res;
     }
     synchronized public SitemapNode getNodePreceedingNeededAction(HttpAction act){
@@ -169,16 +177,16 @@ public class Sitemap {
         }
         return null;
     }
-    public SitemapNode getNodeByID(EntityID id){
+    synchronized public SitemapNode getNodeByID(EntityID id){
          return nodeById.get(id);
     }
-    public SitemapNode createNode(Conversation conv, HtmlPage p){
+    synchronized public SitemapNode createNode(Conversation conv, HtmlPage p){
         SitemapNode n = genNode();
         n.addInbound(conv);
         n.addPage(p);
         return n;
     }
-    public SitemapNode getNode(HtmlPage p){
+    synchronized public SitemapNode getNode(HtmlPage p){
         SitemapNode n = null;
         for(Map.Entry<EntityID, SitemapNode> entry : nodeById.entrySet()){
             if(entry.getValue().pageEqual(p)){
@@ -191,7 +199,7 @@ public class Sitemap {
         }
         return n;
     }
-    public SitemapNode getNode(Conversation conv){
+    synchronized public SitemapNode getNode(Conversation conv){
         SitemapNode n = null;
         for(Map.Entry<EntityID, SitemapNode> entry : nodeById.entrySet()){
             if(entry.getValue().responseEqual(conv)){
@@ -252,11 +260,11 @@ public class Sitemap {
 
     private final EntityID ctxID;
 
-    public Sitemap(EntityID ctxID) {     
+    public Sitemap(EntityID ctxID) {
         this.ctxID = ctxID;
     }
 
-    public boolean addEdge(SitemapNode from, SitemapNode to, CorrespondentActions act, ArrayList<Conversation> convs){
+    synchronized public boolean addEdge(SitemapNode from, SitemapNode to, CorrespondentActions act, ArrayList<Conversation> convs){
         actionDepGraph.addVertex(from);
         actionDepGraph.addVertex(to);
         SitemapEdge edge = new SitemapEdge(from,to,act,convs);
@@ -268,7 +276,7 @@ public class Sitemap {
         return actionDepGraph.addEdge(from,to,edge);
     }
 
-    public EntityID getCtxID() {
+    synchronized public EntityID getCtxID() {
         return ctxID;
     }
 

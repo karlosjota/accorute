@@ -90,7 +90,10 @@ public class SessionValidityWatcher {
             notifyAll();
             logger.trace(ctx + ":"+yetUntestedFetches + " left to test");
             RespCheckStatus res;
-            if(type == ResponseClassificator.ResponseType.EXPIRED){
+            if(type == ResponseClassificator.ResponseType.EXPIRED
+                    || type == ResponseClassificator.ResponseType.PROHIBITED
+                    || type == ResponseClassificator.ResponseType.ERROR
+            ){
                 syncReAuth(tm);
             }
             res = RespCheckStatus.NOT_EXPIRED;
