@@ -33,13 +33,10 @@ import java.util.Set;
 public class SimpleDynamicCredentialsUpdater implements DynamicCredentialsUpdater {
     private static Logger logger = Logger.getLogger(SimpleDynamicCredentialsUpdater.class.getName());
     public void updateCredentials(EntityID userID, List<ActionParameter> params){
-        List<String> dynCredNames = WebAppProperties.getInstance().getDynamicTokenNames();
-        List<ActionParameterLocation> dynCredLocs = WebAppProperties.getInstance().getDynamicTokenLocations();
         WebAppUser u = WebAppProperties.getInstance().getUserService().getUserByID(userID);
         for(ActionParameter p : params){
             String name = p.getName();
-            int pos = dynCredNames.indexOf(name);
-            if(pos>=0 && dynCredLocs.get(pos) == p.getLocation()){
+            if(WebAppProperties.getInstance().getDynTokenLoc(name) == p.getLocation()){
                 u.getDynamicCredentials().put(name, p.getValue());
                 logger.trace(userID + "Updated cred: " + name + ": " + p.getValue());
             }

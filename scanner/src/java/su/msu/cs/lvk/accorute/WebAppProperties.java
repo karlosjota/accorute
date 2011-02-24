@@ -12,6 +12,7 @@ import org.apache.http.impl.client.AbstractHttpClient;
 import su.msu.cs.lvk.accorute.RBAC.Role;
 import su.msu.cs.lvk.accorute.decisions.*;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterLocation;
+import su.msu.cs.lvk.accorute.http.constants.ActionParameterMeaning;
 import su.msu.cs.lvk.accorute.http.model.HttpAction;
 import su.msu.cs.lvk.accorute.http.model.TestChain;
 import su.msu.cs.lvk.accorute.http.model.UseCaseGraph;
@@ -168,20 +169,21 @@ public class WebAppProperties {
         return ucGraph;
     }
 
-    public List<String> getDynamicTokenNames() {
-        return dynamicTokenNames;
+    public void addDynamicToken(String name, ActionParameterLocation loc) {
+        dynamicTokenNames.add(name);
+        dynamicTokenLocations.add(loc);
     }
 
-    public void setDynamicTokenNames(List<String> dynamicTokenNames) {
-        this.dynamicTokenNames = dynamicTokenNames;
+    public ActionParameterMeaning getDynTokenMeaning(String name){
+       if(dynamicTokenNames.indexOf(name)<0)
+           return null;
+       return ActionParameterMeaning.ONETIMETOKEN;
     }
-
-    public List<ActionParameterLocation> getDynamicTokenLocations() {
-        return dynamicTokenLocations;
-    }
-
-    public void setDynamicTokenLocations(List<ActionParameterLocation> dynamicTokenLocations) {
-        this.dynamicTokenLocations = dynamicTokenLocations;
+    public ActionParameterLocation getDynTokenLoc(String name){
+        int p = dynamicTokenNames.indexOf(name);
+        if(p<0)
+            return null;
+        return dynamicTokenLocations.get(p);
     }
 
     public URL getStartPage() {

@@ -83,7 +83,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
                             nameval[0],
                             nameval[1],
                             ActionParameterLocation.BODY,
-                            ActionParameterMeaning.AUTOMATIC,//TODO: this is temporary
+                            decideActionMeaning(nameval[0],ActionParameterLocation.BODY),
                             ActionParameterDatatype.STRING
                     ));
                 }
@@ -94,7 +94,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
                             URLDecoder.decode(nvp.getName()),
                             URLDecoder.decode(nvp.getValue()),
                             ActionParameterLocation.BODY,
-                            ActionParameterMeaning.AUTOMATIC,//TODO: this is temporary
+                            decideActionMeaning(URLDecoder.decode(nvp.getName()),ActionParameterLocation.BODY),
                             ActionParameterDatatype.STRING
                     ));
                 }
@@ -157,7 +157,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
                 "host",
                 url.getHost(),
                 ActionParameterLocation.URL,
-                ActionParameterMeaning.AUTOMATIC,
+                decideActionMeaning("host",ActionParameterLocation.URL),
                 ActionParameterDatatype.STRING)
         );
         int port = url.getPort();
@@ -167,14 +167,14 @@ public class SimpleRCD extends RequestComposerDecomposer{
                 "port",
                 Integer.toString(port),
                 ActionParameterLocation.URL,
-                ActionParameterMeaning.AUTOMATIC,
+                decideActionMeaning("port",ActionParameterLocation.URL),
                 ActionParameterDatatype.NUMBER)
         );
         params.add(new ActionParameter(
                 "path",
                 url.getPath(),
                 ActionParameterLocation.URL,
-                ActionParameterMeaning.AUTOMATIC,
+                decideActionMeaning("path",ActionParameterLocation.URL),
                 ActionParameterDatatype.STRING)
         );
         String query = url.getQuery();
@@ -186,12 +186,33 @@ public class SimpleRCD extends RequestComposerDecomposer{
                     URLDecoder.decode(nameValue[0]),
                     URLDecoder.decode( (nameValue.length>1)?nameValue[1]:""),
                     ActionParameterLocation.QUERY,
-                    ActionParameterMeaning.AUTOMATIC,
+                    decideActionMeaning(URLDecoder.decode(nameValue[0]),ActionParameterLocation.QUERY),
                     ActionParameterDatatype.STRING)
                 );
             }
         }
         return params;
+    }
+
+    private ActionParameterMeaning decideActionMeaning(String name, ActionParameterLocation loc){
+        if(loc == null)
+            throw new RuntimeException("decideActionMeaning: location cannot be null");
+        if(loc == WebAppProperties.getInstance().getDynTokenLoc(name))
+            return WebAppProperties.getInstance().getDynTokenMeaning(name);
+        switch(loc){
+            case BODY:
+                return ActionParameterMeaning.AUTOMATIC;
+            case COOKIE:
+                return ActionParameterMeaning.SESSIONTOKEN;
+            case HEADER:
+                return ActionParameterMeaning.UNKNOWN;
+            case QUERY:
+                return ActionParameterMeaning.AUTOMATIC;
+            case URL:
+                return ActionParameterMeaning.AUTOMATIC;
+            default:
+                return ActionParameterMeaning.UNKNOWN;
+        }
     }
 
     public List<ActionParameter> decomposeCookies(String cookies){
@@ -203,7 +224,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
                     namevalue[0].trim(),
                     namevalue[1].trim(),
                     ActionParameterLocation.COOKIE,
-                    ActionParameterMeaning.SESSIONTOKEN, // TODO: this is a stub
+                    decideActionMeaning(namevalue[0].trim(),ActionParameterLocation.COOKIE),
                     ActionParameterDatatype.STRING)
             );
         }

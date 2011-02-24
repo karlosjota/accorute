@@ -115,16 +115,17 @@ public class JSONConfigurator extends Task {
                 for(int i=0;i < tokens.length();i++){
                     JSONObject token = tokens.getJSONObject(i);
                     String loc = token.getString("location");
+                    ActionParameterLocation paramLoc = null;
                     if(loc.equalsIgnoreCase("query")){
-                       WebAppProperties.getInstance().getDynamicTokenLocations().add(ActionParameterLocation.QUERY);
+                       paramLoc = ActionParameterLocation.QUERY;
                     }else if(loc.equalsIgnoreCase("body")){
-                       WebAppProperties.getInstance().getDynamicTokenLocations().add(ActionParameterLocation.BODY);
+                       paramLoc = ActionParameterLocation.BODY;
                     }else if(loc.equalsIgnoreCase("cookie")){
-                       WebAppProperties.getInstance().getDynamicTokenLocations().add(ActionParameterLocation.COOKIE);
+                       paramLoc = ActionParameterLocation.COOKIE;
                     }else{
                         throw new RuntimeException(loc +" location is not supported");
                     }
-                    WebAppProperties.getInstance().getDynamicTokenNames().add(token.getString("name"));
+                    WebAppProperties.getInstance().addDynamicToken(token.getString("name"),paramLoc);
                 }
                 JSONArray roles = obj.getJSONArray("roles");
                 for(int i=0;i < roles.length();i++){
