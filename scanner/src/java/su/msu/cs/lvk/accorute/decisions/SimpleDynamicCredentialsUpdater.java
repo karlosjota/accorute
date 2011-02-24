@@ -44,6 +44,7 @@ public class SimpleDynamicCredentialsUpdater implements DynamicCredentialsUpdate
         WebAppProperties.getInstance().getUserService().addOrModifyUser(u);
     }
     public void updateCredentials(EntityID userID, HtmlPage p){
+        logger.trace(userID+"USING THE RESPONSE TO THE FOLLOWING REQUEST \n" + p.getWebResponse().getWebRequest() + "\nWITH RESPONSE:"+p.getWebResponse().getContentAsString());
         WebClient client = p.getWebClient();
         Set<com.gargoylesoftware.htmlunit.util.Cookie> cooks = client.getCookieManager().getCookies();
         URL u = p.getUrl();
@@ -60,7 +61,7 @@ public class SimpleDynamicCredentialsUpdater implements DynamicCredentialsUpdate
         WebAppUser user = WebAppProperties.getInstance().getUserService().getUserByID(id);
         for(Cookie c: desc.getCookies()){
             user.getDynamicCredentials().put(c.getName(),c.getValue());
-            logger.trace(user.getUserID()+"Updated cred: " + c.getName() + ":" + c.getValue());
+            logger.trace(userID+"Updated cred: " + c.getName() + ":" + c.getValue());
         }
         WebAppProperties.getInstance().getUserService().addOrModifyUser(user);
 

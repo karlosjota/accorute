@@ -1,5 +1,6 @@
 package su.msu.cs.lvk.accorute.decisions;
 
+import org.apache.log4j.Logger;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterMeaning;
 import su.msu.cs.lvk.accorute.http.model.ActionParameter;
 import su.msu.cs.lvk.accorute.http.model.HttpAction;
@@ -21,6 +22,7 @@ import java.util.Set;
  * @br simple URL-based equality check
  */
 public class ActionEqualsIfNameValueEquals implements ActionEqualityDecision{
+    private Logger logger = Logger.getLogger(ActionEqualsIfNameValueEquals.class.getName());
     private static ActionParameter getParamByName(List<ActionParameter> params, String name){
         for(ActionParameter param: params ){
             if(param.getName().equals(name))
@@ -58,8 +60,10 @@ public class ActionEqualsIfNameValueEquals implements ActionEqualityDecision{
                 return false;
             String aVal = aParam.getValue();
             String bVal = bParam.getValue();
-            if(!aVal.equals(bVal))
+            if(!aVal.equals(bVal)){
+                logger.trace( a + " != " +b +" because of " + name);
                 return false;
+            }
         }
         return true;
     }
