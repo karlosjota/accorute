@@ -36,7 +36,7 @@ public class ActionEqualsIfNameValueEquals implements ActionEqualityDecision{
         for(ActionParameter aParam:aParams){
             names.add(aParam.getName());
         }
-        for(ActionParameter bParam:bParams){names.add(bParam.getName());
+        for(ActionParameter bParam:bParams){
             names.add(bParam.getName());
         }
         for(ActionParameter aParam:aParams){

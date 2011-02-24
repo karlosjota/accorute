@@ -83,7 +83,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
                             nameval[0],
                             nameval[1],
                             ActionParameterLocation.BODY,
-                            ActionParameterMeaning.USERCONTROLLABLE,//TODO: this is temporary
+                            ActionParameterMeaning.AUTOMATIC,//TODO: this is temporary
                             ActionParameterDatatype.STRING
                     ));
                 }
@@ -94,7 +94,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
                             URLDecoder.decode(nvp.getName()),
                             URLDecoder.decode(nvp.getValue()),
                             ActionParameterLocation.BODY,
-                            ActionParameterMeaning.USERCONTROLLABLE,//TODO: this is temporary
+                            ActionParameterMeaning.AUTOMATIC,//TODO: this is temporary
                             ActionParameterDatatype.STRING
                     ));
                 }
