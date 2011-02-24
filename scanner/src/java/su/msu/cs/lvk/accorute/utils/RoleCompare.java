@@ -41,6 +41,6 @@ public class RoleCompare {
         if(i<minSize - 1){
             return 0; // Not comparable
         }
-        return c1 - c2; // >0 if one parent of other, <0 otherwise
+        return c1 - c2; // >0 if one is more privileged than other, <0 otherwise
     }
 }
