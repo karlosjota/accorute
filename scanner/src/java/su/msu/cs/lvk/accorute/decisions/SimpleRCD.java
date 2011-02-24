@@ -170,13 +170,6 @@ public class SimpleRCD extends RequestComposerDecomposer{
                 decideActionMeaning("port",ActionParameterLocation.URL),
                 ActionParameterDatatype.NUMBER)
         );
-        params.add(new ActionParameter(
-                "path",
-                url.getPath(),
-                ActionParameterLocation.URL,
-                decideActionMeaning("path",ActionParameterLocation.URL),
-                ActionParameterDatatype.STRING)
-        );
         String query = url.getQuery();
         if(query != null){
             String [] ar = query.split("&");
@@ -191,6 +184,18 @@ public class SimpleRCD extends RequestComposerDecomposer{
                 );
             }
         }
+        String path = url.getPath();
+        if(!path.endsWith("/") && query == null){
+            path = path + "/";
+        }
+        params.add(new ActionParameter(
+                "path",
+                path,
+                ActionParameterLocation.URL,
+                decideActionMeaning("path",ActionParameterLocation.URL),
+                ActionParameterDatatype.STRING)
+        );
+
         return params;
     }
 
@@ -205,7 +210,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
             case COOKIE:
                 return ActionParameterMeaning.SESSIONTOKEN;
             case HEADER:
-                return ActionParameterMeaning.UNKNOWN;
+                return ActionParameterMeaning.SESSIONTOKEN;
             case QUERY:
                 return ActionParameterMeaning.AUTOMATIC;
             case URL:
