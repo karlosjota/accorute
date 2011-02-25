@@ -4,4 +4,4 @@ scanner/out
 *.iml
 .idea
 accorute_test.db
-scanner/report.xml
+scanner/report

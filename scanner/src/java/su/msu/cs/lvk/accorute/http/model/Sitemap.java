@@ -1,10 +1,13 @@
 package su.msu.cs.lvk.accorute.http.model;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.log4j.Logger;
+import org.jgrapht.ext.JGraphModelAdapter;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedMultigraph;
 import su.msu.cs.lvk.accorute.WebAppProperties;
 import org.apache.commons.lang.NotImplementedException;
+
+import java.io.*;
 import java.util.*;
 
 /**
@@ -127,6 +130,43 @@ public class Sitemap {
         nextNodeID ++;
         return n;
     }
+    public void writeToFile(String fname, String suffix){
+        try{
+            FileWriter fstream = new FileWriter(fname);
+            BufferedWriter out = new BufferedWriter(fstream);
+            out.write("digraph sitemap_"+suffix+" {\n");
+            out.write("\t\tnode_"+entryNode.getNodeID().getId().toString()
+                    + " [shape = doublecircle, style = filled, color = green, label = start];\n"
+            );
+            out.write("\t\tnode_"+exitNode.getNodeID().getId().toString()
+                    + " [shape = doublecircle, style=filled, color = blue, label = \"state change\" ];\n"
+            );
+            out.write("\t\tnode_"+invalidNode.getNodeID().getId().toString()
+                    + " [shape = doublecircle, style=filled, color = red, label = invalid ];\n"
+            );
+            out.write("\tnode [shape = circle];\n");
+            for(Object e:actionDepGraph.edgeSet()){
+                SitemapEdge edge = (SitemapEdge) e;
+                out.write("\t\t node_"+edge.getV1().getNodeID().getId().toString()
+                        + " -> "
+                        +"\t\t node_"+edge.getV2().getNodeID().getId().toString()
+                );
+                try{
+                    out.write("[ label = \""+
+                            WebAppProperties.getInstance().getRcd().getURL(
+                                    edge.getLabel().getHttpActions().get(0).getActionParameters()
+                            ).getPath()+ "\" ];\n");
+                }catch (Exception ex){
+                    out.write("[ label = \"FUCKGEESE\" ];\n");
+                }
+            }
+            out.write("}\n");
+            out.close();
+        }catch (IOException e){//Catch exception if any
+            logger.error("io error", e);
+        }
+    }
+
     synchronized public Map<HttpAction,Conversation> getValidHttpActions(){
         Map<HttpAction,Conversation> res = new HashMap<HttpAction,Conversation>();
         logger.trace("getValidHttpActions for " + ctxID + "");

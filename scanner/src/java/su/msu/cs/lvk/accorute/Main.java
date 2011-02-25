@@ -103,12 +103,14 @@ public class Main{
             logger.fatal(e);
             return;
         }
+        String ucName = "start";
         while(it.hasNext()){
             final Element curState = rootDocument.createElement("usecase");
             rootElement.appendChild(curState);
             if(started){
                 UseCase uc = it.next();
                 curState.setAttribute("name",uc.getHttpAct().getName());
+                ucName = uc.getHttpAct().getName();
                 curState.setAttribute("role",uc.getUserRole().getRoleName());
                 uc.getHttpAct().appendToElement(curState);
                 EntityID ctxID = users1.get(uc.getUserRole().getRoleName());
@@ -126,6 +128,18 @@ public class Main{
                 taskman.addTask(new SitemapCrawler(taskman,startAct,ctxID2));
             }
             taskman.waitForEmptyQueue();
+            for(final Role role: WebAppProperties.getInstance().getRoles()){
+                String rName = role.getRoleName();
+                EntityID u1 = users1.get(rName);
+                EntityID u2 = users2.get(rName);
+                WebAppProperties.getInstance().getSitemapService().getSitemapForContext(u1).writeToFile(
+                        "report/"+ucName+"_"+rName + "_1.dot",rName + "_1"
+                );
+                WebAppProperties.getInstance().getSitemapService().getSitemapForContext(u2).writeToFile(
+                        "report/"+ucName+"_"+rName + "_2.dot",rName + "_2"
+                );
+
+            }
             //3. Perform spike detection
             for(final Role attackRole: WebAppProperties.getInstance().getRoles()){
                 for(final Role victimRole: WebAppProperties.getInstance().getRoles()){
@@ -170,7 +184,7 @@ public class Main{
 
             //create string from xml tree
               // get the supporting classes for the transformer
-            FileWriter writer = new FileWriter("report.xml");
+            FileWriter writer = new FileWriter("report/report.xml");
             StreamResult result = new StreamResult(writer);
             DOMSource    source = new DOMSource(rootDocument);
 
