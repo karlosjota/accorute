@@ -13,6 +13,7 @@ Capturer.prototype = {
     clicks_count: 0,
     submits_count:0,
     pageload_count:0,
+    submit_name: "",
 
     dumpCurSession: function(){
         if(this.sessions.length  > 0){
@@ -135,6 +136,9 @@ Capturer.prototype = {
         } else if(evt.type == "click") {
             var link = evt.currentTarget;
             if(link.tagName != "A"){
+                if((link.tagName == "INPUT" || link.tagName == "BUTTON") && link.type == "submit"){
+                    this.submit_name = link.name;
+                }
                 return;
             }
             this.clicks_count ++;
@@ -167,12 +171,24 @@ Capturer.prototype = {
             event_record.method = form.method;
             event_record.elements = new Array();
             for(var i = 0; i< form.length; i++){
-                event_record.elements[i] = {
-                    name:form.elements[i].name,
-                    value: form.elements[i].value,
-                    type: form.elements[i].type,
-                    checked: form.elements[i].checked
-                };
+                var item = form.elements[i];
+                if(!item.disabled && item.type != "reset"){
+                    if(item.type != "submit"){
+                        event_record.elements[event_record.elements.length] = {
+                            name:item.name,
+                            value: item.value,
+                            type: item.type,
+                            checked: item.checked
+                        };
+                    }else if(item.name == this.submit_name){
+                        event_record.elements[event_record.elements.length] = {
+                            name:item.name,
+                            value: item.value,
+                            type: item.type,
+                            checked: item.checked
+                        };
+                    }
+                }
             }
             /*var rootdoc = form.ownerDocument;
              for(var i = 0; i< this.opened_tabs.length && event_record.rootdoc == null; i++){
