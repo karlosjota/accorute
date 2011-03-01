@@ -8,9 +8,21 @@ function populateMenuFromList(menu, list){
 }
 
 function clearListBox(list){
-    for(var i = 0; i < list.itemCount; i++){
-        list.removeItemAt(i);
+    while(list.itemCount != 0){
+        list.removeItemAt(0);
     }
+}
+
+function addToken(){
+    var list =  document.getElementById("tokenList");
+    var row = document.createElement('listitem');
+    var cell = document.createElement("listcell");
+    cell.setAttribute("label",document.getElementById("webappSessTokenName").value);
+    row.appendChild(cell);
+    var cell = document.createElement("listcell");
+    cell.setAttribute("label",document.getElementById("webappSessTokenLocSelect").selectedItem.label);
+    row.appendChild(cell);
+    list.appendChild(row);
 }
 
 function addRole(){
@@ -164,13 +176,12 @@ function startUC(){
 function dumpSettingsToFile(file){
     var settings = {
         scope: document.getElementById("webappScopeRegexp").value,
-        sessTokenLocation: document.getElementById("webappSessTokenLocSelect").selectedItem.label,
-        sessTokenName: document.getElementById("webappSessTokenName").value,
         roles: new Array(),
         users: new Array(),
         dependencies: new Array(),
         cancellations: new Array(),
         useCases: new Array(),
+        dynamicTokens: new Array(),
         trace: capturer.sessions
     };
     var list = document.getElementById("depList");
@@ -224,6 +235,16 @@ function dumpSettingsToFile(file){
         }
     }
 
+    list = document.getElementById("tokenList");
+    for(var i=0;i<list.itemCount;i++){
+        var name = list.getItemAtIndex(i).childNodes[0].getAttribute("label");
+        var location = list.getItemAtIndex(i).childNodes[1].getAttribute("label");
+        settings.dynamicTokens[settings.dynamicTokens.length] = {
+            name: name,
+            location: location
+        }
+    }
+
     try {
         var foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].
                 createInstance(Components.interfaces.nsIFileOutputStream);
@@ -264,14 +285,7 @@ function importSettingsFromFile(file){
     capturer.sessions = settings.trace;
     //basic
     document.getElementById("webappScopeRegexp").value = settings.scope;
-    document.getElementById("webappSessTokenName").value = settings.sessTokenName;
-    var menulst = document.getElementById("webappSessTokenLocSelect");
-    for(var i = 0; i < menulst.itemCount; i++){
-        if(menulst.getItemAtIndex(i).label == settings.sessTokenLocation){
-            document.getElementById("webappSessTokenLocSelect").selectedIndex = i;
-            break;
-        }
-    }
+
     capturer.listening = false;
     var list = document.getElementById("depList");
     clearListBox(list);
@@ -336,6 +350,20 @@ function importSettingsFromFile(file){
         row.appendChild(cell);
         list.appendChild(row);
     }
+
+    list = document.getElementById("tokenList");
+    clearListBox(list);
+    for(var i=0;i<settings.dynamicTokens.length;i++){
+        var row = document.createElement('listitem');
+        var cell = document.createElement("listcell");
+        cell.setAttribute("label",settings.dynamicTokens[i].name);
+        row.appendChild(cell);
+        cell = document.createElement("listcell");
+        cell.setAttribute("label",settings.dynamicTokens[i].location);
+        row.appendChild(cell);
+        list.appendChild(row);
+    }
+
     return true;
 }
 

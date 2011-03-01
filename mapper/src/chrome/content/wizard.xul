@@ -12,30 +12,39 @@
             </tabs>
             <tabpanels flex="1">
                 <tabpanel id="wam_basicTab" orient="vertical" flex="1">
-                    <hbox flex="1">
-                        <grid>
-                            <rows>
-                                <row align="center">
-                                    <label value="Scope regexp:"/>
-                                    <textbox id="webappScopeRegexp" value=".*"/>
-                                </row>
-                                <row align="center">
-                                    <label value="Session token location:"/>
-                                    <menulist id = "webappSessTokenLocSelect">
-                                        <menupopup >
-                                            <menuitem label="query" id="sessTokenLocQuery"/>
-                                            <menuitem label="body" id="sessTokenLocBody"/>
-                                            <menuitem label="cookie" id="sessTokenLocCookie"/>
-                                        </menupopup>
-                                    </menulist>
-                                </row>
-                                <row align="center">
-                                    <label value="Session token name:"/>
-                                    <textbox id="webappSessTokenName"/>
-                                </row>
-                            </rows>
-                        </grid>
-                    </hbox>
+                    <grid>
+                        <rows>
+                            <caption label="Basic settings"/>
+                            <row align="center">
+                                <label value="Scope regexp:"/>
+                                <textbox id="webappScopeRegexp" value=".*"/>
+                            </row>
+                            <caption label="Dynamic tokens"/>
+                            <row align="center">
+                                <label value="Name:"/>
+                                <textbox id="webappSessTokenName"/>
+                                <label value="Location:"/>
+                                <menulist id = "webappSessTokenLocSelect">
+                                    <menupopup >
+                                        <menuitem label="query" id="sessTokenLocQuery"/>
+                                        <menuitem label="body" id="sessTokenLocBody"/>
+                                        <menuitem label="cookie" id="sessTokenLocCookie"/>
+                                    </menupopup>
+                                </menulist>
+                                <button id="addTokenButton" oncommand = "addToken();" label="add" />
+                            </row>
+                        </rows>
+                    </grid>
+                    <listbox id = "tokenList" flex="1">
+                        <listhead>
+                            <listheader label="name"/>
+                            <listheader label="location"/>
+                        </listhead>
+                        <listcols>
+                            <listcol flex="1"/>
+                            <listcol flex="1"/>
+                        </listcols>
+                    </listbox>
                 </tabpanel>
                 <tabpanel id="wam_rolesTab" orient="vertical" flex="1">
                     <caption label="New role"/>
@@ -61,6 +70,10 @@
                             <listheader label="Role Name" flex="1"/>
                             <listheader label="Parent role" flex="1"/>
                         </listhead>
+                        <listcols>
+                            <listcol flex="1"/>
+                            <listcol flex="1"/>
+                        </listcols>
                         <listitem>
                             <listcell label="public" />
                             <listcell label="N/A" />
@@ -94,6 +107,12 @@
                             <listheader label="Role" flex="1"/>
                             <listheader label="Password" flex="1"/>
                         </listhead>
+
+                        <listcols>
+                            <listcol flex="1"/>
+                            <listcol flex="1"/>
+                            <listcol flex="1"/>
+                        </listcols>
                     </listbox>
                 </tabpanel>
                 <tabpanel id="wam_useCaseTab" orient="vertical" flex="1">
@@ -125,6 +144,10 @@
                             <listheader label="Session Name" flex="1"/>
                             <listheader label="User" flex="1"/>
                         </listhead>
+                         <listcols>
+                            <listcol flex="1"/>
+                            <listcol flex="1"/>
+                        </listcols>
                     </listbox>
                 </tabpanel>
                 <tabpanel id="wam_dependenciesTab" orient="vertical" flex="1">
@@ -157,6 +180,10 @@
                             <listheader label="Dependent UC" flex="1"/>
                             <listheader label="Dependency UC" flex="1"/>
                         </listhead>
+                         <listcols>
+                            <listcol flex="1"/>
+                            <listcol flex="1"/>
+                        </listcols>
                     </listbox>
                 </tabpanel>
                 <tabpanel id="wam_cancellationsTab" orient="vertical" flex="1">
@@ -189,6 +216,10 @@
                             <listheader label="Cancelling UC" flex="1"/>
                             <listheader label="Cancelled UC" flex="1"/>
                         </listhead>
+                         <listcols>
+                            <listcol flex="1"/>
+                            <listcol flex="1"/>
+                        </listcols>
                     </listbox>
                 </tabpanel>
             </tabpanels>
