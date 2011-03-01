@@ -128,6 +128,7 @@ function finishUC(){
     document.getElementById("userSelect").disabled = false;
     document.getElementById("saveToFileButton").disabled = false;
     document.getElementById("loadFromFileButton").disabled = false;
+    capturer.finishSession();
     /*    var list = document.getElementById("SessList");
      var item = list.getItemAtIndex(list.getRowCount() - 1);
      var actions = capturer.finishSession();
