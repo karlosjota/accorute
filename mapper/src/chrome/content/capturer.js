@@ -114,10 +114,12 @@ Capturer.prototype = {
             dumpLN("New UC started!");
             cur_sess[cur_sess.length] = {type: "UCStarted", time: now.getTime()};
         }
+        var save = false;
         now = new Date();
         cur_sess[cur_sess.length]  = {time: now.getTime()};
         var event_record = cur_sess[cur_sess.length - 1];
         if(evt.type == "DOMContentLoaded"){
+            save = true;
             this.pageload_count ++;
             event_record.type = "pageLoaded";
             event_record.tabs = new Array();
@@ -141,6 +143,7 @@ Capturer.prototype = {
                 }
                 return;
             }
+            save = true;
             this.clicks_count ++;
             event_record.type = "linkClicked";
             event_record.href = link.href;
@@ -161,8 +164,9 @@ Capturer.prototype = {
              }
              }
              }*/
-            event_record.document = event_record.document = { location: link.ownerDocument.location.href };
+            event_record.document = { location: link.ownerDocument.location.href };
         } else if(evt.type == "submit") {
+            save = true;
             this.submits_count ++;
             event_record.type = "formSubmitted";
             var form = evt.currentTarget;
@@ -206,7 +210,10 @@ Capturer.prototype = {
              }
              }
              */
-            event_record.document = event_record.document = { location: form.ownerDocument.location.href };
+            event_record.document = { location: form.ownerDocument.location.href };
+        }
+        if(!save){
+            cur_sess.length--;
         }
     }
 }
