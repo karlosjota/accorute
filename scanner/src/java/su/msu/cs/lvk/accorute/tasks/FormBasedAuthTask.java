@@ -4,6 +4,7 @@ import com.gargoylesoftware.htmlunit.CookieManager;
 import com.gargoylesoftware.htmlunit.HttpWebConnection;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -43,6 +44,13 @@ public class FormBasedAuthTask extends Task {
         this.formIndex = formIndex;
         this.submitXPath = submitXPath;
     }
+    public FormBasedAuthTask(EntityID ctxID, TaskManager t, URL url, int formIndex){
+        super(t);
+        this.ctxID = ctxID;
+        this.url = url;
+        this.formIndex = formIndex;
+        this.submitXPath = null;
+    }
 
     @Override
     public Object getResult() {
@@ -80,10 +88,25 @@ public class FormBasedAuthTask extends Task {
             HtmlForm loginForm = forms.get(formIndex);
             WebAppProperties.getInstance().getFfd().FillForm(loginForm,ctxID);
             //find the submit button and click it
-            HtmlInput submitButton = loginForm.getFirstByXPath(submitXPath);
-            if(submitButton == null){
-                logger.error("Submit button not present");
-                return;
+            HtmlInput submitButton;
+            if(submitXPath != null){
+                submitButton = loginForm.getFirstByXPath(submitXPath);
+                if(submitButton == null){
+                    logger.error("Submit button not present");
+                    return;
+                }
+            } else{
+                submitButton = loginForm.getFirstByXPath("input[@type='submit']");
+                if(submitButton == null){
+                    submitButton = loginForm.getFirstByXPath("button[@type='submit']");
+                }
+                if(submitButton == null){
+                    submitButton = loginForm.getFirstByXPath("input[@type='image']");
+                }
+                if(submitButton == null){
+                    logger.error("Submit button not present");
+                    return;
+                }
             }
             Page p = submitButton.click();
             if(! (p instanceof HtmlPage)){

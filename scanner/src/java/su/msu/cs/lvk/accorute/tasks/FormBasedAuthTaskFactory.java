@@ -22,7 +22,15 @@ public class FormBasedAuthTaskFactory implements ContextedTaskFactory {
         this.formIndex = formIndex;
         this.submitXPath = submitXPath;
     }
+    public FormBasedAuthTaskFactory(URL url, int formIndex){
+        this.url = url;
+        this.formIndex = formIndex;
+        this.submitXPath = null;
+    }
     public Task genContextedTask(EntityID ctx,TaskManager t) {
-        return new FormBasedAuthTask(ctx,t, url, formIndex,submitXPath);
+        if(submitXPath != null)
+            return new FormBasedAuthTask(ctx,t, url, formIndex,submitXPath);
+        else
+            return new FormBasedAuthTask(ctx,t, url, formIndex,submitXPath);
     }
 }
