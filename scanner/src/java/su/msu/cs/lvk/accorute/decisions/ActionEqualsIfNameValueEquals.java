@@ -1,6 +1,7 @@
 package su.msu.cs.lvk.accorute.decisions;
 
 import org.apache.log4j.Logger;
+import su.msu.cs.lvk.accorute.http.constants.ActionParameterLocation;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterMeaning;
 import su.msu.cs.lvk.accorute.http.model.ActionParameter;
 import su.msu.cs.lvk.accorute.http.model.HttpAction;
@@ -60,6 +61,18 @@ public class ActionEqualsIfNameValueEquals implements ActionEqualityDecision{
                 return false;
             String aVal = aParam.getValue();
             String bVal = bParam.getValue();
+            if(aParam.getLocation() != bParam.getLocation()){
+                logger.trace( a + " != " +b +" because of location of " + name);
+                return false;
+            }
+            if(name=="path"){
+                if (aParam.getLocation() == ActionParameterLocation.URL){
+                    if(!aVal.endsWith("/"))
+                        aVal += "/";
+                    if(!bVal.endsWith("/"))
+                        bVal += "/";
+                }
+            }
             if(!aVal.equals(bVal)){
                 logger.trace( a + " != " +b +" because of " + name);
                 return false;

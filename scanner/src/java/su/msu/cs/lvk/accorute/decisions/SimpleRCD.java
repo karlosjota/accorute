@@ -185,9 +185,6 @@ public class SimpleRCD extends RequestComposerDecomposer{
             }
         }
         String path = url.getPath();
-        if(!path.endsWith("/") && query == null){
-            path = path + "/";
-        }
         params.add(new ActionParameter(
                 "path",
                 path,
