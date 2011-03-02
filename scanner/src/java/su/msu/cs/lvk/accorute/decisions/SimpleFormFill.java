@@ -22,8 +22,17 @@ public class SimpleFormFill implements FormFillDecision{
             String name = input.getNameAttribute();
             EntityID uid = WebAppProperties.getInstance().getContextService().getContextByID(ctxID).getUserID();
             WebAppUser user = WebAppProperties.getInstance().getUserService().getUserByID(uid);
+            boolean updated = false;
             if(user.getStaticCredentials().containsKey(name)){
                 input.setValueAttribute(user.getStaticCredentials().get(name));
+                updated = true;
+            }
+            if(!updated){
+                if(input.getTypeAttribute().equalsIgnoreCase("password")
+                        && user.getStaticCredentials().containsKey("password")
+                ){
+                    input.setValueAttribute(user.getStaticCredentials().get("password"));
+                }
             }
         }
         //TODO: do not forget about textarea!!!
