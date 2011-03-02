@@ -67,7 +67,7 @@ public class SitemapCrawler extends Task implements Callback0{
         Matcher m = WebAppProperties.getInstance().getScope().matcher(url);
         if(!m.matches()){
             logger.trace(contextID + ":Will not access url "+ url+" because it's out of scope");
-            siteMap.addEdge(siteMap.getNodeByID(fromNodeID), siteMap.getExitNode(), acts, null);
+            siteMap.addEdge(siteMap.getNodeByID(fromNodeID), siteMap.getInvalidNode(), acts, null);
             return;
         }
         if(WebAppProperties.getInstance().getChStateDec().changesState(httpAct)){

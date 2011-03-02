@@ -168,7 +168,6 @@ public class Main{
                 }                                                                                                                           
             }
             taskman.waitForEmptyQueue();
-            break;
         }
         WebAppProperties.getInstance().getTaskManager().terminate();
         WebAppProperties.getInstance().getTaskManager().waitForFinish();

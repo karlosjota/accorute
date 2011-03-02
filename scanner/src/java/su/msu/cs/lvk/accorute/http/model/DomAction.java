@@ -25,9 +25,6 @@ public class DomAction {
 
     @Override
     public String toString() {
-        return "{" +
-                "'" + xpathElString + '\'' +
-                ", " + type +
-                '}';
+        return type.toString() +  " " + xpathElString;
     }
 }

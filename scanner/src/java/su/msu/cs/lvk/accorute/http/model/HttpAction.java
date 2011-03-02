@@ -6,6 +6,7 @@ import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.StringWriter;
 import java.util.List;
 
 /**
@@ -26,11 +27,18 @@ public class HttpAction {
 
     @Override
     public String toString() {
-        return "HttpAction{" +
-                "name='" + name + '\'' +
-                ", actionParameters=" + actionParameters +
-                ", actionID=" + actionID +
-                '}';
+        return actionParameters.toString();
+    }
+
+    public String toStringNl() {
+        StringWriter wr = new StringWriter();
+        for(ActionParameter p: actionParameters){
+            wr.write(p.getName());
+            wr.write(":");
+            wr.write(p.getValue());
+            wr.write("\\n");
+        }
+        return wr.toString();
     }
 
     public void appendToElement(Element el) {

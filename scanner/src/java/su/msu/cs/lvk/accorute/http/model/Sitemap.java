@@ -1,11 +1,9 @@
 package su.msu.cs.lvk.accorute.http.model;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.log4j.Logger;
-import org.jgrapht.ext.JGraphModelAdapter;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedMultigraph;
 import su.msu.cs.lvk.accorute.WebAppProperties;
-import org.apache.commons.lang.NotImplementedException;
 
 import java.io.*;
 import java.util.*;
@@ -54,18 +52,18 @@ public class Sitemap {
             return nodeID;
         }
 
-        public Set<HttpAction> getActions() {
+        public Set<CorrespondentActions> getActions() {
             return httpActions;
         }
 
-        public void setActions(Collection<HttpAction> httpActions) {
+        public void setActions(Collection<? extends CorrespondentActions> httpActions) {
             this.httpActions.clear();
             addActions(httpActions);
         }
-        public boolean addAction(HttpAction action) {
+        public boolean addAction(CorrespondentActions action) {
             return this.httpActions.add(action);
         }
-        public boolean addActions(Collection<HttpAction> httpActions) {
+        public boolean addActions(Collection<? extends CorrespondentActions> httpActions) {
             return this.httpActions.addAll(httpActions);
         }
         public boolean addInbound(Conversation c){
@@ -90,7 +88,7 @@ public class Sitemap {
             return  inConversation.iterator();
         }
 
-        private final Set<HttpAction> httpActions = new HashSet<HttpAction>();
+        private final Set<CorrespondentActions> httpActions = new HashSet<CorrespondentActions>();
         private final List<Conversation> inConversation  = new ArrayList<Conversation> ();
         private final List<HtmlPage> pages  = new ArrayList<HtmlPage> ();
 
@@ -98,9 +96,6 @@ public class Sitemap {
 
         SitemapNode(EntityID id) {
             this.nodeID = id;
-        }
-        boolean equals(SitemapNode other){
-            return other.getActions().equals(httpActions);
         }
 
         @Override
@@ -135,31 +130,39 @@ public class Sitemap {
             FileWriter fstream = new FileWriter(fname);
             BufferedWriter out = new BufferedWriter(fstream);
             out.write("digraph sitemap_"+suffix+" {\n");
-            out.write("\t\tnode_"+entryNode.getNodeID().getId().toString()
-                    + " [shape = doublecircle, style = filled, color = green, label = start];\n"
+            out.write("\tnode_"+entryNode.getNodeID().getId().toString()
+                    + " [shape = record, style = filled, color = green, label = start];\n"
             );
-            out.write("\t\tnode_"+exitNode.getNodeID().getId().toString()
-                    + " [shape = doublecircle, style=filled, color = blue, label = \"state change\" ];\n"
+            out.write("\tnode_"+exitNode.getNodeID().getId().toString()
+                    + " [shape = record, style=filled, color = blue, label = \"state change\" ];\n"
             );
-            out.write("\t\tnode_"+invalidNode.getNodeID().getId().toString()
-                    + " [shape = doublecircle, style=filled, color = red, label = invalid ];\n"
+            out.write("\tnode_"+invalidNode.getNodeID().getId().toString()
+                    + " [shape = record, style=filled, color = red, label = invalid ];\n"
             );
-            out.write("\tnode [shape = circle];\n");
+            out.write("\tnode [shape = point, width = 0.4];\n");
             for(Object e:actionDepGraph.edgeSet()){
                 SitemapEdge edge = (SitemapEdge) e;
-                out.write("\t\t node_"+edge.getV1().getNodeID().getId().toString()
-                        + " -> "
-                        +"\t\t node_"+edge.getV2().getNodeID().getId().toString()
-                );
-                try{
-                    out.write("[ label = \""+
-                            WebAppProperties.getInstance().getRcd().getURL(
-                                    edge.getLabel().getHttpActions().get(0).getActionParameters()
-                            ).getPath()+ "\" ];\n");
-                }catch (Exception ex){
-                    out.write("[ label = \"FUCKGEESE\" ];\n");
-                }
+                String id1 = edge.getV1().getNodeID().getId().toString();
+                String id2 = edge.getV2().getNodeID().getId().toString();
+                out.write("\tnode_"+id1+" -> "+"label"+id1+id2+" [arrowhead = none];\n");
+                out.write("label"+id1+id2+" -> "+"node_"+id2+";\n");
+                out.write("label"+id1+id2 +" [ shape=record, label = \""+ edge.getLabel().getAsDotRecord() + "\" ];\n");
             }
+            /*for(Object e:actionDepGraph.vertexSet()){
+                SitemapNode n = (SitemapNode) e;
+                if(n.getActions().size()==0)
+                    continue;
+                out.write("\tnode_" + n.getNodeID().getId().toString());
+                out.write(" [ label=\"{");
+                StringWriter output = new StringWriter();
+                for(CorrespondentActions act : n.getActions()){
+                    output.write(act.getAsDotRecord());
+                    output.write("|");
+                }
+                output.getBuffer().deleteCharAt(output.getBuffer().length()-1);
+                out.write(output.toString());
+                out.write("}\"];\n");
+            }*/
             out.write("}\n");
             out.close();
         }catch (IOException e){//Catch exception if any
@@ -307,6 +310,7 @@ public class Sitemap {
     synchronized public boolean addEdge(SitemapNode from, SitemapNode to, CorrespondentActions act, ArrayList<Conversation> convs){
         actionDepGraph.addVertex(from);
         actionDepGraph.addVertex(to);
+        to.addAction(act);
         SitemapEdge edge = new SitemapEdge(from,to,act,convs);
         if(convs!=null){
             for(Conversation c : convs){

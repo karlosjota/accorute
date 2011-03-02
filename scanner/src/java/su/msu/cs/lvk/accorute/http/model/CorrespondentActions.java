@@ -1,6 +1,10 @@
 package su.msu.cs.lvk.accorute.http.model;
 
+import java.io.StringWriter;
+import java.io.Writer;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,5 +28,57 @@ public class CorrespondentActions {
 
     public ArrayList<HttpAction> getHttpActions() {
         return httpActions;
+    }
+    public String getAsDotLabel() {
+        StringWriter output = new StringWriter();
+        if(httpActions.size()==1){
+            output.write(httpActions.get(0).toStringNl());
+        }else{
+            output.write("{");
+            for(HttpAction a: httpActions){
+                output.write(a.toStringNl() + "|");
+            }
+            output.getBuffer().deleteCharAt(output.getBuffer().length()-1);
+            output.write("}");
+        }
+        output.write("\\n");
+        if(domActions.size()==1){
+            output.write(domActions.get(0).toString());
+        }else{
+            output.write("{");
+            for(DomAction da: domActions){
+                output.write(da + "|");
+            }
+            output.getBuffer().deleteCharAt(output.getBuffer().length()-1);
+            output.write("}");
+        }
+        return output.toString();
+    }
+    public String getAsDotRecord(){
+        StringWriter output = new StringWriter();
+        output.write("{");
+        if(httpActions.size()==1){
+            output.write(httpActions.get(0).toString());
+        }else{
+            output.write("{");
+            for(HttpAction a: httpActions){
+                output.write(a + "|");
+            }
+            output.getBuffer().deleteCharAt(output.getBuffer().length()-1);
+            output.write("}");
+        }
+        output.write("|");
+        if(domActions.size()==1){
+            output.write(domActions.get(0).toString());
+        }else{
+            output.write("{");
+            for(DomAction da: domActions){
+                output.write(da + "|");
+            }
+            output.getBuffer().deleteCharAt(output.getBuffer().length()-1);
+            output.write("}");
+        }
+        output.write("}");
+        return output.toString();
     }
 }
