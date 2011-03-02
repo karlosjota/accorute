@@ -263,11 +263,16 @@ public class Request extends Message {
         }else{
             throw new NotImplementedException("cannot convert " + method + " method request to httpclient HttpMethod");
         }
+        boolean hashost = false;
         if(super.headers != null){
             for(NamedValue v: super.headers){
-                //if(!v.getName().equalsIgnoreCase("Content-length"))
+                if(v.getName().equalsIgnoreCase("host"))
+                    hashost = true;
                 res.addHeader(v.getName(),v.getValue());
             }
+        }
+        if(!hashost){
+            res.addHeader("Host",getURL().getHost());
         }
         return res;
     }
