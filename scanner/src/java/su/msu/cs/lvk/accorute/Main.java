@@ -41,13 +41,13 @@ public class Main{
     public static void main(String[] args){
         ApplicationContext ctx;
         try {
-            ctx = new FileSystemXmlApplicationContext("src/resources/accorute-config-django-test-1.xml");
+            ctx = new FileSystemXmlApplicationContext("src/resources/accorute-config-paolink.xml");
         } catch (BeanDefinitionStoreException ex) {
             System.err.println("Error loading evaluation contexts: " + ex.getMessage());
             return;
         }
         JSONConfigurator configTask = new JSONConfigurator(WebAppProperties.getInstance().getTaskManager(),
-                "src/resources/django-test1-light.txt");
+                "../mapper/captures/paolink-capture.txt");
         TaskManager taskman = WebAppProperties.getInstance().getTaskManager();
         taskman.addTask(configTask);
         new Thread(taskman).start();
@@ -61,7 +61,7 @@ public class Main{
             //"http://127.0.0.1/accorute_tests/JS_menu_2/demo1/index.html"
             //http://127.0.0.1/accorute_tests/plainHTML/test4/1.html
             //http://127.0.0.1:8080/accounts/login/?next=/test1/
-            startAct = new HttpAction("initial",WebAppProperties.getInstance().getRcd().decomposeURL("http://127.0.0.1:8000/test1/"));
+            startAct = new HttpAction("initial",WebAppProperties.getInstance().getRcd().decomposeURL("http://10.0.0.10:80/"));
         }catch(Throwable r){
             return;
         }
@@ -168,6 +168,7 @@ public class Main{
                 }                                                                                                                           
             }
             taskman.waitForEmptyQueue();
+            break;
         }
         WebAppProperties.getInstance().getTaskManager().terminate();
         WebAppProperties.getInstance().getTaskManager().waitForFinish();
