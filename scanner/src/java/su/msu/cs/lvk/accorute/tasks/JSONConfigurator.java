@@ -1,7 +1,6 @@
 package su.msu.cs.lvk.accorute.tasks;
 
 
-import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -68,12 +67,17 @@ public class JSONConfigurator extends Task {
                     if(eltype.equalsIgnoreCase("submit") && name.equals("")){
                         name = eltype;
                     }
+                    ActionParameterMeaning mean;
+                    if(eltype.equalsIgnoreCase("hidden")||eltype.equalsIgnoreCase("submit")){
+                        mean = ActionParameterMeaning.AUTOMATIC;
+                    }else{
+                        mean = ActionParameterMeaning.USERCONTROLLABLE;
+                    }
                     params.add(new ActionParameter(
                         name,
                         value,
                         method.equalsIgnoreCase("GET") ? ActionParameterLocation.QUERY : ActionParameterLocation.BODY,
-                        (eltype.equalsIgnoreCase("hidden")) ?
-                                ActionParameterMeaning.AUTOMATIC : ActionParameterMeaning.USERCONTROLLABLE,
+                        mean,
                         ActionParameterDatatype.STRING)
                     );//TODO: be more specific here!!!
                 }
@@ -212,20 +216,20 @@ public class JSONConfigurator extends Task {
                 JSONArray dependencies = obj.getJSONArray("dependencies");
                 for(int i=0;i < dependencies.length();i++){
                     JSONObject dep = dependencies.getJSONObject(i);
-                    String from = dep.getString("from");
-                    String to = dep.getString("to");
-                    UseCase fromUC = nameUseCaseMap.get(from);
-                    UseCase toUC = nameUseCaseMap.get(to);
-                    WebAppProperties.getInstance().getUcGraph().addDependency(toUC, fromUC);
+                    String dependent = dep.getString("from");
+                    String dependence = dep.getString("to");
+                    UseCase dependentUC = nameUseCaseMap.get(dependent);
+                    UseCase dependenceUC = nameUseCaseMap.get(dependence);
+                    WebAppProperties.getInstance().getUcGraph().addDependency(dependenceUC, dependentUC);
                 }
                 JSONArray cancellations = obj.getJSONArray("cancellations");
                 for(int i=0;i < cancellations.length();i++){
                     JSONObject canc = cancellations.getJSONObject(i);
-                    String from = canc.getString("from");
-                    String to = canc.getString("to");
-                    UseCase fromUC = nameUseCaseMap.get(from);
-                    UseCase toUC = nameUseCaseMap.get(to);
-                    WebAppProperties.getInstance().getUcGraph().addCancellation(fromUC, toUC);
+                    String canceller = canc.getString("from");
+                    String cancellee = canc.getString("to");
+                    UseCase cancellerUC = nameUseCaseMap.get(canceller);
+                    UseCase cancelleeUC = nameUseCaseMap.get(cancellee);
+                    WebAppProperties.getInstance().getUcGraph().addCancellation(cancellerUC, cancelleeUC);
                 }
                 WebAppProperties.getInstance().setTestChain(t);
                 setSuccessful(true);
