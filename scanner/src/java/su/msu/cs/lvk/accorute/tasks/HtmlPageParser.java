@@ -122,6 +122,7 @@ public class HtmlPageParser extends Task implements DomChangeListener {
         doJsActions(el);
         List<HtmlAnchor> anchors = el.getHtmlElementsByTagName("a");
         List<HtmlInput> inputs = el.getHtmlElementsByTagName("input");
+        List<HtmlButton> buttons = el.getHtmlElementsByTagName("button");
         logger.trace("emulateUserActions on " + el);
         Iterable<HtmlElement> htmlChildren = el.getHtmlElementDescendants();
         Iterator<HtmlElement> it = htmlChildren.iterator();
@@ -136,6 +137,10 @@ public class HtmlPageParser extends Task implements DomChangeListener {
         for(HtmlInput inp: inputs){
             if(inp.getTypeAttribute().equalsIgnoreCase("submit"))
                 tryClick(inp);
+        }
+        for(HtmlButton b: buttons){
+            if(b.getTypeAttribute().equalsIgnoreCase("submit"))
+                tryClick(b);
         }
     }
     private void doJsActions(HtmlElement htmlElement) {
