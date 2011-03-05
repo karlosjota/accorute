@@ -1,0 +1,403 @@
+{
+  "scope": ".*10\\.0\\.0\\.10.*",
+  "roles": [
+    {
+      "name": "public",
+      "parent": "N/A"
+    },
+    {
+      "name": "admin",
+      "parent": "public"
+    }
+  ],
+  "users": [
+    {
+      "name": "pub1",
+      "role": "public",
+      "credentials": {
+        "login": "pub1",
+        "password": ""
+      }
+    },
+    {
+      "name": "pub2",
+      "role": "public",
+      "credentials": {
+        "login": "pub2",
+        "password": ""
+      }
+    },
+    {
+      "name": "admin1",
+      "role": "admin",
+      "credentials": {
+        "login": "admin1",
+        "password": "vulnweb"
+      }
+    },
+    {
+      "name": "admin2",
+      "role": "admin",
+      "credentials": {
+        "login": "admin2",
+        "password": "vulnweb"
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "from": "edit_link : admin1",
+      "to": "post_link : pub1"
+    },
+    {
+      "from": "approve_link : admin1",
+      "to": "post_link : pub1"
+    },
+    {
+      "from": "delete_link : admin1",
+      "to": "post_link : pub1"
+    }
+  ],
+  "cancellations": [
+    {
+      "from": "approve_link : admin1",
+      "to": "approve_link : admin1"
+    },
+    {
+      "from": "delete_link : admin1",
+      "to": "approve_link : admin1"
+    },
+    {
+      "from": "delete_link : admin1",
+      "to": "delete_link : admin1"
+    },
+    {
+      "from": "delete_link : admin1",
+      "to": "edit_link : admin1"
+    }
+  ],
+  "useCases": [
+    {
+      "name": "post_link",
+      "user": "pub1"
+    },
+    {
+      "name": "edit_link",
+      "user": "admin1"
+    },
+    {
+      "name": "approve_link",
+      "user": "admin1"
+    },
+    {
+      "name": "delete_link",
+      "user": "admin1"
+    }
+  ],
+  "dynamicTokens": [
+    {
+      "name": "PHPSESSID",
+      "location": "cookie"
+    }
+  ],
+  "trace": [
+    [
+      {
+        "type": "SessionCreated",
+        "name": "post_link",
+        "user": "pub1",
+        "time": 1298981254917
+      },
+      {
+        "type": "UCCreated",
+        "time": 1298981254917
+      },
+      {
+        "time": 1298981447410,
+        "type": "formSubmitted",
+        "action": "http://10.0.0.10/scrivi.php",
+        "cookie": "PHPSESSID=blbtvplcnc0255t94mkp7t3oc6",
+        "method": "post",
+        "elements": [
+          {
+            "name": "title",
+            "value": "testwebsite",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "sito",
+            "value": "http://example.com",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "email",
+            "value": "ex@example.com",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "msg",
+            "value": "test description",
+            "type": "textarea"
+          },
+          {
+            "name": "ip",
+            "value": "10.0.0.111",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "submit",
+            "value": " Go",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/scrivi.php"
+        }
+      },
+      {
+        "time": 1298981447464,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/scrivi.php",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/scrivi.php"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1298981448879
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1298981448879,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "edit_link",
+        "user": "admin1",
+        "time": 1298981499480
+      },
+      {
+        "type": "UCCreated",
+        "time": 1298981499480
+      },
+      {
+        "time": 1298981510081,
+        "type": "formSubmitted",
+        "action": "http://10.0.0.10/admin.php",
+        "cookie": "PHPSESSID=blbtvplcnc0255t94mkp7t3oc6",
+        "method": "post",
+        "elements": [
+          {
+            "name": "data",
+            "value": "1/3/11 ",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "title",
+            "value": "testwebsite",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "sito",
+            "value": "http://example.com",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "msg",
+            "value": "test description edited by admin",
+            "type": "textarea"
+          },
+          {
+            "name": "email",
+            "value": "ex@example.com",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "app",
+            "value": "no",
+            "type": "select-one"
+          },
+          {
+            "name": "num",
+            "value": "0",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "aggiorna",
+            "value": "Save",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/admin.php"
+        }
+      },
+      {
+        "time": 1298981510136,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/admin.php",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/admin.php"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1298981516390
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1298981516390,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "approve_link",
+        "user": "admin1",
+        "time": 1298981525728
+      },
+      {
+        "type": "UCCreated",
+        "time": 1298981525728
+      },
+      {
+        "time": 1298981528265,
+        "type": "formSubmitted",
+        "action": "http://10.0.0.10/admin.php",
+        "cookie": "PHPSESSID=blbtvplcnc0255t94mkp7t3oc6",
+        "method": "post",
+        "elements": [
+          {
+            "name": "num",
+            "value": "0",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "approva",
+            "value": "Approve",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/admin.php"
+        }
+      },
+      {
+        "time": 1298981528313,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/admin.php",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/admin.php"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1298981529414
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1298981529414,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "delete_link",
+        "user": "admin1",
+        "time": 1298981544336
+      },
+      {
+        "type": "UCCreated",
+        "time": 1298981544336
+      },
+      {
+        "time": 1298981545209,
+        "type": "formSubmitted",
+        "action": "http://10.0.0.10/admin.php",
+        "cookie": "PHPSESSID=blbtvplcnc0255t94mkp7t3oc6",
+        "method": "post",
+        "elements": [
+          {
+            "name": "num",
+            "value": "0",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "cancella",
+            "value": "Delete",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/admin.php"
+        }
+      },
+      {
+        "time": 1298981545258,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/admin.php",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/admin.php"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1298981546462
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1298981546462,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ]
+  ]
+}
+
