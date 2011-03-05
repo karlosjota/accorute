@@ -31,19 +31,19 @@
     <bean id="simplePVD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimplePVD"/>
     <bean id="dummyChState" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.ConfigBasedChStateDec"/>
     <bean id="notFoundRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
-        <constructor-arg value=".*(The requested URL .* was not found on this server|Bad Request).*" />
+        <constructor-arg value=".*(URL.*was\s*not\s*found\s*on\s*this\s*server|Bad\s*Request).*" />
         <constructor-arg type="int" value="40"/> <!-- MuLTILINE and DOTALL-->
     </bean>
     <bean id="prohibRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
-        <constructor-arg value=".*(You don't have permission to access this page|Password incorrect).*" />
+        <constructor-arg value=".*(You\s*don't\s*have\s*permission\s*to\s*access\s*this\s*page|Password\s*incorrect).*" />
         <constructor-arg type="int" value="40"/>
     </bean>
     <bean id="expireRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
-        <constructor-arg value=".*Logout successfully.*" />
+        <constructor-arg value=".*(Logout\s*successfully).*" />
         <constructor-arg type="int" value="40"/>
     </bean>
     <bean id="errorRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
-        <constructor-arg type="java.lang.String" value=".*Please fill in required fields.*" />
+        <constructor-arg type="java.lang.String" value=".*(Please\s*fill\s*in\s*required\s*fields).*" />
         <constructor-arg type="int" value="40"/>
     </bean>
     <bean id="respClass" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.PatternResponceClassifier">
@@ -52,7 +52,7 @@
         <constructor-arg ref="expireRegex" />
         <constructor-arg ref="errorRegex" />
     </bean>
-    <bean id="pageEqD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimplePageEqDec"/>
+    <bean id="pageEqD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.LevensteinPageEqualityDecision"/>
     <bean id="acEqD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.ActionEqualsIfNameValueEquals"/>
     <bean id="scopeRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
         <constructor-arg value=".*10.0.0.10.*" />

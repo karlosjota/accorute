@@ -52,7 +52,7 @@
         <constructor-arg ref="expireRegex" />
         <constructor-arg ref="errorRegex" />
     </bean>
-    <bean id="pageEqD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimplePageEqDec"/>
+    <bean id="pageEqD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.LevensteinPageEqualityDecision"/>
     <bean id="acEqD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.ActionEqualsIfNameValueEquals"/>
     <bean id="scopeRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
         <constructor-arg value=".*127.0.0.1.*" />

@@ -48,6 +48,14 @@
     {
       "from": "edit_link : admin1",
       "to": "post_link : pub1"
+    },
+    {
+      "from": "approve_link : admin1",
+      "to": "post_link : pub1"
+    },
+    {
+      "from": "delete_link : admin1",
+      "to": "post_link : pub1"
     }
   ],
   "cancellations": [
