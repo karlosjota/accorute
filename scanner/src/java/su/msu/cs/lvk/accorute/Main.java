@@ -104,6 +104,7 @@ public class Main{
             return;
         }
         String ucName = "start";
+        int ucNum = 0;
         while(it.hasNext()){
             final Element curState = rootDocument.createElement("usecase");
             rootElement.appendChild(curState);
@@ -133,10 +134,10 @@ public class Main{
                 EntityID u1 = users1.get(rName);
                 EntityID u2 = users2.get(rName);
                 WebAppProperties.getInstance().getSitemapService().getSitemapForContext(u1).writeToFile(
-                        "report/"+ucName+"_"+rName + "_1.dot",rName + "_1"
+                        "report/"+ucNum+ucName+"_"+rName + "_1.dot",rName + "_1"
                 );
                 WebAppProperties.getInstance().getSitemapService().getSitemapForContext(u2).writeToFile(
-                        "report/"+ucName+"_"+rName + "_2.dot",rName + "_2"
+                        "report/"+ucNum+ucName+"_"+rName + "_2.dot",rName + "_2"
                 );
 
             }
@@ -168,10 +169,12 @@ public class Main{
                 }                                                                                                                           
             }
             taskman.waitForEmptyQueue();
+            ucNum++;
         }
         WebAppProperties.getInstance().getTaskManager().terminate();
         WebAppProperties.getInstance().getTaskManager().waitForFinish();
         System.out.print(WebAppProperties.getInstance().getUcGraph());
+        WebAppProperties.getInstance().getUcGraph().writeToFile("report/usecases.dot");
         try{
             ////////////////
             //Output the XML

@@ -140,13 +140,15 @@ public class Sitemap {
                     + " [shape = record, style=filled, color = red, label = invalid ];\n"
             );
             out.write("\tnode [shape = point, width = 0.4];\n");
+            int i=0;
             for(Object e:actionDepGraph.edgeSet()){
                 SitemapEdge edge = (SitemapEdge) e;
                 String id1 = edge.getV1().getNodeID().getId().toString();
                 String id2 = edge.getV2().getNodeID().getId().toString();
-                out.write("\tnode_"+id1+" -> "+"label"+id1+id2+" [arrowhead = none];\n");
-                out.write("label"+id1+id2+" -> "+"node_"+id2+";\n");
-                out.write("label"+id1+id2 +" [ shape=record, label = \""+ edge.getLabel().getAsDotRecord() + "\" ];\n");
+                out.write("\tnode_"+id1+" -> "+"label_"+i+" [arrowhead = none];\n");
+                out.write("label_"+i+" -> "+"node_"+id2+";\n");
+                out.write("label_"+i +" [ shape=record, label = \""+ edge.getLabel().getAsDotRecord() + "\" ];\n");
+                i++;
             }
             /*for(Object e:actionDepGraph.vertexSet()){
                 SitemapNode n = (SitemapNode) e;

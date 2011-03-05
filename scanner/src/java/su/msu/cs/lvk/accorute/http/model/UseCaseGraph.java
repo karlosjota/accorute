@@ -6,6 +6,9 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedMultigraph;
 import su.msu.cs.lvk.accorute.WebAppProperties;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -121,6 +124,48 @@ public class UseCaseGraph implements Comparator<UseCase> {
                 "\nDependencies: " + ucDepGraph.edgeSet() +
                 "\nCancellations:" + ucCancelGraph.edgeSet() +
                 "\n}";
+    }
+
+    public void writeToFile(String fname){
+        try{
+            FileWriter fstream = new FileWriter(fname);
+            BufferedWriter out = new BufferedWriter(fstream);
+            out.write("digraph usecases {\n");
+            for(UseCase u : ucDepGraph.vertexSet()){
+                out.write("\t"
+                        + u.hashCode()
+                        +"[shape = record, label=\"{"
+                        + u.getHttpAct().getName()
+                        +"|"
+                        + u.getUserRole().getRoleName()
+                        + "}\"];\n"
+                );
+            }
+            for(graphEdge e:ucDepGraph.edgeSet()){
+                int source = e.getSource().hashCode();
+                int dest = e.getTarget().hashCode();
+                out.write("\t"
+                        + source
+                        + "->"
+                        + dest
+                        +"[color=black, style = solid];\n"
+                );
+            }
+            for(graphEdge e:ucCancelGraph.edgeSet()){
+                int source = e.getSource().hashCode();
+                int dest = e.getTarget().hashCode();
+                out.write("\t"
+                        + source
+                        + "->"
+                        + dest
+                        +"[color=red, style = dotted];\n"
+                );
+            }
+            out.write("}\n");
+            out.close();
+        }catch (IOException ex){
+            logger.error("Error writing to file: ",ex);
+        }
     }
 
     public boolean addUCIfNotPresent(UseCase u){
