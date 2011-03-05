@@ -115,35 +115,35 @@ public class HtmlElementActionPerformer extends Task {
             DomAction last = actions.get(actions.size() - 1);
             HtmlElement el = page.getFirstByXPath(last.getXpathElString());
             switch (last.getType()){
-            case CLICK:
-                try{
-                    logger.trace("Will click on " + last.getXpathElString());
-                    Page  newPage = el.click();
-                    if(!wasReq){
-                        //This should never happen!
-                        logger.error("No request intercepted!!!");
-                        result = Result.NOREQUEST;
+                case CLICK:
+                    try{
+                        logger.trace("Will click on " + last.getXpathElString());
+                        Page  newPage = el.click();
+                        if(!wasReq){
+                            //This should never happen!
+                            logger.error("No request intercepted!!!");
+                            result = Result.NOREQUEST;
+                            setSuccessful(false);
+                            return;
+                        }
+                        if(newPage instanceof HtmlPage){
+                            UserContext contx = WebAppProperties.getInstance().getContextService().getContextByID(ctx);
+                            WebAppProperties.getInstance().getDynCredUpd().updateCredentials(contx.getUserID(),(HtmlPage)newPage);
+                            callback.CallMeBack(convs,acts,(HtmlPage)newPage);
+                        }else{
+                            logger.warn("Not a html page?!");
+                            result = Result.NOTHTML;
+                            setSuccessful(false);
+                            return;
+                        }
+                    }catch ( IOException ex){
+                        result = Result.FETCHERROR;
                         setSuccessful(false);
                         return;
                     }
-                    if(newPage instanceof HtmlPage){
-                        UserContext contx = WebAppProperties.getInstance().getContextService().getContextByID(ctx);
-                        WebAppProperties.getInstance().getDynCredUpd().updateCredentials(contx.getUserID(),(HtmlPage)newPage);
-                        callback.CallMeBack(convs,acts,(HtmlPage)newPage);
-                    }else{
-                        logger.warn("Not a html page?!");
-                        result = Result.NOTHTML;
-                        setSuccessful(false);
-                        return;
-                    }
-                }catch ( IOException ex){
-                    result = Result.FETCHERROR;
-                    setSuccessful(false);
-                    return;
-                }
-                break;
-            default:
-                throw new NotImplementedException("Actions other than click are not yet supported!");
+                    break;
+                default:
+                    throw new NotImplementedException("Actions other than click are not yet supported!");
             }
         }else if(startHttpAct != null){
             ResponseFetcher tsk = new ResponseFetcher(super.taskManager, startHttpAct, ctx);
