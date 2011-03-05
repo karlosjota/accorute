@@ -28,7 +28,7 @@ public class LevensteinAGD implements AccessGrantedDecision{
                 s2
             );
             int avglen = (s1.length() + s2.length())/2;
-            return ((double) avglen / (double)distance) > 0.5 ;
+            return ((double)  distance / (double)avglen) < 0.2 ;
         }else{
             return WebAppProperties.getInstance().getRespClassificator().getResponseType(checkedOne) ==  ResponseClassificator.ResponseType.OKAY;
         }

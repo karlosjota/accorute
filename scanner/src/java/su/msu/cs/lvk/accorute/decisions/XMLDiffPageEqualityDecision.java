@@ -5,13 +5,14 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 /**
  * Created by IntelliJ IDEA.
- * User: george
- * Date: 12.11.2010
- * Time: 1:19:57
+ * User: ngo
+ * Date: 3/3/11
+ * Time: 5:14 PM
  * To change this template use File | Settings | File Templates.
  */
-public class SimplePageEqDec implements HtmlPageEqualityDecision{
+public class XMLDiffPageEqualityDecision implements HtmlPageEqualityDecision{
     public boolean pagesEqual(HtmlPage a, HtmlPage b) {
+        //TOD: this is now almost useless
         //  TODO: a.isEqualNode() - not yet implemented...
         //TODO: this task is not trivial in general case!
         Iterable<HtmlElement> ait = a.getHtmlElementDescendants();
@@ -31,3 +32,4 @@ public class SimplePageEqDec implements HtmlPageEqualityDecision{
         return true;
     }
 }
+
