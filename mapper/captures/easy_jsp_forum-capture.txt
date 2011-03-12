@@ -1,0 +1,967 @@
+{
+  "scope": ".*10\\.0\\.0\\.13:8080\\/easy_jsp_forum\\/index\\.jsp.*",
+  "roles": [
+    {
+      "name": "public",
+      "parent": "N/A"
+    },
+    {
+      "name": "user",
+      "parent": "public"
+    },
+    {
+      "name": "moder",
+      "parent": "user"
+    },
+    {
+      "name": "admin",
+      "parent": "moder"
+    }
+  ],
+  "users": [
+    {
+      "name": "pub1",
+      "role": "pub1",
+      "credentials": {
+        "login": "pub1",
+        "password": ""
+      }
+    },
+    {
+      "name": "pub2",
+      "role": "pub2",
+      "credentials": {
+        "login": "pub2",
+        "password": ""
+      }
+    },
+    {
+      "name": "member1",
+      "role": "member1",
+      "credentials": {
+        "login": "member1",
+        "password": "member1"
+      }
+    },
+    {
+      "name": "member2",
+      "role": "member2",
+      "credentials": {
+        "login": "member2",
+        "password": "member2"
+      }
+    },
+    {
+      "name": "mod1",
+      "role": "mod1",
+      "credentials": {
+        "login": "mod1",
+        "password": "mod1"
+      }
+    },
+    {
+      "name": "mod2",
+      "role": "mod2",
+      "credentials": {
+        "login": "mod2",
+        "password": "mod2"
+      }
+    },
+    {
+      "name": "admin1",
+      "role": "admin1",
+      "credentials": {
+        "login": "admin1",
+        "password": "admin1"
+      }
+    },
+    {
+      "name": "admin2",
+      "role": "admin2",
+      "credentials": {
+        "login": "admin2",
+        "password": "admin2"
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "from": "assign_forum : admin1",
+      "to": "create_forum : admin1"
+    },
+    {
+      "from": "edit_forum : mod1",
+      "to": "create_forum : admin1"
+    },
+    {
+      "from": "edit_forum : mod1",
+      "to": "assign_forum : admin1"
+    },
+    {
+      "from": "create_thread : member1",
+      "to": "create_forum : admin1"
+    },
+    {
+      "from": "reply_thread : member1",
+      "to": "create_thread : member1"
+    },
+    {
+      "from": "edit_message : mod1",
+      "to": "reply_thread : member1"
+    },
+    {
+      "from": "delete_reply : mod1",
+      "to": "reply_thread : member1"
+    },
+    {
+      "from": "delete_thread : mod1",
+      "to": "create_thread : member1"
+    }
+  ],
+  "cancellations": [
+    {
+      "from": "delete_reply : mod1",
+      "to": "edit_message : mod1"
+    },
+    {
+      "from": "delete_thread : mod1",
+      "to": "reply_thread : member1"
+    },
+    {
+      "from": "delete_thread : mod1",
+      "to": "edit_message : mod1"
+    }
+  ],
+  "useCases": [
+    {
+      "name": "edit_member",
+      "user": "admin1"
+    },
+    {
+      "name": "create_forum",
+      "user": "admin1"
+    },
+    {
+      "name": "assign_forum",
+      "user": "admin1"
+    },
+    {
+      "name": "create_thread",
+      "user": "member1"
+    },
+    {
+      "name": "reply_thread",
+      "user": "member1"
+    },
+    {
+      "name": "update_profile",
+      "user": "member1"
+    },
+    {
+      "name": "edit_forum",
+      "user": "mod1"
+    },
+    {
+      "name": "edit_message",
+      "user": "mod1"
+    },
+    {
+      "name": "delete_reply",
+      "user": "mod1"
+    },
+    {
+      "name": "delete_thread",
+      "user": "mod1"
+    }
+  ],
+  "dynamicTokens": [
+    {
+      "name": "JSESSIONID",
+      "location": "cookie"
+    }
+  ],
+  "trace": [
+    [
+      {
+        "type": "SessionCreated",
+        "name": "edit_member",
+        "user": "admin1",
+        "time": 1299925804421
+      },
+      {
+        "type": "UCCreated",
+        "time": 1299925804421
+      },
+      {
+        "time": 1299925814661,
+        "type": "formSubmitted",
+        "action": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_members",
+        "cookie": "JSESSIONID=A7257E177D6CBDFAA34A035EDF531530",
+        "method": "post",
+        "elements": [
+          {
+            "name": "memberid",
+            "value": "3",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "username",
+            "value": "member1",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "password",
+            "value": "",
+            "type": "password",
+            "checked": false
+          },
+          {
+            "name": "cpassword",
+            "value": "",
+            "type": "password",
+            "checked": false
+          },
+          {
+            "name": "firstname",
+            "value": "Forum edited",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "lastname",
+            "value": "Member edited",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "email",
+            "value": "member@forum.com",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "type",
+            "value": "Administrator",
+            "type": "radio",
+            "checked": false
+          },
+          {
+            "name": "type",
+            "value": "Moderator",
+            "type": "radio",
+            "checked": false
+          },
+          {
+            "name": "type",
+            "value": "Member",
+            "type": "radio",
+            "checked": true
+          },
+          {
+            "name": "save",
+            "value": "Save",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_members"
+        }
+      },
+      {
+        "time": 1299925815266,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_members",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_members"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1299925815842
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1299925815842,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "create_forum",
+        "user": "admin1",
+        "time": 1299925825091
+      },
+      {
+        "type": "UCCreated",
+        "time": 1299925825091
+      },
+      {
+        "time": 1299925838804,
+        "type": "formSubmitted",
+        "action": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_forums",
+        "cookie": "JSESSIONID=A7257E177D6CBDFAA34A035EDF531530",
+        "method": "post",
+        "elements": [
+          {
+            "name": "boxname",
+            "value": "admin forum",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "sortdesc",
+            "value": "admin forum description",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "create",
+            "value": "Create",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_forums"
+        }
+      },
+      {
+        "time": 1299925839516,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_forums",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_forums"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1299925840170
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1299925840170,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "assign_forum",
+        "user": "admin1",
+        "time": 1299925852092
+      },
+      {
+        "type": "UCCreated",
+        "time": 1299925852092
+      },
+      {
+        "time": 1299925857277,
+        "type": "formSubmitted",
+        "action": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_forums",
+        "cookie": "JSESSIONID=A7257E177D6CBDFAA34A035EDF531530",
+        "method": "post",
+        "elements": [
+          {
+            "name": "uboxid",
+            "value": "1667",
+            "type": "select-one"
+          },
+          {
+            "name": "umemberid",
+            "value": "2",
+            "type": "select-one"
+          },
+          {
+            "name": "assign",
+            "value": "Assign",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_forums"
+        }
+      },
+      {
+        "time": 1299925857960,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_forums",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_forums"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1299925858826
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1299925858826,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "create_thread",
+        "user": "member1",
+        "time": 1299925922020
+      },
+      {
+        "type": "UCCreated",
+        "time": 1299925922020
+      },
+      {
+        "time": 1299925940478,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "JSESSIONID=A7257E177D6CBDFAA34A035EDF531530",
+        "method": "post",
+        "elements": [
+          {
+            "name": "subject",
+            "value": "member thread subject",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "posttext",
+            "value": "thread content<br />",
+            "type": "textarea"
+          },
+          {
+            "name": "post",
+            "value": "Post",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/popup.jsp?action=post&boxid=1667"
+        }
+      },
+      {
+        "time": 1299925940830,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=forum&boxid=1667",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.13:8080/easy_jsp_forum/popup.jsp?action=post&boxid=1667",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/popup.jsp?action=post&boxid=1667"
+        }
+      },
+      {
+        "time": 1299925940950,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=forum&boxid=1667",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.13:8080/easy_jsp_forum/popup.jsp?action=post&boxid=1667",
+            "frames": [
+              {
+                "location": "http://10.0.0.13:8080/easy_jsp_forum/popup.jsp?action=post&boxid=1667"
+              }
+            ]
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/popup.jsp?action=post&boxid=1667"
+        }
+      },
+      {
+        "time": 1299925941911,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=forum&boxid=1667",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=forum&boxid=1667"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1299925943233
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1299925943233,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 3
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "reply_thread",
+        "user": "member1",
+        "time": 1299925979068
+      },
+      {
+        "type": "UCCreated",
+        "time": 1299925979068
+      },
+      {
+        "time": 1299925986062,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "JSESSIONID=A7257E177D6CBDFAA34A035EDF531530",
+        "method": "post",
+        "elements": [
+          {
+            "name": "subject",
+            "value": "RE: member thread subject",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "posttext",
+            "value": "reply text<br />",
+            "type": "textarea"
+          },
+          {
+            "name": "reply",
+            "value": "Reply",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/popup.jsp?action=reply&boxid=1667&parentid=1474"
+        }
+      },
+      {
+        "time": 1299925986474,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=thread&threadid=1474",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.13:8080/easy_jsp_forum/popup.jsp?action=reply&boxid=1667&parentid=1474",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/popup.jsp?action=reply&boxid=1667&parentid=1474"
+        }
+      },
+      {
+        "time": 1299925986591,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=thread&threadid=1474",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.13:8080/easy_jsp_forum/popup.jsp?action=reply&boxid=1667&parentid=1474",
+            "frames": [
+              {
+                "location": "http://10.0.0.13:8080/easy_jsp_forum/popup.jsp?action=reply&boxid=1667&parentid=1474"
+              }
+            ]
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/popup.jsp?action=reply&boxid=1667&parentid=1474"
+        }
+      },
+      {
+        "time": 1299925987661,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=thread&threadid=1474",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=thread&threadid=1474"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1299925991193
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1299925991193,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 3
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "update_profile",
+        "user": "member1",
+        "time": 1299926043858
+      },
+      {
+        "type": "UCCreated",
+        "time": 1299926043858
+      },
+      {
+        "time": 1299926064914,
+        "type": "formSubmitted",
+        "action": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_profile",
+        "cookie": "JSESSIONID=A7257E177D6CBDFAA34A035EDF531530",
+        "method": "post",
+        "elements": [
+          {
+            "name": "password",
+            "value": "member1",
+            "type": "password",
+            "checked": false
+          },
+          {
+            "name": "cpassword",
+            "value": "member1",
+            "type": "password",
+            "checked": false
+          },
+          {
+            "name": "firstname",
+            "value": "Forum edited",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "lastname",
+            "value": "Member edited edited",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "email",
+            "value": "member@forum.com",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "editpro",
+            "value": "Update",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_profile"
+        }
+      },
+      {
+        "time": 1299926065132,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_profile",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_profile"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1299926067064
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1299926067064,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "edit_forum",
+        "user": "mod1",
+        "time": 1299926314185
+      },
+      {
+        "type": "UCCreated",
+        "time": 1299926314185
+      },
+      {
+        "time": 1299926320130,
+        "type": "formSubmitted",
+        "action": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_forums",
+        "cookie": "JSESSIONID=30A8D34066088292478185FE9F2B4DF8",
+        "method": "post",
+        "elements": [
+          {
+            "name": "boxid",
+            "value": "1667",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "eboxname",
+            "value": "admin forum",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "esortdesc",
+            "value": "admin forum description edited",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "save",
+            "value": "Save",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_forums"
+        }
+      },
+      {
+        "time": 1299926320434,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_forums",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_forums"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1299926322134
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1299926322134,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "edit_message",
+        "user": "mod1",
+        "time": 1299926366977
+      },
+      {
+        "type": "UCCreated",
+        "time": 1299926366977
+      },
+      {
+        "time": 1299926371771,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "JSESSIONID=30A8D34066088292478185FE9F2B4DF8",
+        "method": "post",
+        "elements": [
+          {
+            "name": "subject",
+            "value": "RE: member thread subject",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "posttext",
+            "value": "reply text edited<br />",
+            "type": "textarea"
+          },
+          {
+            "name": "save",
+            "value": "Save",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/popup.jsp?action=edit&replyid=1104"
+        }
+      },
+      {
+        "time": 1299926372219,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=thread&threadid=1474",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.13:8080/easy_jsp_forum/popup.jsp?action=edit&replyid=1104",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/popup.jsp?action=edit&replyid=1104"
+        }
+      },
+      {
+        "time": 1299926372337,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=thread&threadid=1474",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.13:8080/easy_jsp_forum/popup.jsp?action=edit&replyid=1104",
+            "frames": [
+              {
+                "location": "http://10.0.0.13:8080/easy_jsp_forum/popup.jsp?action=edit&replyid=1104"
+              }
+            ]
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/popup.jsp?action=edit&replyid=1104"
+        }
+      },
+      {
+        "time": 1299926373385,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=thread&threadid=1474",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=thread&threadid=1474"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1299926374502
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1299926374502,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 3
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "delete_reply",
+        "user": "mod1",
+        "time": 1299926449407
+      },
+      {
+        "type": "UCCreated",
+        "time": 1299926449407
+      },
+      {
+        "time": 1299926456821,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=thread&threadid=1474&action=del&id=1104",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=thread&threadid=1474&action=del&id=1104"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1299926463653
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1299926463653,
+        "clicks": 0,
+        "submits": 0,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "delete_thread",
+        "user": "mod1",
+        "time": 1299926518551
+      },
+      {
+        "type": "UCCreated",
+        "time": 1299926518551
+      },
+      {
+        "time": 1299926521962,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=thread&threadid=1474&action=del&id=1474",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=thread&threadid=1474&action=del&id=1474"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1299926526868
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1299926526868,
+        "clicks": 0,
+        "submits": 0,
+        "pages": 1
+      }
+    ]
+  ]
+}
+
