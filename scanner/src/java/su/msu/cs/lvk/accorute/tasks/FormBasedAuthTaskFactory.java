@@ -31,6 +31,6 @@ public class FormBasedAuthTaskFactory implements ContextedTaskFactory {
         if(submitXPath != null)
             return new FormBasedAuthTask(ctx,t, url, formIndex,submitXPath);
         else
-            return new FormBasedAuthTask(ctx,t, url, formIndex,submitXPath);
+            return new FormBasedAuthTask(ctx,t, url, formIndex);
     }
 }
