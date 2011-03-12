@@ -96,12 +96,12 @@ public class FormBasedAuthTask extends Task {
                     return;
                 }
             } else{
-                submitButton = loginForm.getFirstByXPath("input[@type='submit']");
+                submitButton = loginForm.getFirstByXPath(".//input[@type='submit']");
                 if(submitButton == null){
-                    submitButton = loginForm.getFirstByXPath("button[@type='submit']");
+                    submitButton = loginForm.getFirstByXPath(".//button[@type='submit']");
                 }
                 if(submitButton == null){
-                    submitButton = loginForm.getFirstByXPath("input[@type='image']");
+                    submitButton = loginForm.getFirstByXPath(".//input[@type='image']");
                 }
                 if(submitButton == null){
                     logger.error("Submit button not present");
