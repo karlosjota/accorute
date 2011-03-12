@@ -46,8 +46,10 @@ public class Main{
             System.err.println("Error loading evaluation contexts: " + ex.getMessage());
             return;
         }
-        JSONConfigurator configTask = new JSONConfigurator(WebAppProperties.getInstance().getTaskManager(),
-                "../mapper/captures/paolink-capture.txt");
+        JSONConfigurator configTask = new JSONConfigurator(
+                WebAppProperties.getInstance().getTaskManager(),
+                WebAppProperties.getInstance().getCaptureFileName()
+        );
         TaskManager taskman = WebAppProperties.getInstance().getTaskManager();
         taskman.addTask(configTask);
         new Thread(taskman).start();
@@ -56,15 +58,9 @@ public class Main{
         Iterator<UseCase> it = graph.dependencyRespectingIterator();
         List<Task> tasks = new ArrayList<Task>();
         HttpAction startAct;
-        try{
-
-            //"http://127.0.0.1/accorute_tests/JS_menu_2/demo1/index.html"
-            //http://127.0.0.1/accorute_tests/plainHTML/test4/1.html
-            //http://127.0.0.1:8080/accounts/login/?next=/test1/
-            startAct = new HttpAction("initial",WebAppProperties.getInstance().getRcd().decomposeURL("http://10.0.0.10:80/"));
-        }catch(Throwable r){
-            return;
-        }
+        startAct = new HttpAction("initial",WebAppProperties.getInstance().getRcd().decomposeURL(
+                WebAppProperties.getInstance().getMainPage()
+        ));
         for(Role r: WebAppProperties.getInstance().getRoles()){
             WebAppUser u1 = WebAppProperties.getInstance().getUserService().getUsersByRole(r.getRoleName()).get(0);
             UserContext u1Ctx = new UserContext();
@@ -176,7 +172,6 @@ public class Main{
         System.out.print(WebAppProperties.getInstance().getUcGraph());
         WebAppProperties.getInstance().getUcGraph().writeToFile("report/usecases.dot");
         try{
-            ////////////////
             //Output the XML
             //set up a transformer
             TransformerFactory transfac = TransformerFactory.newInstance();
@@ -200,13 +195,5 @@ public class Main{
             logger.fatal(ex);
             return;
         }
-        /*TestChain testChain = WebAppProperties.getInstance().getTestChain();
-        for(int i=0; i < testChain.size(); i++){
-            logger.trace("UC: " + testChain.get(i).action + " by role " +testChain.get(i).user.getUserRole().getRoleName());
-            logger.trace("\n==========\n" + WebAppProperties.getInstance().getRcd().compose(
-                    testChain.get(i).action.getActionParameters(),
-                    testChain.get(i).user).toString()+ "\n==========\n"
-            );
-        } */
     }
 }

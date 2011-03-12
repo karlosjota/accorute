@@ -75,7 +75,7 @@
     </bean>
     <bean id="dynCredUp" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimpleDynamicCredentialsUpdater" />
 
-    <bean id="Properties" class="su.msu.cs.lvk.accorute.WebAppProperties" factory-method="getInstance">
+    <bean id="properties" class="su.msu.cs.lvk.accorute.WebAppProperties" factory-method="getInstance">
         <property name="actionService" ref="actionService"/>
         <property name="contextService" ref="contextService"/>
         <property name="cookieService" ref="cookieService" />
@@ -100,6 +100,11 @@
         <property name="httpClient" ref="httpcl"/>
         <property name="proxy" ref="proxy" />
         <property name="dynCredUpd" ref="dynCredUp"/>
+        <property name="captureFileName" value="../mapper/captures/paolink-capture.txt" />
+        <property name="mainPage" ref="mainPage" />
+    </bean>
+    <bean id="mainPage" class="java.net.URL">
+        <constructor-arg value="http://10.0.0.10:80/" />
     </bean>
 
 </beans>

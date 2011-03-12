@@ -101,6 +101,11 @@
         <property name="httpClient" ref="httpcl"/>
         <property name="proxy" ref="proxy" />
         <property name="dynCredUpd" ref="dynCredUp"/>
+        <property name="captureFileName" value="../mapper/captures/django-test1.txt" />
+        <property name="mainPage" ref="mainPage" />
+    </bean>
+    <bean id="mainPage" class="java.net.URL">
+        <constructor-arg value="http://127.0.0.1:8000/test/" />
     </bean>
 
 </beans>

@@ -165,6 +165,26 @@ public class WebAppProperties {
     private TaskManager taskManager;
     private final UseCaseGraph ucGraph = new UseCaseGraph();
 
+    public URL getMainPage() {
+        return mainPage;
+    }
+
+    public void setMainPage(URL mainPage) {
+        this.mainPage = mainPage;
+    }
+
+    private URL mainPage;
+
+    public String getCaptureFileName() {
+        return captureFileName;
+    }
+
+    public void setCaptureFileName(String captureFileName) {
+        this.captureFileName = captureFileName;
+    }
+
+    private String captureFileName;
+
     public UseCaseGraph getUcGraph() {
         return ucGraph;
     }
