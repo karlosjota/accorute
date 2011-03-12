@@ -272,7 +272,11 @@ public class Request extends Message {
             }
         }
         if(!hashost){
-            res.addHeader("Host",getURL().getHost());
+            String portpart="";
+            if(url.getPort() != -1){
+                portpart = ":"+url.getPort();
+            }
+            res.addHeader("Host",url.getHost()+portpart);
         }
         return res;
     }
