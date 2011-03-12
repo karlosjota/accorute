@@ -60,23 +60,19 @@ public class CorrespondentActions {
         if(httpActions.size()==1){
             output.write(httpActions.get(0).toString());
         }else{
-            output.write("{");
             for(HttpAction a: httpActions){
                 output.write(a + "|");
             }
             output.getBuffer().deleteCharAt(output.getBuffer().length()-1);
-            output.write("}");
         }
         output.write("|");
         if(domActions.size()==1){
             output.write(domActions.get(0).toString());
         }else{
-            output.write("{");
             for(DomAction da: domActions){
                 output.write(da + "|");
             }
             output.getBuffer().deleteCharAt(output.getBuffer().length()-1);
-            output.write("}");
         }
         output.write("}");
         return output.toString();
