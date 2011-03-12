@@ -320,7 +320,7 @@ function importSettingsFromFile(file){
         cell.setAttribute("label",settings.users[i].name);
         row.appendChild(cell);
         cell = document.createElement("listcell");
-        cell.setAttribute("label",settings.users[i].name);
+        cell.setAttribute("label",settings.users[i].role);
         row.appendChild(cell);
         cell = document.createElement("listcell");
         cell.setAttribute("label",settings.users[i].credentials.password);
