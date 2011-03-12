@@ -161,13 +161,16 @@ public abstract class Task implements Runnable{
     abstract protected void start();
 
     public void run(){
-        logger.trace("Task " +this.getClass().getName()+ " was STARTED at thread " + Thread.currentThread().getId());
-        setStatus(TaskStatus.RUNNING);
-        start();
-        setStatus(TaskStatus.FINISHED);
-        taskManager.taskFinished();
-        for (int i=0; i< Callbacks.size(); i++){
-		  Callbacks.get(i).CallMeBack();
+        try{
+            logger.trace("Task " +this.getClass().getName()+ " was STARTED at thread " + Thread.currentThread().getId());
+            setStatus(TaskStatus.RUNNING);
+            start();
+        }  finally {
+            setStatus(TaskStatus.FINISHED);
+            taskManager.taskFinished();
+            for (int i=0; i< Callbacks.size(); i++){
+              Callbacks.get(i).CallMeBack();
+            }
         }
     }
 }
