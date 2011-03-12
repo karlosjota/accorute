@@ -141,6 +141,7 @@ Capturer.prototype = {
                 if((link.tagName == "INPUT" || link.tagName == "BUTTON") && link.type == "submit"){
                     this.submit_name = link.name;
                 }
+                cur_sess.length--;
                 return;
             }
             save = true;
