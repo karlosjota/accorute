@@ -59,7 +59,7 @@
     </bean>
     <bean id="ffd" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimpleFormFill"/>
     <bean id="loginPageURL" scope="prototype" class="java.net.URL" >
-        <constructor-arg value="10.0.0.13:8080/easy_jsp_forum/"/>
+        <constructor-arg value="http://10.0.0.13:8080/easy_jsp_forum/"/>
     </bean>
     <bean id="authFactory" scope="prototype" class="su.msu.cs.lvk.accorute.tasks.FormBasedAuthTaskFactory">
         <constructor-arg ref="loginPageURL" />

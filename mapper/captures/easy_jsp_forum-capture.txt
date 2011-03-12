@@ -21,7 +21,7 @@
   "users": [
     {
       "name": "pub1",
-      "role": "pub1",
+      "role": "public",
       "credentials": {
         "login": "pub1",
         "password": ""
@@ -29,7 +29,7 @@
     },
     {
       "name": "pub2",
-      "role": "pub2",
+      "role": "public",
       "credentials": {
         "login": "pub2",
         "password": ""
@@ -37,7 +37,7 @@
     },
     {
       "name": "member1",
-      "role": "member1",
+      "role": "user",
       "credentials": {
         "login": "member1",
         "password": "member1"
@@ -45,7 +45,7 @@
     },
     {
       "name": "member2",
-      "role": "member2",
+      "role": "user",
       "credentials": {
         "login": "member2",
         "password": "member2"
@@ -53,7 +53,7 @@
     },
     {
       "name": "mod1",
-      "role": "mod1",
+      "role": "moder",
       "credentials": {
         "login": "mod1",
         "password": "mod1"
@@ -61,7 +61,7 @@
     },
     {
       "name": "mod2",
-      "role": "mod2",
+      "role": "moder",
       "credentials": {
         "login": "mod2",
         "password": "mod2"
@@ -69,7 +69,7 @@
     },
     {
       "name": "admin1",
-      "role": "admin1",
+      "role": "admin",
       "credentials": {
         "login": "admin1",
         "password": "admin1"
@@ -77,7 +77,7 @@
     },
     {
       "name": "admin2",
-      "role": "admin2",
+      "role": "admin",
       "credentials": {
         "login": "admin2",
         "password": "admin2"
