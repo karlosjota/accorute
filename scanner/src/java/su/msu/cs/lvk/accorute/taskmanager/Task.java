@@ -154,6 +154,7 @@ public abstract class Task implements Runnable{
      * Warning! do not forget to make it thread-safe!
      * @return returns the result of the task or null if it is not finished.
      */
+    @SuppressWarnings("unchecked")
     abstract public Object getResult();
 
 

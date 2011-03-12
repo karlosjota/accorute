@@ -39,9 +39,18 @@ import javax.xml.transform.stream.*;
 public class Main{
     private static Logger logger = Logger.getLogger(Main.class.getName());
     public static void main(String[] args){
-        ApplicationContext ctx;
+        if(args.length != 1){
+            System.err.println(
+                    "Usage: <program-name> <your_config.xml>, \n" +
+                    "where <your_config.xml> is the filename relative to the \n" +
+                    "VM working directory. \n" +
+                    "If you wish to use absoulute paths, prefix them with 'file:'\n" +
+                    "(C) Noseevich George, 2011\n"
+            );
+            return;
+        }
         try {
-            ctx = new FileSystemXmlApplicationContext("src/resources/accorute-config-paolink.xml");
+            ApplicationContext ctx = new FileSystemXmlApplicationContext(args[0]);
         } catch (BeanDefinitionStoreException ex) {
             System.err.println("Error loading evaluation contexts: " + ex.getMessage());
             return;
