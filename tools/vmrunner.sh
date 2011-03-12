@@ -2,6 +2,7 @@
 [ "$#" -eq "1" ] || exit 1;
 function restart
 {
+    echo -n "[`date +%T`] "
     echo -n "Restarting the VM: "
     VBoxManage controlvm $1 poweroff &>/dev/null
     echo -n " ...stopped... "
@@ -12,6 +13,7 @@ function restart
 }
 function exit_gracefully
 {
+    echo -n "[`date +%T`] "
     echo -n "Closing the VM: "
     VBoxManage controlvm $1 poweroff &>/dev/null
     echo -n " ...stopped... "
