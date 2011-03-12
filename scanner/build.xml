@@ -156,7 +156,7 @@
     </target>        
 
     <target name="ivy-publish-local" depends="clean, ivy-resolve, build">
-        <ivy:publish resolver="local" artifactspattern="${out.dir}/[artifact].[ext]"/>
+        <ivy:publish resolver="local" artifactspattern="${basedir}/[artifact].[ext]" update="true"/>
     </target>
 
     <!--
