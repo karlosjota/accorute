@@ -34,7 +34,7 @@ public class JSONConfigurator extends Task {
             super();
         }
         public UnsupportedDOMEventTypeException(String err){
-            super("Unsupported evant type: " + err);
+            super("Unsupported event type: " + err);
         }
     }
     private static class JSONEventParser{
@@ -43,12 +43,7 @@ public class JSONConfigurator extends Task {
             HttpAction act;
             if(type.equals("pageLoaded")){
                 String URL = event.getJSONObject("document").getString("location");
-                List<ActionParameter> params;
-                try {
-                    params = WebAppProperties.getInstance().getRcd().decomposeURL(URL);
-                } catch (java.net.MalformedURLException e) {
-                    throw e;
-                }
+                List<ActionParameter> params;params = WebAppProperties.getInstance().getRcd().decomposeURL(URL);
                 act = new HttpAction("",params);
             }else if(type.equals("formSubmitted")){
                 String method = event.getString("method");
@@ -109,10 +104,12 @@ public class JSONConfigurator extends Task {
         try{
             try{
                 in = new FileInputStream(filename);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
                 byte[] buffer = new byte[(int) new File(filename).length()];
                 BufferedInputStream f = new BufferedInputStream(in);
-                f.read(buffer);
+                int res = f.read(buffer);
+                if(res < 0){
+                    throw new IOException("Empty file!");
+                }
                 String contents = new String(buffer);
                 JSONObject obj = new JSONObject(contents);
                 JSONArray tokens = obj.getJSONArray("dynamicTokens");
