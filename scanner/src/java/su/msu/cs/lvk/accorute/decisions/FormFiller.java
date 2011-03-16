@@ -1,5 +1,6 @@
 package su.msu.cs.lvk.accorute.decisions;
 
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import su.msu.cs.lvk.accorute.http.model.EntityID;
 
@@ -10,10 +11,7 @@ import su.msu.cs.lvk.accorute.http.model.EntityID;
  * Time: 15:19:26
  * To change this template use File | Settings | File Templates.
  */
-public interface FormFillDecision {
-    /**
-     * The only requirement is: if given a login form, this should fill it with valid credentials
-     * @param f
-     */
-    void FillForm(HtmlForm f, EntityID ctxID);
+public interface FormFiller {
+    boolean hasNext();
+    HtmlElement next();
 }

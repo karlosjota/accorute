@@ -7,6 +7,7 @@ import com.gargoylesoftware.htmlunit.util.FalsifyingWebConnection;
 import net.sourceforge.htmlunit.corejs.javascript.EcmaError;
 import net.sourceforge.htmlunit.corejs.javascript.ScriptableObject;
 import su.msu.cs.lvk.accorute.WebAppProperties;
+import su.msu.cs.lvk.accorute.decisions.FormFiller;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
@@ -112,17 +113,13 @@ public class HtmlPageParser extends Task implements DomChangeListener {
         }
     }
     private void fillForms(HtmlElement el){
-        List<HtmlElement> forms = el.getHtmlElementsByTagName("form");
-        for(HtmlElement f: forms){
-            WebAppProperties.getInstance().getFfd().FillForm((HtmlForm)f,ctxID);
-        }
+
+
     }
     private void emulateUserActions(HtmlElement el) {
         fillForms(el);
         doJsActions(el);
         List<HtmlAnchor> anchors = el.getHtmlElementsByTagName("a");
-        List<HtmlInput> inputs = el.getHtmlElementsByTagName("input");
-        List<HtmlButton> buttons = el.getHtmlElementsByTagName("button");
         logger.trace("emulateUserActions on " + el);
         Iterable<HtmlElement> htmlChildren = el.getHtmlElementDescendants();
         Iterator<HtmlElement> it = htmlChildren.iterator();
@@ -131,16 +128,15 @@ public class HtmlPageParser extends Task implements DomChangeListener {
         }
         for(HtmlAnchor a:anchors){
             //only click anchors that has a href
-            if(a.getHrefAttribute() != DomElement.ATTRIBUTE_NOT_DEFINED)
+            if(!a.getHrefAttribute().equals(DomElement.ATTRIBUTE_NOT_DEFINED))
                 tryClick(a);
         }
-        for(HtmlInput inp: inputs){
-            if(inp.getTypeAttribute().equalsIgnoreCase("submit"))
-                tryClick(inp);
-        }
-        for(HtmlButton b: buttons){
-            if(b.getTypeAttribute().equalsIgnoreCase("submit"))
-                tryClick(b);
+        List<HtmlElement> forms = el.getHtmlElementsByTagName("form");
+        for(HtmlElement f: forms){
+            FormFiller filler = WebAppProperties.getInstance().getFormFillerFactory().generate((HtmlForm)f,ctxID);
+            while(filler.hasNext()){
+                tryClick(filler.next());
+            }
         }
     }
     private void doJsActions(HtmlElement htmlElement) {

@@ -1,7 +1,5 @@
 package su.msu.cs.lvk.accorute.tasks;
 
-import com.gargoylesoftware.htmlunit.CookieManager;
-import com.gargoylesoftware.htmlunit.HttpWebConnection;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
@@ -9,20 +7,15 @@ import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.http.HttpHost;
-import org.apache.http.cookie.Cookie;
-import org.apache.http.cookie.CookieOrigin;
-import org.apache.http.impl.client.AbstractHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
 import su.msu.cs.lvk.accorute.WebAppProperties;
+import su.msu.cs.lvk.accorute.decisions.FormFiller;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -86,23 +79,11 @@ public class FormBasedAuthTask extends Task {
                 return;
             }
             HtmlForm loginForm = forms.get(formIndex);
-            WebAppProperties.getInstance().getFfd().FillForm(loginForm,ctxID);
+            FormFiller ffiller = WebAppProperties.getInstance().getFormFillerFactory().generate(loginForm, ctxID);
+            HtmlElement submitButton = ffiller.next();//fill in the submit
             //find the submit button and click it
-            HtmlInput submitButton;
             if(submitXPath != null){
                 submitButton = loginForm.getFirstByXPath(submitXPath);
-                if(submitButton == null){
-                    logger.error("Submit button not present");
-                    return;
-                }
-            } else{
-                submitButton = loginForm.getFirstByXPath(".//input[@type='submit']");
-                if(submitButton == null){
-                    submitButton = loginForm.getFirstByXPath(".//button[@type='submit']");
-                }
-                if(submitButton == null){
-                    submitButton = loginForm.getFirstByXPath(".//input[@type='image']");
-                }
                 if(submitButton == null){
                     logger.error("Submit button not present");
                     return;

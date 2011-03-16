@@ -57,7 +57,13 @@
     <bean id="scopeRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
         <constructor-arg value="http:\/\/10\.0\.0\.13:8080\/easy_jsp_forum\/.*" />
     </bean>
-    <bean id="ffd" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimpleFormFill"/>
+    <bean id="formFillerFactory" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.MultiStateFormFillFactory" >
+        <constructor-arg value="" />
+        <constructor-arg value="" />
+        <constructor-arg value="true" />
+        <constructor-arg value="true" />
+        <constructor-arg value="true" />
+    </bean>
     <bean id="loginPageURL" scope="prototype" class="java.net.URL" >
         <constructor-arg value="http://10.0.0.13:8080/easy_jsp_forum/"/>
     </bean>
@@ -94,7 +100,7 @@
         <property name="pageEqDec" ref="pageEqD" />
         <property name="acEqDec" ref="acEqD" />
         <property name="scope" ref="scopeRegex" />
-        <property name="ffd" ref="ffd" />
+        <property name="formFillerFactory" ref="formFillerFactory" />
         <property name="authTaskFactory" ref="authFactory" />
         <property name="agd" ref="simpleAGD" />
         <property name="httpClient" ref="httpcl"/>

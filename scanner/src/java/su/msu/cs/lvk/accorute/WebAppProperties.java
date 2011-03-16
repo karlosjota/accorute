@@ -97,15 +97,15 @@ public class WebAppProperties {
 
     private AccessGrantedDecision agd;
 
-    public FormFillDecision getFfd() {
-        return ffd;
+    public FormFillerFactory getFormFillerFactory() {
+        return formFillerFactory;
     }
 
-    public void setFfd(FormFillDecision ffd) {
-        this.ffd = ffd;
+    public void setFormFillerFactory(FormFillerFactory formFillerFactory) {
+        this.formFillerFactory = formFillerFactory;
     }
 
-    private FormFillDecision ffd;
+    private FormFillerFactory formFillerFactory;
 
     public ActionEqualityDecision getAcEqDec() {
         return acEqDec;
