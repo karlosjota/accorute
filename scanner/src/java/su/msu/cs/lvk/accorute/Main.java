@@ -59,6 +59,12 @@ public class Main{
                 WebAppProperties.getInstance().getTaskManager(),
                 WebAppProperties.getInstance().getCaptureFileName()
         );
+        //clear dir of temp files...
+        File reportDir = new File("report");
+        for(File f : reportDir.listFiles()){
+            if(f.getAbsolutePath().endsWith(".dot") || f.getAbsolutePath().endsWith(".png"))
+                f.delete();
+        }
         TaskManager taskman = WebAppProperties.getInstance().getTaskManager();
         taskman.addTask(configTask);
         new Thread(taskman).start();
