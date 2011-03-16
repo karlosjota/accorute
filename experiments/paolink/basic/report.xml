@@ -1,0 +1,16 @@
+<WebApp>
+  <usecase>
+    <spikeset from="public" to="public"/>
+    <spikeset from="admin" to="admin"/>
+    <spikeset from="public" to="admin">
+      <action id="0" name="tmp">
+        <params>
+          <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.10"/>
+          <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="80"/>
+          <param location="QUERY" meaning="AUTOMATIC" name="login_ok" role="UNKNOWN" type="STRING" value="true"/>
+          <param location="URL" meaning="AUTOMATIC" name="path" role="UNKNOWN" type="STRING" value="/login.php"/>
+        </params>
+      </action>
+    </spikeset>
+  </usecase>
+</WebApp>

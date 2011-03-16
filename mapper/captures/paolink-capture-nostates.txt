@@ -1,0 +1,58 @@
+{
+  "scope": ".*10\\.0\\.0\\.10.*",
+  "roles": [
+    {
+      "name": "public",
+      "parent": "N/A"
+    },
+    {
+      "name": "admin",
+      "parent": "public"
+    }
+  ],
+  "users": [
+    {
+      "name": "pub1",
+      "role": "public",
+      "credentials": {
+        "login": "pub1",
+        "password": ""
+      }
+    },
+    {
+      "name": "pub2",
+      "role": "public",
+      "credentials": {
+        "login": "pub2",
+        "password": ""
+      }
+    },
+    {
+      "name": "admin1",
+      "role": "admin",
+      "credentials": {
+        "login": "admin1",
+        "password": "vulnweb"
+      }
+    },
+    {
+      "name": "admin2",
+      "role": "admin",
+      "credentials": {
+        "login": "admin2",
+        "password": "vulnweb"
+      }
+    }
+  ],
+  "dependencies": [],
+  "cancellations": [],
+  "useCases": [],
+  "dynamicTokens": [
+    {
+      "name": "PHPSESSID",
+      "location": "cookie"
+    }
+  ],
+  "trace": []
+}
+

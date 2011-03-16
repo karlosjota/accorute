@@ -39,7 +39,7 @@ import javax.xml.transform.stream.*;
 public class Main{
     private static Logger logger = Logger.getLogger(Main.class.getName());
     public static void main(String[] args){
-        if(args.length != 1){
+        if(args.length < 1){
             System.err.println(
                     "Usage: <program-name> <your_config.xml>, \n" +
                     "where <your_config.xml> is the filename relative to the \n" +
@@ -116,7 +116,7 @@ public class Main{
         }
         String ucName = "start";
         int ucNum = 0;
-        while(it.hasNext()){
+        do{
             final Element curState = rootDocument.createElement("usecase");
             rootElement.appendChild(curState);
             if(started){
@@ -181,7 +181,7 @@ public class Main{
             }
             taskman.waitForEmptyQueue();
             ucNum++;
-        }
+        }while(it.hasNext());
         WebAppProperties.getInstance().getTaskManager().terminate();
         WebAppProperties.getInstance().getTaskManager().waitForFinish();
         System.out.print(WebAppProperties.getInstance().getUcGraph());

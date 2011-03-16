@@ -45,7 +45,7 @@ public class UseCaseGraph implements Comparator<UseCase> {
         }
         public DependencyRespectingIterator(UseCaseGraph g){
             ucGraph = g;
-            traversalOrder = new PriorityQueue<UseCase>(g.getUCCount(), g);
+            traversalOrder = new PriorityQueue<UseCase>(g.getUCCount()>0?g.getUCCount():1, g);
             Iterator<UseCase> it = g.getUseCases().iterator();
             while (it.hasNext()){
                 UseCase u = it.next();

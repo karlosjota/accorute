@@ -6,16 +6,19 @@ Each subfolder contains a full report for some web application,
 which consists of:
  * README.txt , which contains info about the web application itself, 
    its known vulnerabilities, etc.
- * usecases.png , the UseCase diagram (solid black arrows mean dependency, 
-   dashed red arrows mean cancellation)
+ * basic/ , which contains the results of the basic method
+ * AcCoRuTe/ , which contains the results of the AcCoRuTe method
+Each of the two subfolders contains:
  * report.xml , the main output of scanner tool, which describes the selected
    sequence of usecases and lists spikes found at each step
- * <webappname>-capture.txt , t6he output of the mapper tool
+ * <capturename>.txt , the output of the mapper tool
  * sitemaps, which is a directory, containing graphical representation
    of sitemaps, named <UCnum><UCname>_<role>_<num>, where UCnum and UCname 
    are number and name of performed UseCase, role is the role of user for which
    the sitemap is gathered, and num is 1 or 2, as we need 2 users of each role
    to perform horisontal priviledge escalation tests
+AcCoRuTe subfolders also contains usecases.png , the UseCase diagram
+(solid black arrows mean dependency, dashed red arrows mean cancellation)
 
 == How to read sitemaps ==
  * Big dark dots are web pages. 
