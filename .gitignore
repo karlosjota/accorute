@@ -6,3 +6,10 @@ scanner/out
 accorute_test.db
 scanner/report
 scanner/scanner.jar
+papers/*.aux
+papers/*.nav
+papers/*.log
+papers/*.out
+papers/*.snm
+papers/*.toc
+
