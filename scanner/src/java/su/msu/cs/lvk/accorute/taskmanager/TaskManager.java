@@ -205,7 +205,10 @@ public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutio
             try{
                 notifyAll(); // wake waiting
                 logger.trace("Sleep until next action...");
-                wait();
+                wait(500);
+                /*
+                    TODO: Sometimes TaskManager  gets stuck, for unknown reason.
+                 */
             }catch (InterruptedException e){}
         }
     }
