@@ -141,14 +141,23 @@ public class Sitemap {
             );
             out.write("\tnode [shape = point, width = 0.4];\n");
             int i=0;
+            final Map<String, String> labelNameLabelString = new HashMap<String,String>();
             for(Object e:actionDepGraph.edgeSet()){
                 SitemapEdge edge = (SitemapEdge) e;
+                String lblStr = edge.getLabel().getAsDotRecord();
                 String id1 = edge.getV1().getNodeID().getId().toString();
                 String id2 = edge.getV2().getNodeID().getId().toString();
-                out.write("\tnode_"+id1+" -> "+"label_"+i+" [arrowhead = none];\n");
-                out.write("label_"+i+" -> "+"node_"+id2+";\n");
-                out.write("label_"+i +" [ shape=record, label = \""+ edge.getLabel().getAsDotRecord() + "\" ];\n");
-                i++;
+                String lblName;
+                if(!labelNameLabelString.containsKey(lblStr+"->"+id2)){
+                    lblName = "label_"+i;
+                    out.write(lblName +" [ shape=record, label = \""+ lblStr + "\" ];\n");
+                    labelNameLabelString.put(lblStr+"->"+id2, lblName);
+                    out.write(lblName+" -> "+"node_"+id2+" [arrowhead=vee];\n");
+                    i++;
+                }else{
+                    lblName = labelNameLabelString.get(lblStr+"->"+id2);
+                }
+                out.write("\tnode_"+id1+" -> "+lblName+";\n");
             }
             /*for(Object e:actionDepGraph.vertexSet()){
                 SitemapNode n = (SitemapNode) e;

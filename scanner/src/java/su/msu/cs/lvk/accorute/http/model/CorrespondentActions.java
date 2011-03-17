@@ -58,21 +58,23 @@ public class CorrespondentActions {
         StringWriter output = new StringWriter();
         output.write("{");
         if(httpActions.size()==1){
-            output.write(httpActions.get(0).toString());
+            output.write(httpActions.get(0).toStringNl());
         }else{
             for(HttpAction a: httpActions){
-                output.write(a + "|");
+                output.write(a.toStringNl() + "|");
             }
             output.getBuffer().deleteCharAt(output.getBuffer().length()-1);
         }
-        output.write("|");
-        if(domActions.size()==1){
-            output.write(domActions.get(0).toString());
-        }else{
-            for(DomAction da: domActions){
-                output.write(da + "|");
+        if(false){
+            output.write("|");
+            if(domActions.size()==1){
+                output.write(domActions.get(0).toString());
+            }else{
+                for(DomAction da: domActions){
+                    output.write(da + "|");
+                }
+                output.getBuffer().deleteCharAt(output.getBuffer().length()-1);
             }
-            output.getBuffer().deleteCharAt(output.getBuffer().length()-1);
         }
         output.write("}");
         return output.toString();
