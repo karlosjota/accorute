@@ -58,8 +58,8 @@
         <constructor-arg value="http:\/\/10\.0\.0\.13:8080\/easy_jsp_forum\/.*" />
     </bean>
     <bean id="formFillerFactory" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.MultiStateFormFillFactory" >
-        <constructor-arg value="" />
-        <constructor-arg value="" />
+        <constructor-arg value="test" />
+        <constructor-arg value="test" />
         <constructor-arg value="true" />
         <constructor-arg value="true" />
         <constructor-arg value="true" />

@@ -63,7 +63,12 @@ public class JSONConfigurator extends Task {
                         name = eltype;
                     }
                     ActionParameterMeaning mean;
-                    if(eltype.equalsIgnoreCase("hidden")||eltype.equalsIgnoreCase("submit")){
+                    /*
+                        TODO: what to do with hidden input fields here must be configurable.
+                        Usually, though, it should be thought about as usercontrollable
+                     */
+
+                    if(eltype.equalsIgnoreCase("submit") /* ||eltype.equalsIgnoreCase("hidden")*/ ){
                         mean = ActionParameterMeaning.AUTOMATIC;
                     }else{
                         mean = ActionParameterMeaning.USERCONTROLLABLE;
