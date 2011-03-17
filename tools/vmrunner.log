@@ -1,0 +1,229 @@
+VBoxManage: error: Cannot power down a saved virtual machine
+VBoxManage: error: Details: code VBOX_E_INVALID_VM_STATE (0x80bb0002), component Console, interface IConsole, callee nsISupports
+Context: "PowerDown(progress.asOutParam())" at line 149 of file VBoxManageControlVM.cpp
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+VBoxManage: error: Cannot power down a saved virtual machine
+VBoxManage: error: Details: code VBOX_E_INVALID_VM_STATE (0x80bb0002), component Console, interface IConsole, callee nsISupports
+Context: "PowerDown(progress.asOutParam())" at line 149 of file VBoxManageControlVM.cpp
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot d5e0fab5-0709-450c-9396-ba13aa0b1a9d
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot d5e0fab5-0709-450c-9396-ba13aa0b1a9d
+VBoxManage: error: Could not find a registered machine named 'vulnweb'
+VBoxManage: error: Details: code VBOX_E_OBJECT_NOT_FOUND (0x80bb0001), component VirtualBox, interface IVirtualBox, callee nsISupports
+Context: "FindMachine(Bstr(a->argv[0]).raw(), machine.asOutParam())" at line 78 of file VBoxManageControlVM.cpp
+VBoxManage: error: Could not find a registered machine named 'vulnweb'
+VBoxManage: error: Details: code VBOX_E_OBJECT_NOT_FOUND (0x80bb0001), component VirtualBox, interface IVirtualBox, callee nsISupports
+Context: "FindMachine(bstrMachine.raw(), pMachine.asOutParam())" at line 230 of file VBoxManageSnapshot.cpp
+VBoxManage: error: Could not find a registered machine named 'vulnweb'
+VBoxManage: error: Details: code VBOX_E_OBJECT_NOT_FOUND (0x80bb0001), component VirtualBox, interface IVirtualBox, callee nsISupports
+Context: "FindMachine(Bstr(VMName).raw(), machine.asOutParam())" at line 354 of file VBoxManageMisc.cpp
+VBoxManage: error: Could not find a registered machine named 'vulnweb'
+VBoxManage: error: Details: code VBOX_E_OBJECT_NOT_FOUND (0x80bb0001), component VirtualBox, interface IVirtualBox, callee nsISupports
+Context: "FindMachine(Bstr(a->argv[0]).raw(), machine.asOutParam())" at line 78 of file VBoxManageControlVM.cpp
+VBoxManage: error: Could not find a registered machine named 'vulnweb'
+VBoxManage: error: Details: code VBOX_E_OBJECT_NOT_FOUND (0x80bb0001), component VirtualBox, interface IVirtualBox, callee nsISupports
+Context: "FindMachine(bstrMachine.raw(), pMachine.asOutParam())" at line 230 of file VBoxManageSnapshot.cpp
+VBoxManage: error: Could not open the medium '/home/ngo/.VirtualBox/Machines/vulnweb/Snapshots/{a7d48ef8-7f5c-4b87-b219-0c2e0afefa9f}.vdi'.
+VBoxManage: error: VD: error VERR_FILE_NOT_FOUND opening image file '/home/ngo/.VirtualBox/Machines/vulnweb/Snapshots/{a7d48ef8-7f5c-4b87-b219-0c2e0afefa9f}.vdi' (VERR_FILE_NOT_FOUND)
+VBoxManage: error: Details: code NS_ERROR_FAILURE (0x80004005), component Medium, interface IMedium, callee 
+Waiting for the VM to power on...
+VBoxManage: error: Cannot power down a saved virtual machine
+VBoxManage: error: Details: code VBOX_E_INVALID_VM_STATE (0x80bb0002), component Console, interface IConsole, callee nsISupports
+Context: "PowerDown(progress.asOutParam())" at line 149 of file VBoxManageControlVM.cpp
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot d5e0fab5-0709-450c-9396-ba13aa0b1a9d
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot d5e0fab5-0709-450c-9396-ba13aa0b1a9d
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot d5e0fab5-0709-450c-9396-ba13aa0b1a9d
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+VBoxManage: error: Invalid machine state: Restoring (must be Running, Paused or Stuck)
+VBoxManage: error: Details: code VBOX_E_INVALID_VM_STATE (0x80bb0002), component Console, interface IConsole, callee nsISupports
+Context: "PowerDown(progress.asOutParam())" at line 149 of file VBoxManageControlVM.cpp
+VBoxManage: error: Cannot delete the current state of the running machine (machine state: Restoring)
+VBoxManage: error: Details: code VBOX_E_INVALID_VM_STATE (0x80bb0002), component Console, interface IConsole, callee nsISupports
+Context: "RestoreSnapshot(pSnapshot, pProgress.asOutParam())" at line 379 of file VBoxManageSnapshot.cpp
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+VBoxManage: error: The machine 'win2k3' is already locked by a session (or being locked or unlocked)
+VBoxManage: error: Details: code VBOX_E_INVALID_OBJECT_STATE (0x80bb0007), component Machine, interface IMachine, callee nsISupports
+Context: "LaunchVMProcess(a->session, sessionType.raw(), env.raw(), progress.asOutParam())" at line 371 of file VBoxManageMisc.cpp
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+Restoring snapshot 16b21b92-ed88-4f3a-9aee-7786eeeac071
+Waiting for the VM to power on...
+VM has been successfully started.

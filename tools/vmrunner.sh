@@ -23,6 +23,8 @@ function exit_gracefully
 }
 trap "restart $1" INT
 trap "exit_gracefully $1" QUIT
+VBoxManage startvm $1 --type headless &>>vmrunner.log
+echo " machine started!"
 while true; do
     sleep 60
 done
