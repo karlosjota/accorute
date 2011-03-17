@@ -130,6 +130,50 @@
     {
       "from": "delete_thread : mod1",
       "to": "edit_message : mod1"
+    },
+    {
+      "from": "delete_member : admin1",
+      "to": "edit_member : admin1"
+    },
+    {
+      "from": "delete_member : admin1",
+      "to": "create_forum : admin1"
+    },
+    {
+      "from": "delete_member : admin1",
+      "to": "assign_forum : admin1"
+    },
+    {
+      "from": "delete_member : admin1",
+      "to": "create_thread : member1"
+    },
+    {
+      "from": "delete_member : admin1",
+      "to": "reply_thread : member1"
+    },
+    {
+      "from": "delete_member : admin1",
+      "to": "update_profile : member1"
+    },
+    {
+      "from": "delete_member : admin1",
+      "to": "edit_forum : mod1"
+    },
+    {
+      "from": "delete_member : admin1",
+      "to": "edit_message : mod1"
+    },
+    {
+      "from": "delete_member : admin1",
+      "to": "delete_reply : mod1"
+    },
+    {
+      "from": "delete_member : admin1",
+      "to": "delete_thread : mod1"
+    },
+    {
+      "from": "delete_member : admin1",
+      "to": "delete_member : admin1"
     }
   ],
   "useCases": [
@@ -172,6 +216,10 @@
     {
       "name": "delete_thread",
       "user": "mod1"
+    },
+    {
+      "name": "delete_member",
+      "user": "admin1"
     }
   ],
   "dynamicTokens": [
@@ -959,6 +1007,120 @@
         "time": 1299926526868,
         "clicks": 0,
         "submits": 0,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "delete_member",
+        "user": "admin1",
+        "time": 1300364962924
+      },
+      {
+        "type": "UCCreated",
+        "time": 1300364962924
+      },
+      {
+        "time": 1300364965266,
+        "type": "formSubmitted",
+        "action": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_members",
+        "cookie": "JSESSIONID=B26851528E6F7EC90EB946BD4E61BE4E; JSESSIONID=97A12FD3129C34CBD7E2343675F7D5CF",
+        "method": "post",
+        "elements": [
+          {
+            "name": "memberid",
+            "value": "3",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "username",
+            "value": "member1",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "password",
+            "value": "",
+            "type": "password",
+            "checked": false
+          },
+          {
+            "name": "cpassword",
+            "value": "",
+            "type": "password",
+            "checked": false
+          },
+          {
+            "name": "firstname",
+            "value": "Forum",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "lastname",
+            "value": "Member",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "email",
+            "value": "member@forum.com",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "type",
+            "value": "Administrator",
+            "type": "radio",
+            "checked": false
+          },
+          {
+            "name": "type",
+            "value": "Moderator",
+            "type": "radio",
+            "checked": false
+          },
+          {
+            "name": "type",
+            "value": "Member",
+            "type": "radio",
+            "checked": true
+          },
+          {
+            "name": "delete",
+            "value": "Delete",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_members"
+        }
+      },
+      {
+        "time": 1300364966042,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_members",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_members"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1300364967654
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1300364967654,
+        "clicks": 0,
+        "submits": 1,
         "pages": 1
       }
     ]
