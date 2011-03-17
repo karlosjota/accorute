@@ -4,20 +4,20 @@ function restart
 {
     echo -n "[`date +%T`] "
     echo -n "Restarting the VM: "
-    VBoxManage controlvm $1 poweroff &>/dev/null
+    VBoxManage controlvm $1 poweroff &>>vmrunner.log
     echo -n " ...stopped... "
-    VBoxManage snapshot $1 restorecurrent &>/dev/null
+    VBoxManage snapshot $1 restorecurrent &>>vmrunner.log
     echo -n " ...restored... "
-    VBoxManage startvm $1 --type headless &>/dev/null
+    VBoxManage startvm $1 --type headless &>>vmrunner.log
     echo " ...started!"
 }
 function exit_gracefully
 {
     echo -n "[`date +%T`] "
     echo -n "Closing the VM: "
-    VBoxManage controlvm $1 poweroff &>/dev/null
+    VBoxManage controlvm $1 poweroff &>>vmrunner.log
     echo -n " ...stopped... "
-    VBoxManage snapshot $1 restorecurrent &>/dev/null
+    VBoxManage snapshot $1 restorecurrent &>>vmrunner.log
     echo " ...restored!"
     exit 0
 }
