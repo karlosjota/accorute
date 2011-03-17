@@ -17,10 +17,10 @@ public class HtmlUnitUtils {
 
     public static HtmlPage clonePage(HtmlPage other, WebWindow w){
         HtmlPage p = new HtmlPage(other.getUrl(), other.getWebResponse(), w);
-        DomNode newContents = other.getFirstChild().cloneNode(true);
-        p.appendChild(newContents);
         w.setEnclosedPage(p);
         p.setEnclosingWindow(w);
+        DomNode newContents = other.getFirstChild().cloneNode(true);
+        p.appendChild(newContents);
         List<HtmlElement> scripts = p.getElementsByTagName("script");
         for(HtmlElement sc: scripts){
             HtmlScript script = (HtmlScript)sc;
