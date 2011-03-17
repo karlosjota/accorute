@@ -104,6 +104,7 @@ public class SessionValidityWatcher {
             }
             logger.trace(ctx + ":I'm returning from analyzeResponce after a retry");
             singleRetryFinished = true;
+            notifyAll();
             return res;
         }
         if(curState == SessionWatcherState.JOINING ){
