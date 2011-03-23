@@ -13,4 +13,6 @@ scanner/scanner.jar
 *.snm
 *.toc
 *.vrb
-
+*.bbl
+*.blg
+*.bib
