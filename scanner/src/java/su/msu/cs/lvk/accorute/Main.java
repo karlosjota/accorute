@@ -159,32 +159,35 @@ public class Main{
                     EntityID attacker = users2.get(attackRole.getRoleName());
                     EntityID victim = users1.get(victimRole.getRoleName());
                     if(RoleCompare.less(victimRole,attackRole) >= 0){
-                        if(attackRole.getRoleName().equalsIgnoreCase("user") && victimRole.getRoleName().equalsIgnoreCase("admin") ){
-                            final Task t = new SimpleDetectSpikes(taskman,attacker,victim);
-                            t.registerCallback(
-                                    new Callback0(){
-                                        public void CallMeBack() {
-                                            Set<HttpAction> acts = (Set<HttpAction>)t.getResult();
-                                            Element spikeSet = curState.getOwnerDocument().createElement("spikeset");
-                                            curState.appendChild(spikeSet);
-                                            spikeSet.setAttribute("from",attackRole.getRoleName());
-                                            spikeSet.setAttribute("to",victimRole.getRoleName());
-                                            Iterator<HttpAction> it = acts.iterator();
-                                            while(it.hasNext()){
-                                                HttpAction act = it.next();
-                                                act.appendToElement(spikeSet);
-                                            }
+                        //if(attackRole.getRoleName().equalsIgnoreCase("user") && victimRole.getRoleName().equalsIgnoreCase("admin") ){
+                        final Task t = new SimpleDetectSpikes(taskman,attacker,victim);
+                        t.registerCallback(
+                                new Callback0(){
+                                    public void CallMeBack() {
+                                        Set<HttpAction> acts = (Set<HttpAction>)t.getResult();
+                                        Element spikeSet = curState.getOwnerDocument().createElement("spikeset");
+                                        curState.appendChild(spikeSet);
+                                        spikeSet.setAttribute("from",attackRole.getRoleName());
+                                        spikeSet.setAttribute("to",victimRole.getRoleName());
+                                        Iterator<HttpAction> it = acts.iterator();
+                                        while(it.hasNext()){
+                                            HttpAction act = it.next();
+                                            act.appendToElement(spikeSet);
                                         }
                                     }
-                            );
-                            taskman.addTask(t);
-                        }
+                                }
+                        );
+                        taskman.addTask(t);
+                        //}
                     }
                 }                                                                                                                           
             }
             taskman.waitForEmptyQueue();
             ucNum++;
-        }while(it.hasNext() && ucNum < 1);
+            try{
+                Thread.sleep(10000);
+            }catch(InterruptedException ex){}
+        }while(it.hasNext() /* && ucNum < 1 */ );
         WebAppProperties.getInstance().getTaskManager().terminate();
         WebAppProperties.getInstance().getTaskManager().waitForFinish();
         System.out.print(WebAppProperties.getInstance().getUcGraph());
