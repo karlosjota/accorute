@@ -5,8 +5,6 @@ import su.msu.cs.lvk.accorute.WebAppProperties;
 import su.msu.cs.lvk.accorute.http.model.EntityID;
 import su.msu.cs.lvk.accorute.http.model.WebAppUser;
 
-import java.awt.*;
-import java.sql.Struct;
 import java.util.*;
 import java.util.List;
 
@@ -24,8 +22,6 @@ public class MultiStateFormFillFactory implements FormFillerFactory {
     public boolean cycleRadioButtons = false;
     public boolean cycleCheckboxes = false;
 
-    public MultiStateFormFillFactory(){
-    }
     public MultiStateFormFillFactory(
             String defaultInputText,
             String defaultTextAreaText,
@@ -222,31 +218,43 @@ public class MultiStateFormFillFactory implements FormFillerFactory {
                     String name = input.getNameAttribute();
                     if(user.getStaticCredentials().containsKey(name)){
                         input.setValueAttribute(user.getStaticCredentials().get(name));
+                    }else if(name.toLowerCase().contains("mail")){
+                        input.setValueAttribute("test@example.org");//TODO: terrible cludge!
                     }else if(defaultInputText!=null){
                         input.setValueAttribute(defaultInputText);
                     }
                 }
                 //1.2 type=password
                 else if(type.equalsIgnoreCase("password")){
-                    input.setValueAttribute(user.getStaticCredentials().get("password"));
+                    String name = input.getNameAttribute();
+                    if(user.getStaticCredentials().containsKey(name)){
+                        input.setValueAttribute(user.getStaticCredentials().get(name));
+                    }else if(user.getStaticCredentials().get("password") != null){
+                        input.setValueAttribute(user.getStaticCredentials().get("password"));
+                    }
                 }
                 //1.3 type=radio
-                else if(type.equalsIgnoreCase("radio")&&cycleRadioButtons){
-                    HtmlRadioButtonInput radio = (HtmlRadioButtonInput) input;
-                    String name = radio.getNameAttribute();
-                    if(radioGroups.containsKey(name)){
-                        radioGroups.get(name).add(radio);
-                    }else{
-                        ArrayList<HtmlRadioButtonInput> ar = new ArrayList<HtmlRadioButtonInput>();
-                        ar.add(radio);
-                        radioGroups.put(name,ar);
+                else if(type.equalsIgnoreCase("radio")){
+                    String name = input.getNameAttribute();
+                    if(cycleRadioButtons){
+                        HtmlRadioButtonInput radio = (HtmlRadioButtonInput) input;
+                        if(radioGroups.containsKey(name)){
+                            radioGroups.get(name).add(radio);
+                        }else{
+                            ArrayList<HtmlRadioButtonInput> ar = new ArrayList<HtmlRadioButtonInput>();
+                            ar.add(radio);
+                            radioGroups.put(name,ar);
+                        }
                     }
                 }
                 //1.4 type=checkbox
-                else if(type.equalsIgnoreCase("checkbox")&&cycleCheckboxes){
-                    currentState.add(
-                        new CheckBoxFormStateIter((HtmlCheckBoxInput)input)
-                    );
+                else if(type.equalsIgnoreCase("checkbox")){
+                    String name = input.getNameAttribute();
+                    if(cycleCheckboxes){
+                        currentState.add(
+                                new CheckBoxFormStateIter((HtmlCheckBoxInput)input)
+                        );
+                    }
                 }
                 //1.5 submit
                 else if(type.equalsIgnoreCase("submit")){
@@ -270,18 +278,20 @@ public class MultiStateFormFillFactory implements FormFillerFactory {
                 }
             }
             //selects
-            if(cycleSelects){
-                for(HtmlElement i: form.getHtmlElementsByTagName("select")){
-                    HtmlSelect sel = (HtmlSelect) i;
+
+            for(HtmlElement i: form.getHtmlElementsByTagName("select")){
+                HtmlSelect sel = (HtmlSelect) i;
+                String name = sel.getNameAttribute();
+                if(cycleSelects){
                     if(sel.isMultipleSelectEnabled()){
                         for(HtmlOption opt:sel.getOptions()){
                             currentState.add(
-                                new SingleOptionFormStateIter(opt)
+                                    new SingleOptionFormStateIter(opt)
                             );
                         }
                     }else{
                         currentState.add(
-                            new SelectFormStateIter(sel)
+                                new SelectFormStateIter(sel)
                         );
                     }
                 }
@@ -302,7 +312,6 @@ public class MultiStateFormFillFactory implements FormFillerFactory {
             }
             submitIter = submittable.iterator();
         }
-
         public boolean hasNext() {
             for(RewindingFormStateIterator it : currentState){
                 if(it.hasNext())
@@ -352,5 +361,6 @@ public class MultiStateFormFillFactory implements FormFillerFactory {
             }while(carry);
             return currentSubmit;
         }
+
     }
 }

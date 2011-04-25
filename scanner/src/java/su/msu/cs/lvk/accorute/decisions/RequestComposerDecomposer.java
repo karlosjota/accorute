@@ -7,6 +7,8 @@ import su.msu.cs.lvk.accorute.http.model.UserContext;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -18,8 +20,10 @@ import java.util.List;
  */
 public abstract class RequestComposerDecomposer {
     abstract public URL getURL(List<ActionParameter> params);
-    abstract public List<ActionParameter> decompose(Request r);
-    abstract public List<ActionParameter> decompose(WebRequest r);
+    public List<ActionParameter> decompose(WebRequest r){
+        return decompose(r, new ArrayList<String>());
+    }
+    abstract public List<ActionParameter> decompose(WebRequest r, Collection<String> userControllableFields);
     abstract public Request compose(List<ActionParameter> params, UserContext userContext);
     abstract public List<ActionParameter> decomposeURL(URL u);
     public List<ActionParameter> decomposeURL(String u) throws MalformedURLException {

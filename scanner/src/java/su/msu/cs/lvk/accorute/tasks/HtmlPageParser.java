@@ -8,6 +8,7 @@ import net.sourceforge.htmlunit.corejs.javascript.EcmaError;
 import net.sourceforge.htmlunit.corejs.javascript.ScriptableObject;
 import su.msu.cs.lvk.accorute.WebAppProperties;
 import su.msu.cs.lvk.accorute.decisions.FormFiller;
+import su.msu.cs.lvk.accorute.http.constants.ActionParameterLocation;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
@@ -16,9 +17,7 @@ import su.msu.cs.lvk.accorute.utils.HtmlUnitUtils;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -34,6 +33,7 @@ public class HtmlPageParser extends Task implements DomChangeListener {
     private final Callback4<HtmlPage,  ArrayList<DomAction>, HttpAction, Boolean> callback;
     private final WebClient webClient;
     private boolean wasRequest;
+    private Collection<String> userControllableFormFields = new ArrayList<String>();
     private WebConnection falseWebConn;
     private final EntityID ctxID;
     private final ArrayList<DomAction> curActionChain = new ArrayList<DomAction>();
@@ -51,7 +51,7 @@ public class HtmlPageParser extends Task implements DomChangeListener {
             public WebResponse getResponse(WebRequest request) throws IOException {
                 wasRequest = true;
                 logger.debug("Intercepted a request: "+ request);
-                List<ActionParameter> param = WebAppProperties.getInstance().getRcd().decompose(request);
+                List<ActionParameter> param = WebAppProperties.getInstance().getRcd().decompose(request,userControllableFormFields);
                 URL u = WebAppProperties.getInstance().getRcd().getURL(param);
                 boolean cancellable = false;
                 //if(u.getFile().endsWith(".js") || u.getFile().endsWith(".css"))
@@ -72,6 +72,11 @@ public class HtmlPageParser extends Task implements DomChangeListener {
         webClient.setWebConnection(falseWebConn);
     }
     private void tryClick(HtmlElement htmlElement){
+        userControllableFormFields.clear();
+        HtmlForm form = htmlElement.getEnclosingForm();
+        if(form != null){
+            userControllableFormFields.addAll(HtmlUnitUtils.getUserControllableFormFields(form));
+        }
         String path = htmlElement.getCanonicalXPath();
         logger.trace("Trying to click "+ path);
         //clone page
@@ -98,6 +103,7 @@ public class HtmlPageParser extends Task implements DomChangeListener {
             if(!ex.getMessage().equalsIgnoreCase("java.io.IOException: goes just as planned"))
                 logger.error("got runtime exception during click!", ex);
         }
+        userControllableFormFields.clear();
         //if there was no request, we can happily reproduce this action on current page
         if(!wasRequest){
             logger.trace("click didn't produce a request");
@@ -112,12 +118,14 @@ public class HtmlPageParser extends Task implements DomChangeListener {
             curActionChain.remove(curActionChain.size() - 1);    
         }
     }
-    private void fillForms(HtmlElement el){
-
-
-    }
     private void emulateUserActions(HtmlElement el) {
-        fillForms(el);
+        Map<HtmlForm, FormFiller> fillers = new HashMap<HtmlForm, FormFiller>();
+        List<HtmlElement> forms = el.getHtmlElementsByTagName("form");
+        for(HtmlElement f: forms){
+            HtmlForm form = (HtmlForm) f;
+            FormFiller filler = WebAppProperties.getInstance().getFormFillerFactory().generate(form,ctxID);
+            fillers.put(form,filler);
+        }
         doJsActions(el);
         List<HtmlAnchor> anchors = el.getHtmlElementsByTagName("a");
         logger.trace("emulateUserActions on " + el);
@@ -131,9 +139,16 @@ public class HtmlPageParser extends Task implements DomChangeListener {
             if(!a.getHrefAttribute().equals(DomElement.ATTRIBUTE_NOT_DEFINED))
                 tryClick(a);
         }
-        List<HtmlElement> forms = el.getHtmlElementsByTagName("form");
+        forms = el.getHtmlElementsByTagName("form");
         for(HtmlElement f: forms){
-            FormFiller filler = WebAppProperties.getInstance().getFormFillerFactory().generate((HtmlForm)f,ctxID);
+
+            HtmlForm form = (HtmlForm) f;
+            FormFiller filler;
+            if(fillers.containsKey(form)){
+                filler = fillers.get(form);
+            } else {
+                filler = WebAppProperties.getInstance().getFormFillerFactory().generate(form,ctxID);
+            }
             while(filler.hasNext()){
                 tryClick(filler.next());
             }

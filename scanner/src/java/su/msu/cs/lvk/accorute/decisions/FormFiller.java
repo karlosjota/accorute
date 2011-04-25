@@ -4,6 +4,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import su.msu.cs.lvk.accorute.http.model.EntityID;
 
+import java.util.Collection;
+
 /**
  * Created by IntelliJ IDEA.
  * User: george

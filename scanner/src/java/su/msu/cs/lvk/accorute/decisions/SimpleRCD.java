@@ -19,6 +19,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -60,10 +61,10 @@ public class SimpleRCD extends RequestComposerDecomposer{
             return null;
         }
     }
-    public List<ActionParameter> decompose(WebRequest r){
+    public List<ActionParameter> decompose(WebRequest r, Collection<String> userControllable){
         //TODO: not complete at all!
         ArrayList<ActionParameter> params = new ArrayList<ActionParameter>();
-        params.addAll(decomposeURL(r.getUrl()));
+        params.addAll(decomposeURL(r.getUrl(), userControllable));
         HttpMethod m = r.getHttpMethod();
         boolean isPost = false;
         if(m == HttpMethod.POST){
@@ -83,7 +84,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
                             nameval[0],
                             nameval[1],
                             ActionParameterLocation.BODY,
-                            decideActionMeaning(nameval[0],ActionParameterLocation.BODY),
+                            decideActionMeaning(nameval[0],ActionParameterLocation.BODY,userControllable),
                             ActionParameterDatatype.STRING
                     ));
                 }
@@ -94,7 +95,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
                             URLDecoder.decode(nvp.getName()),
                             URLDecoder.decode(nvp.getValue()),
                             ActionParameterLocation.BODY,
-                            decideActionMeaning(URLDecoder.decode(nvp.getName()),ActionParameterLocation.BODY),
+                            decideActionMeaning(URLDecoder.decode(nvp.getName()),ActionParameterLocation.BODY,userControllable),
                             ActionParameterDatatype.STRING
                     ));
                 }
@@ -150,14 +151,17 @@ public class SimpleRCD extends RequestComposerDecomposer{
         }
         return req;
     }
-    public List<ActionParameter> decomposeURL(URL url) {
+    public List<ActionParameter> decomposeURL(URL url){
+        return decomposeURL(url, new ArrayList<String>());
+    }
+    public List<ActionParameter> decomposeURL(URL url, Collection<String> userControllable) {
         ArrayList<ActionParameter> params = new ArrayList<ActionParameter>();
 
         params.add(new ActionParameter(
                 "host",
                 url.getHost(),
                 ActionParameterLocation.URL,
-                decideActionMeaning("host",ActionParameterLocation.URL),
+                decideActionMeaning("host",ActionParameterLocation.URL,userControllable),
                 ActionParameterDatatype.STRING)
         );
         int port = url.getPort();
@@ -167,7 +171,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
                 "port",
                 Integer.toString(port),
                 ActionParameterLocation.URL,
-                decideActionMeaning("port",ActionParameterLocation.URL),
+                decideActionMeaning("port",ActionParameterLocation.URL,userControllable),
                 ActionParameterDatatype.NUMBER)
         );
         String query = url.getQuery();
@@ -179,7 +183,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
                     URLDecoder.decode(nameValue[0]),
                     URLDecoder.decode( (nameValue.length>1)?nameValue[1]:""),
                     ActionParameterLocation.QUERY,
-                    decideActionMeaning(URLDecoder.decode(nameValue[0]),ActionParameterLocation.QUERY),
+                    decideActionMeaning(URLDecoder.decode(nameValue[0]),ActionParameterLocation.QUERY,userControllable),
                     ActionParameterDatatype.STRING)
                 );
             }
@@ -189,27 +193,35 @@ public class SimpleRCD extends RequestComposerDecomposer{
                 "path",
                 path,
                 ActionParameterLocation.URL,
-                decideActionMeaning("path",ActionParameterLocation.URL),
+                decideActionMeaning("path",ActionParameterLocation.URL,userControllable),
                 ActionParameterDatatype.STRING)
         );
 
         return params;
     }
-
     private ActionParameterMeaning decideActionMeaning(String name, ActionParameterLocation loc){
+        return decideActionMeaning(name, loc, new ArrayList<String>());
+    }
+    private ActionParameterMeaning decideActionMeaning(String name, ActionParameterLocation loc, Collection<String> uControllable){
         if(loc == null)
             throw new RuntimeException("decideActionMeaning: location cannot be null");
         if(loc == WebAppProperties.getInstance().getDynTokenLoc(name))
             return WebAppProperties.getInstance().getDynTokenMeaning(name);
         switch(loc){
-            case BODY:
+            case BODY:{
+                if(uControllable.contains(name))
+                    return ActionParameterMeaning.USERCONTROLLABLE;
                 return ActionParameterMeaning.AUTOMATIC;
+            }
             case COOKIE:
                 return ActionParameterMeaning.SESSIONTOKEN;
             case HEADER:
                 return ActionParameterMeaning.SESSIONTOKEN;
-            case QUERY:
+            case QUERY:{
+                if(uControllable.contains(name))
+                    return ActionParameterMeaning.USERCONTROLLABLE;
                 return ActionParameterMeaning.AUTOMATIC;
+            }
             case URL:
                 return ActionParameterMeaning.AUTOMATIC;
             default:

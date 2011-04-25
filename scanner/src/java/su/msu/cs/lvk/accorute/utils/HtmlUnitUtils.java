@@ -4,7 +4,7 @@ import com.gargoylesoftware.htmlunit.WebWindow;
 import com.gargoylesoftware.htmlunit.html.*;
 import org.w3c.dom.NamedNodeMap;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,7 +14,48 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class HtmlUnitUtils {
+    public static Collection<String> getUserControllableFormFields(HtmlForm form){
+        Set<String> controllableFieldNames = new HashSet<String>();
+        //1. input
+        for(HtmlElement i: form.getHtmlElementsByTagName("input")){
+            HtmlInput input = (HtmlInput) i;
+            final String type = input.getTypeAttribute();
+            //1.1 type=text
+            if(type.equalsIgnoreCase("text")){
+                String name = input.getNameAttribute();
+                controllableFieldNames.add(name);
+            }
+            //1.2 type=password
+            else if(type.equalsIgnoreCase("password")){
+                String name = input.getNameAttribute();
+                controllableFieldNames.add(name);
+            }
+            //1.3 type=radio
+            else if(type.equalsIgnoreCase("radio")){
+                String name = input.getNameAttribute();
+                controllableFieldNames.add(name);
+            }
+            //1.4 type=checkbox
+            else if(type.equalsIgnoreCase("checkbox")){
+                String name = input.getNameAttribute();
+                controllableFieldNames.add(name);
+            }
+        }
 
+        //selects
+        for(HtmlElement i: form.getHtmlElementsByTagName("select")){
+            HtmlSelect sel = (HtmlSelect) i;
+            String name = sel.getNameAttribute();
+            controllableFieldNames.add(name);
+        }
+        //textarea
+        for(HtmlElement el: form.getHtmlElementsByTagName("textarea")){
+            HtmlTextArea area = (HtmlTextArea) el;
+            String name = area.getNameAttribute();
+            controllableFieldNames.add(name);
+        }
+        return controllableFieldNames;
+    }
     public static HtmlPage clonePage(HtmlPage other, WebWindow w){
         HtmlPage p = new HtmlPage(other.getUrl(), other.getWebResponse(), w);
         w.setEnclosedPage(p);

@@ -77,8 +77,10 @@ public class SimpleDetectSpikes extends Task{
             Iterator<HttpAction> it2 = test12.iterator();
             while(it2.hasNext()){
                 HttpAction act2 = it2.next();
-                if(WebAppProperties.getInstance().getAcEqDec().ActionEquals(act,act2))
+                if(WebAppProperties.getInstance().getAcEqDec().ActionEquals(act,act2)){
                     toDelete.add(act2);
+                    break;
+                }
             }
             test12.removeAll(toDelete);
         }

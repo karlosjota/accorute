@@ -2,6 +2,7 @@ package su.msu.cs.lvk.accorute.tasks;
 
 import com.gargoylesoftware.htmlunit.*;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.util.FalsifyingWebConnection;
 import org.apache.commons.lang.NotImplementedException;
@@ -17,6 +18,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -42,6 +44,7 @@ public class HtmlElementActionPerformer extends Task {
     private final WebConnection falseWebConn;
     private Result result = Result.NOTFINISHED;
     private boolean wasReq = false;
+    private Collection<String> userControllableFormFields = new ArrayList<String>();
     private final ArrayList<Conversation> convs = new ArrayList<Conversation>();
     private final ArrayList<HttpAction> acts = new ArrayList<HttpAction>();
     private final HttpAction startHttpAct;
@@ -80,7 +83,10 @@ public class HtmlElementActionPerformer extends Task {
             public WebResponse getResponse(WebRequest request) throws IOException {
                 //TODO:not so easy!!!
                 wasReq = true;
-                List<ActionParameter> param = WebAppProperties.getInstance().getRcd().decompose(request);
+                List<ActionParameter> param = WebAppProperties.getInstance().getRcd().decompose(
+                        request,
+                        userControllableFormFields
+                );
                 HttpAction act = new HttpAction("tmp", param);
                 acts.add(act);
                 logger.trace("Will request HttpAction " + act);
@@ -118,6 +124,13 @@ public class HtmlElementActionPerformer extends Task {
                 case CLICK:
                     try{
                         logger.trace("Will click on " + last.getXpathElString());
+                        if(el.getEnclosingForm()!=null){
+                            userControllableFormFields.addAll(
+                                    HtmlUnitUtils.getUserControllableFormFields((HtmlForm) el.getEnclosingForm())
+                            );
+                        }else{
+                            userControllableFormFields.clear();
+                        }
                         Page  newPage = el.click();
                         if(!wasReq){
                             //This should never happen!
