@@ -1,0 +1,193 @@
+Entry points: Servlets:
+   <Application,Lorg/apache/jsp/index_jsp>
+   <Application,Lorg/apache/jsp/popup_jsp>
+
+Found 31 executions
+
+Slice 1:
+
+Trying to execute: [SELECT * FROM Members WHERE [username]=']
+Web requests: [index.jsp, popup.jsp]
+Using parameters: [posttext, register, username, post, page, subject, action, reply, parentid, login, password, boxid]
+====================
+
+Slice 2:
+Trying to execute: SELECT * FROM Members
+Web requests: [index.jsp]
+Using parameters: [username, page, login, password]
+====================
+
+Slice 3:
+Trying to execute: [SELECT member_id FROM Members WHERE [username]=']
+Web requests: [index.jsp]
+Using parameters: [register, username, page]
+====================
+
+Slice 4:
+Trying to execute: SELECT box_id FROM Boxes
+Web requests: [index.jsp]
+Using parameters: [assign, save, eboxid, eboxname, create, boxname, boxid, sortdesc, del_thread, page, delete, esortdesc, uboxid, umemberid]
+====================
+
+Slice 5:
+Trying to execute: [SELECT * FROM Boxes WHERE box_id=]
+Web requests: [index.jsp, popup.jsp]
+Using parameters: [posttext, assign, post, save, eboxid, subject, eboxname, parentid, create, boxid, boxname, sortdesc, del_thread, page, replyid, action, delete, reply, esortdesc, uboxid, umemberid, threadid]
+====================
+
+Slice 6:
+Trying to execute: [SELECT * FROM Members WHERE member_id=]
+Web requests: [index.jsp]
+Using parameters: [assign, save, memberid, lastname, eboxname, type, password, boxid, id, username, page, delete, action, esortdesc, umemberid, eboxid, firstname, create, boxname, editmemid, sortdesc, del_thread, email, uboxid, threadid]
+====================
+
+Slice 7:
+Trying to execute: [SELECT thread_id FROM Threads WHERE box_id=]
+Web requests: [index.jsp]
+Using parameters: [del_thread, page]
+====================
+
+Slice 8:
+Trying to execute: [SELECT * FROM Threads WHERE thread_id=]
+Web requests: [index.jsp, popup.jsp]
+Using parameters: [posttext, id, del_thread, post, page, replyid, subject, action, reply, parentid, threadid, boxid]
+====================
+
+Slice 9:
+Trying to execute: [SELECT thread_id FROM Threads WHERE box_id=]
+Web requests: [index.jsp]
+Using parameters: [del_thread, page]
+====================
+
+Slice 10:
+Trying to execute: [SELECT thread_id FROM Threads WHERE box_id=]
+Web requests: [index.jsp]
+Using parameters: [page, boxid]
+====================
+
+Slice 11:
+Trying to execute: [SELECT thread_id FROM Threads WHERE parent_id=]
+Web requests: [index.jsp]
+Using parameters: [id, page, action, threadid]
+====================
+
+Slice 12:
+Trying to execute: [SELECT thread_id FROM Threads WHERE member_id=]
+Web requests: [index.jsp]
+Using parameters: [memberid, page]
+====================
+
+Slice 13:
+Trying to execute: [SELECT box_id FROM Boxes WHERE member_id=]
+Web requests: [index.jsp]
+Using parameters: [username, save, memberid, email, page, delete, lastname, firstname, type, password]
+====================
+
+Slice 14:
+Trying to execute: SELECT member_id FROM Members ORDER BY member_id
+Web requests: [index.jsp]
+Using parameters: [username, save, memberid, email, page, delete, lastname, firstname, type, password]
+====================
+
+Slice 15:
+Trying to execute: [SELECT box_id FROM Boxes WHERE member_id=]
+Web requests: [index.jsp]
+Using parameters: [assign, save, eboxid, eboxname, create, boxname, boxid, sortdesc, page, delete, esortdesc, uboxid, umemberid]
+====================
+
+Slice 16:
+Trying to execute: SELECT box_id FROM Boxes WHERE member_id=0
+Web requests: [index.jsp]
+Using parameters: [assign, save, eboxid, eboxname, create, boxname, boxid, sortdesc, page, delete, esortdesc, uboxid, umemberid]
+====================
+
+Slice 17:
+Trying to execute: SELECT member_id FROM Members WHERE type='Administrator' OR type='Moderator' ORDER BY member_id
+Web requests: [index.jsp]
+Using parameters: [assign, save, eboxid, eboxname, create, boxname, boxid, sortdesc, page, delete, esortdesc, uboxid, umemberid]
+====================
+
+Slice 18:
+Trying to execute: [SELECT thread_id FROM Threads WHERE box_id=]
+Web requests: [index.jsp]
+Using parameters: [del_thread, page]
+====================
+
+Slice 19:
+Trying to execute: [INSERT INTO Members (member_id, [username], [password], [firstname], [lastname], [email], [regdate], [type]) VALUES (]
+Web requests: [index.jsp]
+Using parameters: [register, username, page, password]
+====================
+
+Slice 20:
+Trying to execute: [DELETE FROM Threads WHERE thread_id=]
+Web requests: [index.jsp]
+Using parameters: [id, page, action, threadid]
+====================
+
+Slice 21:
+Trying to execute: [UPDATE Members SET ]
+Web requests: [index.jsp]
+Using parameters: [email, page, lastname, editpro, firstname, password]
+====================
+
+Slice 22:
+Trying to execute: [DELETE FROM Members WHERE member_id=]
+Web requests: [index.jsp]
+Using parameters: [memberid, page, delete]
+====================
+
+Slice 23:
+Trying to execute: [UPDATE Members SET ]
+Web requests: [index.jsp]
+Using parameters: [username, save, memberid, email, page, delete, lastname, firstname, type, password]
+====================
+
+Slice 24:
+Trying to execute: [UPDATE Boxes SET member_id=0 WHERE member_id=]
+Web requests: [index.jsp]
+Using parameters: [username, save, memberid, email, page, delete, lastname, firstname, type, password]
+====================
+
+Slice 25:
+Trying to execute: [INSERT INTO Boxes (box_id, member_id, [box_name], [sort_desc]) VALUES (]
+Web requests: [index.jsp]
+Using parameters: [sortdesc, page, create, boxname]
+====================
+
+Slice 26:
+Trying to execute: [DELETE FROM Boxes WHERE box_id=]
+Web requests: [index.jsp]
+Using parameters: [sortdesc, page, delete, create, boxid, boxname]
+====================
+
+Slice 27:
+Trying to execute: [UPDATE Boxes SET box_name=']
+Web requests: [index.jsp]
+Using parameters: [sortdesc, save, page, delete, esortdesc, eboxname, create, boxid, boxname]
+====================
+
+Slice 28:
+Trying to execute: [UPDATE Boxes SET member_id=]
+Web requests: [index.jsp]
+Using parameters: [sortdesc, assign, save, page, delete, uboxid, esortdesc, eboxname, umemberid, create, boxid, boxname]
+====================
+
+Slice 29:
+Trying to execute: [INSERT INTO Threads (thread_id, parent_id, box_id, member_id, [subject], [post_text], post_date) VALUES (]
+Web requests: [popup.jsp]
+Using parameters: [posttext, post, subject, action, boxid]
+====================
+
+Slice 30:
+Trying to execute: [INSERT INTO Threads (thread_id, parent_id, box_id, member_id, [subject], [post_text], post_date) VALUES (]
+Web requests: [popup.jsp]
+Using parameters: [posttext, post, subject, action, reply, parentid, boxid]
+====================
+
+Slice 31:
+Trying to execute: [UPDATE Threads SET subject=']
+Web requests: [popup.jsp]
+Using parameters: [posttext, post, save, replyid, subject, action, reply, parentid, threadid, boxid]
+====================
+
