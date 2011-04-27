@@ -50,10 +50,6 @@ public class SimplePVD implements ParameterValueDecision{
         for(ActionParameter param:params){
             if(user.getDynamicCredentials().containsKey(param.getName())){ //TODO: name clashes in param names!
                 param.setValue(user.getDynamicCredentials().get(param.getName()));
-            }else{
-                Map<String, String> creds = user.getStaticCredentials();
-                if(creds.containsKey(param.getName()))
-                    param.setValue(creds.get(param.getName()));
             }
         }
     }

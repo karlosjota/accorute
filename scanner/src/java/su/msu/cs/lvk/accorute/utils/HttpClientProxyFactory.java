@@ -38,6 +38,8 @@ public class HttpClientProxyFactory {
         schemeRegistry.register(
                 new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
         schemeRegistry.register(
+                new Scheme("http", PlainSocketFactory.getSocketFactory(), 8080));
+        schemeRegistry.register(
                 new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
         ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
         AbstractHttpClient httpClient = new DefaultHttpClient(cm, params);

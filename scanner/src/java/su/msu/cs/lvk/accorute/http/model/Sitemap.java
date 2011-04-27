@@ -218,14 +218,15 @@ public class Sitemap {
 
         return res;
     }
-    synchronized public SitemapNode getNodePreceedingNeededAction(HttpAction act){
+    synchronized public SitemapEdge getEdgePreceedingNeededAction(HttpAction act){
         Iterator<SitemapEdge> edges = actionDepGraph.edgeSet().iterator();
+        List<SitemapEdge> res = new ArrayList<SitemapEdge>();
         while (edges.hasNext()){
             SitemapEdge e = edges.next();
             List<HttpAction> acts =  e.getLabel().getHttpActions();
             if(acts.size() != 0){
                 if(WebAppProperties.getInstance().getAcEqDec().ActionEquals(acts.get(0), act)){
-                    return e.getV1();
+                    return e;
                 }
             }
         }

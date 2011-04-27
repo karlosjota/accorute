@@ -4,6 +4,7 @@ import com.gargoylesoftware.htmlunit.*;
 import com.gargoylesoftware.htmlunit.html.*;
 import com.gargoylesoftware.htmlunit.javascript.host.Node;
 import com.gargoylesoftware.htmlunit.util.FalsifyingWebConnection;
+import com.gargoylesoftware.htmlunit.util.NameValuePair;
 import net.sourceforge.htmlunit.corejs.javascript.EcmaError;
 import net.sourceforge.htmlunit.corejs.javascript.ScriptableObject;
 import su.msu.cs.lvk.accorute.WebAppProperties;
@@ -42,7 +43,7 @@ public class HtmlPageParser extends Task implements DomChangeListener {
         callback = cb;
         ctxID = ctx;
         logger.trace("HtmlPageParser created");
-        webClient = new WebClient();
+        webClient = new WebClient(BrowserVersion.FIREFOX_3_6);
         //TODO: requests here may follow, need to intercept and add cookies.
         //TODO: Still, content loaded on load (usually js and css, is almost always not protected by cookies.
         page = HtmlUnitUtils.clonePage(_page,webClient.getCurrentWindow());
@@ -58,14 +59,14 @@ public class HtmlPageParser extends Task implements DomChangeListener {
                 //    cancellable = true;
                 //TODO: ajax detection!!!!
                 callback.CallMeBack(tmpPage, (ArrayList<DomAction>) curActionChain.clone(),new HttpAction("tmp", param), cancellable);
-                /*WebResponseData wrd = new WebResponseData(
-                        new byte[0],
+                WebResponseData wrd = new WebResponseData(
+                        "<html></html>".getBytes(),
                         200,
                         "200 OK",
-                        new ArrayList< NameValuePair >()
+                        new ArrayList<NameValuePair>()
                 );
-                return new WebResponse(wrd, request, 1); */
-                throw new IOException("goes just as planned");
+                return new WebResponse(wrd, request, 1);
+                /*throw new IOException("goes just as planned");*/
             }
         };
         //create WebConnectionWrapper that calls back the callback on each request

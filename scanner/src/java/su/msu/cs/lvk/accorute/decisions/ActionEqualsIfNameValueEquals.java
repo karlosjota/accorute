@@ -1,6 +1,7 @@
 package su.msu.cs.lvk.accorute.decisions;
 
 import org.apache.log4j.Logger;
+import su.msu.cs.lvk.accorute.WebAppProperties;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterLocation;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterMeaning;
 import su.msu.cs.lvk.accorute.http.model.ActionParameter;
@@ -9,6 +10,7 @@ import su.msu.cs.lvk.accorute.http.model.HttpAction;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
 
 
 /**
@@ -64,8 +66,10 @@ public class ActionEqualsIfNameValueEquals implements ActionEqualityDecision{
         for(String name : names){
             ActionParameter aParam = getParamByName(aParams,name);
             ActionParameter bParam =  getParamByName(bParams,name);
-            if(bParam==null || aParam==null)
+            if(bParam==null || aParam==null){
+                logger.trace( a + " != " +b +" because of absense");
                 return false;
+            }
             if(!noValueCheck.contains(name)){
                 if(aParam.getLocation() != bParam.getLocation()){
                     logger.trace( a + " != " +b +" because of location of " + name);
@@ -73,7 +77,7 @@ public class ActionEqualsIfNameValueEquals implements ActionEqualityDecision{
                 }
                 String aVal = aParam.getValue();
                 String bVal = bParam.getValue();
-                if(name=="path"){
+                if(name.equals("path")){
                     if (aParam.getLocation() == ActionParameterLocation.URL){
                         if(!aVal.endsWith("/"))
                             aVal += "/";
@@ -81,6 +85,11 @@ public class ActionEqualsIfNameValueEquals implements ActionEqualityDecision{
                             bVal += "/";
                     }
                 }
+                Matcher idNameMatcher = WebAppProperties.getInstance().getIdParamNameRegex().matcher(name);
+                Matcher aValMatcher = WebAppProperties.getInstance().getIdParamValueRegex().matcher(aVal);
+                Matcher bValMatcher = WebAppProperties.getInstance().getIdParamValueRegex().matcher(bVal);
+                if(idNameMatcher.matches() && aValMatcher.matches() && bValMatcher.matches() )
+                    continue;
                 if(!aVal.equals(bVal)){
                     logger.trace( a + " != " +b +" because of " + name);
                     return false;

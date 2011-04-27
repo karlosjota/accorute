@@ -63,20 +63,6 @@ public class SitemapCrawler extends Task implements Callback0{
             return;
         }
         HttpAction httpAct = httpActs.get(0);
-        String url = WebAppProperties.getInstance().getRcd().getURL(httpAct.getActionParameters()).toString();
-        Matcher m = WebAppProperties.getInstance().getScope().matcher(url);
-        if(!m.matches()){
-            logger.trace(contextID + ":Will not access url "+ url+" because it's out of scope");
-            siteMap.addEdge(siteMap.getNodeByID(fromNodeID), siteMap.getInvalidNode(), acts, null);
-            return;
-        }
-        if(WebAppProperties.getInstance().getChStateDec().changesState(httpAct)){
-            logger.trace(contextID + ":Will not perform action because it will change the state");
-            final Sitemap.SitemapNode from = siteMap.getNodeByID(fromNodeID);
-            siteMap.addEdge(from, siteMap.getExitNode(), acts, null);
-            return;
-        }
-
         URL u = WebAppProperties.getInstance().getRcd().getURL(httpAct.getActionParameters());
         synchronized (performedHttpActions){
             HttpAction equalHttpAction = null;
@@ -111,6 +97,20 @@ public class SitemapCrawler extends Task implements Callback0{
                 }
                 performedHttpActions.add(httpAct);
             }
+        }
+        String url = WebAppProperties.getInstance().getRcd().getURL(httpAct.getActionParameters()).toString();
+        Matcher urlincl = WebAppProperties.getInstance().getUrlIncludeScope().matcher(url);
+        Matcher urlexcl = WebAppProperties.getInstance().getUrlExcludeScope().matcher(url);
+        if(!urlincl.matches() || urlexcl.matches()){
+            logger.trace(contextID + ":Will not access url "+ url+" because it's out of scope");
+            siteMap.addEdge(siteMap.getNodeByID(fromNodeID), siteMap.getInvalidNode(), acts, null);
+            return;
+        }
+        if(WebAppProperties.getInstance().getChStateDec().changesState(httpAct)){
+            logger.trace(contextID + ":Will not perform action because it will change the state");
+            final Sitemap.SitemapNode from = siteMap.getNodeByID(fromNodeID);
+            siteMap.addEdge(from, siteMap.getExitNode(), acts, null);
+            return;
         }
         HtmlElementActionPerformer tsk = new HtmlElementActionPerformer(
                 taskManager,
@@ -152,11 +152,16 @@ public class SitemapCrawler extends Task implements Callback0{
         if(convs.size() > 1){
             logger.info(contextID + ":Multi-request action, will take into account only first one");
         }
-        Conversation conv = convs.get(convs.size() - 1);
+        Conversation conv = convs.get(0);
+        Matcher respExcl = WebAppProperties.getInstance().getResponceExcludeScope().matcher(conv.getResponse().toString());
+
         ResponseClassificator.ResponseType respType =  WebAppProperties.getInstance().getRespClassificator().getResponseType(conv);
         final Sitemap.SitemapNode from = siteMap.getNodeByID(fromNodeID);
         Sitemap.SitemapNode resultingNode;
-        if(respType == ResponseClassificator.ResponseType.OKAY){
+        if(respExcl.matches()){
+            logger.trace(contextID + ":Will not process response "+ conv.getResponse()+" because it's out of scope");
+            resultingNode = siteMap.getExitNode();
+        }else if(respType == ResponseClassificator.ResponseType.OKAY){
             resultingNode = siteMap.getNode(p);
             if( resultingNode == null){
                 resultingNode = siteMap.createNode(conv,p);

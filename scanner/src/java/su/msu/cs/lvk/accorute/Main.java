@@ -104,33 +104,41 @@ public class Main{
         boolean started = false;
         Document rootDocument;
         Element rootElement;
+        Element usecases;
+        Element summary;
+        final Map<String, Element> summaryRolePairs = new HashMap<String, Element>();
         try {
             DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = dbfac.newDocumentBuilder();
             rootDocument = docBuilder.newDocument();
             rootElement = rootDocument.createElement("WebApp");
             rootDocument.appendChild(rootElement);
+            usecases = rootDocument.createElement("usecases");
+            rootElement.appendChild(usecases);
+            summary = rootDocument.createElement("summary");
+            rootElement.appendChild(summary);
         }  catch (Exception e) {
             logger.fatal(e);
             return;
         }
         String ucName = "start";
         int ucNum = 0;
-
+        final List<HttpAction> stateChangingSpikes = new ArrayList<HttpAction>();
+        final List<HttpAction> spikes = new ArrayList<HttpAction>();
         do{
             final Element curState = rootDocument.createElement("usecase");
-            rootElement.appendChild(curState);
+            usecases.appendChild(curState);
             if(started){
                 UseCase uc = it.next();
+                HttpAction action = uc.getHttpAct();
+                EntityID ctxID = users1.get(uc.getUserRole().getRoleName());
+                Task t = new HttpActionPerformerWithPrecedingActions(taskman,ctxID,action);
+                taskman.addTask(t);
+                taskman.waitForEmptyQueue();
                 curState.setAttribute("name",uc.getHttpAct().getName());
                 ucName = uc.getHttpAct().getName();
                 curState.setAttribute("role",uc.getUserRole().getRoleName());
                 uc.getHttpAct().appendToElement(curState);
-                EntityID ctxID = users1.get(uc.getUserRole().getRoleName());
-                HttpAction action = uc.getHttpAct();
-                Task t = new HttpActionPerformerWithPrecedingActions(taskman,ctxID,action);
-                taskman.addTask(t);
-                taskman.waitForEmptyQueue();
             }
             started = true;
             //2. Build sitemaps
@@ -161,18 +169,49 @@ public class Main{
                     if(RoleCompare.less(victimRole,attackRole) >= 0){
                         //if(attackRole.getRoleName().equalsIgnoreCase("user") && victimRole.getRoleName().equalsIgnoreCase("admin") ){
                         final Task t = new SimpleDetectSpikes(taskman,attacker,victim);
+                        final Element summry = summary;
                         t.registerCallback(
                                 new Callback0(){
                                     public void CallMeBack() {
                                         Set<HttpAction> acts = (Set<HttpAction>)t.getResult();
+                                        //TODO: this should be configurable
+                                        for(HttpAction act:acts){
+                                            if(WebAppProperties.getInstance().getChStateDec().changesState(act)){
+                                                logger.fatal("Found state-changing spike!");
+                                                stateChangingSpikes.add(act);
+                                            }
+                                        }
                                         Element spikeSet = curState.getOwnerDocument().createElement("spikeset");
                                         curState.appendChild(spikeSet);
                                         spikeSet.setAttribute("from",attackRole.getRoleName());
                                         spikeSet.setAttribute("to",victimRole.getRoleName());
                                         Iterator<HttpAction> it = acts.iterator();
+                                        String rolePair =  attackRole.getRoleName() + "->" + victimRole.getRoleName();
+                                        Element summarySpikes;
+                                        if(summaryRolePairs.containsKey(rolePair)){
+                                            summarySpikes =  summaryRolePairs.get(rolePair);
+                                        }else{
+                                            summarySpikes =  curState.getOwnerDocument().createElement("spikeset");
+                                            summarySpikes.setAttribute("from",attackRole.getRoleName());
+                                            summarySpikes.setAttribute("to",victimRole.getRoleName());
+                                            summry.appendChild(summarySpikes);
+                                            summaryRolePairs.put(rolePair,summarySpikes);
+                                        }
                                         while(it.hasNext()){
                                             HttpAction act = it.next();
+                                            boolean fresh = true;
+                                            for(HttpAction a: spikes){
+                                                if(WebAppProperties.getInstance().getAcEqDec().ActionEquals(a,act)){
+                                                    fresh = false;
+                                                    break;
+                                                }
+                                            }
                                             act.appendToElement(spikeSet);
+                                            if(fresh){
+                                                act.appendToElement(summarySpikes);
+                                            }else{
+                                                spikes.add(act);
+                                            }
                                         }
                                     }
                                 }
@@ -184,13 +223,15 @@ public class Main{
             }
             taskman.waitForEmptyQueue();
             ucNum++;
-            try{
-                Thread.sleep(10000);
-            }catch(InterruptedException ex){}
-        }while(it.hasNext() /* && ucNum < 1 */ );
+            //try{
+            //    Thread.sleep(10000);
+            //}catch(InterruptedException ex){}
+        }while(it.hasNext() && stateChangingSpikes.size() == 0);
         WebAppProperties.getInstance().getTaskManager().terminate();
         WebAppProperties.getInstance().getTaskManager().waitForFinish();
         System.out.print(WebAppProperties.getInstance().getUcGraph());
+        if( stateChangingSpikes.size() != 0)
+            logger.fatal("State-changing spikes were found!");
         WebAppProperties.getInstance().getUcGraph().writeToFile("report/usecases.dot");
         try{
             //Output the XML

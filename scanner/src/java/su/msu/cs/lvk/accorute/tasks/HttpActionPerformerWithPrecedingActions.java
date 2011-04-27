@@ -1,18 +1,18 @@
 package su.msu.cs.lvk.accorute.tasks;
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.truchsess.util.ArrayListTree;
 import su.msu.cs.lvk.accorute.WebAppProperties;
-import su.msu.cs.lvk.accorute.http.model.Conversation;
-import su.msu.cs.lvk.accorute.http.model.EntityID;
-import su.msu.cs.lvk.accorute.http.model.HttpAction;
-import su.msu.cs.lvk.accorute.http.model.Sitemap;
+import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 import su.msu.cs.lvk.accorute.utils.Callback3;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Created by IntelliJ IDEA.
@@ -38,23 +38,50 @@ public class HttpActionPerformerWithPrecedingActions extends Task{
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    private void fixActionIdentifiers(HttpAction a, HttpAction b){
+        List<ActionParameter> aParam = a.getActionParameters();
+        List<ActionParameter> bParam = b.getActionParameters();
+        ListIterator<ActionParameter> it = aParam.listIterator();
+        List<ActionParameter> toAdd = new ArrayList<ActionParameter>();
+        while(it.hasNext()){
+            ActionParameter param = it.next();
+            String pName = param.getName();
+            Pattern nameRegex = WebAppProperties.getInstance().getIdParamNameRegex();
+            Pattern valRegex = WebAppProperties.getInstance().getIdParamValueRegex();
+            if(!nameRegex.matcher(pName).matches() || !valRegex.matcher(param.getValue()).matches())
+                continue;
+            ActionParameter template = null;
+            for(ActionParameter p: bParam){
+                if(p.getName().equals(pName) && valRegex.matcher(p.getValue()).matches()){
+                    template = p;
+                }
+            }
+            if(template == null)
+                continue;
+            it.remove();
+            toAdd.add(template);
+        }
+        for(ActionParameter p: toAdd){
+            aParam.add(p);
+        }
+        a.setActionParameters(aParam);
+    }
     @Override
     protected void start() {
         Sitemap smap = WebAppProperties.getInstance().getSitemapService().getSitemapForContext(ctxID);
-        Sitemap.SitemapNode n = smap.getNodePreceedingNeededAction(act);
-        if(n == null){
+        Sitemap.SitemapEdge e = smap.getEdgePreceedingNeededAction(act);
+        if(e == null){
             logger.error("Action " + act + " not found in the sitemap!!!");
             setSuccessful(false);
             return;
         }
-        Set<HttpAction> preActs = smap.getInbound(n);
+        Set<HttpAction> preActs = smap.getInbound(e.getV1());
         if(preActs.size() == 0){
             logger.error("Inbound actions are absent!");
             setSuccessful(false);
             return;
         }
         HttpAction preAct = preActs.iterator().next();
-
         Task preTask = new HtmlElementActionPerformer(
                     taskManager,
                     preAct,
@@ -66,11 +93,14 @@ public class HttpActionPerformerWithPrecedingActions extends Task{
                     }
         );
         waitForTask(preTask);
+
+
         if(!preTask.isSuccessful()){
             logger.error("Pre task not successful!");
             setSuccessful(false);
             return;
         }
+        fixActionIdentifiers(act,e.getLabel().getHttpActions().get(0));
         Task task = new HtmlElementActionPerformer(
                     taskManager,
                     act,

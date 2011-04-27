@@ -36,6 +36,10 @@ public class SimpleDetectSpikes extends Task{
         for(HttpAction act: testActs){
             boolean successful = false;
             final List<Conversation> convs = new ArrayList<Conversation>();
+            if(WebAppProperties.getInstance().getSuppressDecision().shouldSuppressAction(act, attackCtx)){
+                logger.warn("Suppressing " + act);
+                continue;
+            }
             HtmlElementActionPerformer performer = new HtmlElementActionPerformer(
                 taskManager,
                 act,

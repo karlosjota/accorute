@@ -58,18 +58,65 @@ public class WebAppProperties {
     private AbstractHttpClient httpClient;
 
 
-    public Pattern getScope() {
-        return scope;
+    public Pattern getUrlIncludeScope() {
+        return urlIncludeScope;
     }
 
-    public void setScope(Pattern scope) {
-        this.scope = scope;
+    public void setUrlIncludeScope(Pattern urlIncludeScope) {
+        this.urlIncludeScope = urlIncludeScope;
     }
 
-    private Pattern scope;
+    private SuppressDetectionDecision suppressDecision = new NoTestSuppression();
+
+    public SuppressDetectionDecision getSuppressDecision() {
+        return suppressDecision;
+    }
+
+    public void setSuppressDecision(SuppressDetectionDecision suppressDecision) {
+        this.suppressDecision = suppressDecision;
+    }
+
+    public Pattern getUrlExcludeScope() {
+        return urlExcludeScope;
+    }
+
+    public void setUrlExcludeScope(Pattern urlExcludeScope) {
+        this.urlExcludeScope = urlExcludeScope;
+    }
+
+    public Pattern getResponceExcludeScope() {
+        return responceExcludeScope;
+    }
+
+    public void setResponceExcludeScope(Pattern responceExcludeScope) {
+        this.responceExcludeScope = responceExcludeScope;
+    }
+
+    private Pattern urlExcludeScope = Pattern.compile("(?!)");
+    private Pattern responceExcludeScope = Pattern.compile("(?!)");
+    private Pattern urlIncludeScope = Pattern.compile(".*");
+
+    private Pattern idParamNameRegex = Pattern.compile("(?!)");
+    private Pattern idParamValueRegex = Pattern.compile("(?!)");
 
     private List<String> dynamicTokenNames = new ArrayList<String>();
     private List<ActionParameterLocation> dynamicTokenLocations = new ArrayList<ActionParameterLocation>();
+
+    public Pattern getIdParamNameRegex() {
+        return idParamNameRegex;
+    }
+
+    public void setIdParamNameRegex(Pattern idParamNameRegex) {
+        this.idParamNameRegex = idParamNameRegex;
+    }
+
+    public Pattern getIdParamValueRegex() {
+        return idParamValueRegex;
+    }
+
+    public void setIdParamValueRegex(Pattern idParamValueRegex) {
+        this.idParamValueRegex = idParamValueRegex;
+    }
 
     public ContextedTaskFactory getAuthTaskFactory() {
         return authTaskFactory;

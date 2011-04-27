@@ -40,7 +40,7 @@ public class HtmlElementActionPerformer extends Task {
     final private ArrayList<DomAction> actions;
     final private EntityID ctx;
     final private Callback3<ArrayList<Conversation>, ArrayList<HttpAction>, HtmlPage> callback;
-    final private WebClient webClient = new WebClient();
+    final private WebClient webClient = new WebClient(BrowserVersion.FIREFOX_3_6);
     private final WebConnection falseWebConn;
     private Result result = Result.NOTFINISHED;
     private boolean wasReq = false;

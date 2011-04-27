@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Created by IntelliJ IDEA.
@@ -59,6 +60,10 @@ public class JSONConfigurator extends Task {
                     String name = elements.getJSONObject(i).getString("name");
                     String value = elements.getJSONObject(i).getString("value");
                     String eltype = elements.getJSONObject(i).getString("type");
+                    Boolean checked = false;
+                    if(elements.getJSONObject(i).has("checked")){
+                        checked = elements.getJSONObject(i).getBoolean("checked");
+                    }
                     if(eltype.equalsIgnoreCase("submit") && name.equals("")){
                         name = eltype;
                     }
@@ -72,6 +77,9 @@ public class JSONConfigurator extends Task {
                         mean = ActionParameterMeaning.AUTOMATIC;
                     }else{
                         mean = ActionParameterMeaning.USERCONTROLLABLE;
+                    }
+                    if( ( eltype.equalsIgnoreCase("radio") || eltype.equalsIgnoreCase("checkbox")) && !checked){
+                        continue;
                     }
                     params.add(new ActionParameter(
                         name,
@@ -117,6 +125,16 @@ public class JSONConfigurator extends Task {
                 }
                 String contents = new String(buffer);
                 JSONObject obj = new JSONObject(contents);
+                String urlIncludeScope = obj.getString("urlIncludeScope");
+                String urlExcludeScope = obj.getString("urlExcludeScope");
+                String responceExcludeScope = obj.getString("responceExcludeScope");
+                String idParamNameRegexp = obj.getString("idParamNameRegexp");
+                String idParamValRegexp = obj.getString("idParamValRegexp");
+                WebAppProperties.getInstance().setUrlIncludeScope(Pattern.compile(urlIncludeScope));
+                WebAppProperties.getInstance().setUrlExcludeScope(Pattern.compile(urlExcludeScope));
+                WebAppProperties.getInstance().setResponceExcludeScope(Pattern.compile(responceExcludeScope));
+                WebAppProperties.getInstance().setIdParamNameRegex(Pattern.compile(idParamNameRegexp));
+                WebAppProperties.getInstance().setIdParamValueRegex(Pattern.compile(idParamValRegexp));
                 JSONArray tokens = obj.getJSONArray("dynamicTokens");
                 for(int i=0;i < tokens.length();i++){
                     JSONObject token = tokens.getJSONObject(i);
@@ -203,8 +221,10 @@ public class JSONConfigurator extends Task {
                                 }
                                 UseCase uc = new UseCase(u.getUserRole(),act);
                                 nameUseCaseMap.put(sessname + " : " + uname, uc);
-                                WebAppProperties.getInstance().getUcGraph().addUCIfNotPresent(uc);
-                                WebAppProperties.getInstance().getActionService().addOrUpdateAction(act);
+                                if(! sessionCreatedEvt.has("exclude") || !sessionCreatedEvt.getBoolean("exclude")){
+                                    WebAppProperties.getInstance().getUcGraph().addUCIfNotPresent(uc);
+                                    WebAppProperties.getInstance().getActionService().addOrUpdateAction(act);
+                                }
                                 WebAppProperties.getInstance().addStateChangingAction(act);
                                 logger.trace("Recorded state-changing action:\n" +act);
                                 t.add(act, u);
