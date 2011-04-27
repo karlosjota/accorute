@@ -1,51 +1,26 @@
-Trying to execute: [UPDATE Members SET ]
-Web requests: [index.jsp]
-Using parameters: [email, page, lastname, editpro, firstname, password]
---
-Trying to execute: [UPDATE Members SET ]
-Web requests: [index.jsp]
-Using parameters: [username, save, memberid, email, page, delete, lastname, firstname, type, password]
---
-Trying to execute: [UPDATE Boxes SET member_id=0 WHERE member_id=]
-Web requests: [index.jsp]
-Using parameters: [username, save, memberid, email, page, delete, lastname, firstname, type, password]
---
-Trying to execute: [UPDATE Boxes SET box_name=']
-Web requests: [index.jsp]
-Using parameters: [sortdesc, save, page, delete, esortdesc, eboxname, create, boxid, boxname]
---
-Trying to execute: [UPDATE Boxes SET member_id=]
-Web requests: [index.jsp]
-Using parameters: [sortdesc, assign, save, page, delete, uboxid, esortdesc, eboxname, umemberid, create, boxid, boxname]
---
-Trying to execute: [UPDATE Threads SET subject=']
-Web requests: [popup.jsp]
-Using parameters: [posttext, post, save, replyid, subject, action, reply, parentid, threadid, boxid]
---
-Trying to execute: [DELETE FROM Threads WHERE thread_id=]
-Web requests: [index.jsp]
-Using parameters: [id, page, action, threadid]
---
-Trying to execute: [DELETE FROM Members WHERE member_id=]
-Web requests: [index.jsp]
-Using parameters: [memberid, page, delete]
---
-Trying to execute: [DELETE FROM Boxes WHERE box_id=]
-Web requests: [index.jsp]
-Using parameters: [sortdesc, page, delete, create, boxid, boxname]
---
-Trying to execute: [INSERT INTO Members (member_id, [username], [password], [firstname], [lastname], [email], [regdate], [type]) VALUES (]
-Web requests: [index.jsp]
-Using parameters: [register, username, page, password]
---
-Trying to execute: [INSERT INTO Boxes (box_id, member_id, [box_name], [sort_desc]) VALUES (]
-Web requests: [index.jsp]
-Using parameters: [sortdesc, page, create, boxname]
---
-Trying to execute: [INSERT INTO Threads (thread_id, parent_id, box_id, member_id, [subject], [post_text], post_date) VALUES (]
-Web requests: [popup.jsp]
-Using parameters: [posttext, post, subject, action, boxid]
---
-Trying to execute: [INSERT INTO Threads (thread_id, parent_id, box_id, member_id, [subject], [post_text], post_date) VALUES (]
-Web requests: [popup.jsp]
-Using parameters: [posttext, post, subject, action, reply, parentid, boxid]
+index.jsp
+email page lastname editpro firstname password
+index.jsp
+username save memberid email page delete lastname firstname type password
+index.jsp
+username save memberid email page delete lastname firstname type password
+index.jsp
+sortdesc save page delete esortdesc eboxname create boxid boxname
+index.jsp
+sortdesc assign save page delete uboxid esortdesc eboxname umemberid create boxid boxname
+popup.jsp
+posttext post save replyid subject action reply parentid threadid boxid
+index.jsp
+id page action threadid
+index.jsp
+memberid page delete
+index.jsp
+sortdesc page delete create boxid boxname
+index.jsp
+register username page password
+index.jsp
+sortdesc page create boxname
+popup.jsp
+posttext post subject action boxid
+popup.jsp
+posttext post subject action reply parentid boxid

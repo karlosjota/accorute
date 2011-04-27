@@ -99,7 +99,7 @@
         <property name="respClassificator" ref="respClass" />
         <property name="pageEqDec" ref="pageEqD" />
         <property name="acEqDec" ref="acEqD" />
-        <property name="scope" ref="scopeRegex" />
+        <property name="urlIncludeScope" ref="scopeRegex" />
         <property name="formFillerFactory" ref="formFillerFactory" />
         <property name="authTaskFactory" ref="authFactory" />
         <property name="agd" ref="simpleAGD" />

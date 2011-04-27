@@ -73,9 +73,11 @@ function enumerateUCForDeps(){
     menu1.removeAllItems();
     menu2.removeAllItems();
     for(var i=0;i<list.itemCount;i++){
-        var label = list.getItemAtIndex(i).childNodes[0].getAttribute("label") + " : " + list.getItemAtIndex(i).childNodes[1].getAttribute("label");
-        menu1.appendItem(label,"");
-        menu2.appendItem(label,"");
+        if(list.getItemAtIndex(i).childNodes[2].getAttribute("label") != "X"){
+            var label = list.getItemAtIndex(i).childNodes[0].getAttribute("label") + " : " + list.getItemAtIndex(i).childNodes[1].getAttribute("label");
+            menu1.appendItem(label,"");
+            menu2.appendItem(label,"");
+        }
     }
     menu1.selectedItem = menu1.getItemAtIndex(0);
     menu2.selectedItem = menu2.getItemAtIndex(0);
@@ -100,9 +102,11 @@ function enumerateUCForCanc(){
     menu1.removeAllItems();
     menu2.removeAllItems();
     for(var i=0;i<list.itemCount;i++){
-        var label = list.getItemAtIndex(i).childNodes[0].getAttribute("label") + " : " + list.getItemAtIndex(i).childNodes[1].getAttribute("label");
-        menu1.appendItem(label,"");
-        menu2.appendItem(label,"");
+        if(list.getItemAtIndex(i).childNodes[2].getAttribute("label") != "X"){
+            var label = list.getItemAtIndex(i).childNodes[0].getAttribute("label") + " : " + list.getItemAtIndex(i).childNodes[1].getAttribute("label");
+            menu1.appendItem(label,"");
+            menu2.appendItem(label,"");
+        }
     }
     menu1.selectedItem = menu1.getItemAtIndex(0);
     menu2.selectedItem = menu2.getItemAtIndex(0);
@@ -158,6 +162,15 @@ function startUC(){
             var uname  = item.childNodes[1].getAttribute("label");
         }
     }
+    if(document.getElementById("sessName").value == ""){
+        if ( typeof startUC.counter == 'undefined' ) {
+                // It has not... perform the initilization
+                startUC.counter = 0;
+        }else{
+            startUC.counter ++;
+        }
+        document.getElementById("sessName").value = "UC" + startUC.counter.toString();
+    }
     var row = document.createElement('listitem');
     cell = document.createElement("listcell");
     cell.setAttribute("label",document.getElementById("sessName").value);
@@ -165,18 +178,32 @@ function startUC(){
     cell = document.createElement("listcell");
     cell.setAttribute("label",document.getElementById("userSelect").selectedItem.label);
     row.appendChild(cell);
+    cell = document.createElement("listcell");
+    if(document.getElementById("exclude_from_graph_cb").checked){
+        cell.setAttribute("label","X");
+    }else{
+        cell.setAttribute("label","");
+    }
+    row.appendChild(cell);
     list.appendChild(row);
     document.getElementById("sessName").disabled = true;
     document.getElementById("userSelect").disabled = true;
     document.getElementById("saveToFileButton").disabled = true;
     document.getElementById("loadFromFileButton").disabled = true;
-    capturer.newSession(document.getElementById("sessName").value,
-            document.getElementById("userSelect").selectedItem.label);
+    capturer.newSession(
+        document.getElementById("sessName").value,
+        document.getElementById("userSelect").selectedItem.label,
+        document.getElementById("exclude_from_graph_cb").checked
+    );
 }
 
 function dumpSettingsToFile(file){
     var settings = {
-        scope: document.getElementById("webappScopeRegexp").value,
+        urlIncludeScope: document.getElementById("webappURLIncludeScope").value,
+        urlExcludeScope: document.getElementById("webappURLExcludeScope").value,
+        responceExcludeScope: document.getElementById("webappResponceExcludeScope").value,
+        idParamNameRegexp: document.getElementById("idParamNameRegexp").value,
+        idParamValRegexp: document.getElementById("idParamValRegexp").value,
         roles: new Array(),
         users: new Array(),
         dependencies: new Array(),
@@ -230,9 +257,13 @@ function dumpSettingsToFile(file){
     for(var i=0;i<list.itemCount;i++){
         var name = list.getItemAtIndex(i).childNodes[0].getAttribute("label");
         var user = list.getItemAtIndex(i).childNodes[1].getAttribute("label");
+        var exclude = false;
+        if(list.getItemAtIndex(i).childNodes[2].getAttribute("label") == "X")
+            exclude = true;
         settings.useCases[settings.useCases.length] = {
             name: name,
-            user: user
+            user: user,
+            exclude: exclude
         }
     }
 
@@ -249,7 +280,7 @@ function dumpSettingsToFile(file){
     try {
         var foStream = Components.classes["@mozilla.org/network/file-output-stream;1"].
                 createInstance(Components.interfaces.nsIFileOutputStream);
-        foStream.init(file,0x02 | 0x08 | 0x10 , 0666, 0);
+        foStream.init(file,0x02 | 0x08 | 0x20 , 0666, 0);
         var str = JSON.stringify(settings, null, "  ");
         str += "\n\n";
         foStream.write(str,str.length);
@@ -285,7 +316,21 @@ function importSettingsFromFile(file){
     }
     capturer.sessions = settings.trace;
     //basic
-    document.getElementById("webappScopeRegexp").value = settings.scope;
+    if(settings.hasOwnProperty("urlIncludeScope")){
+        document.getElementById("webappURLIncludeScope").value = settings.urlIncludeScope;
+    }
+    if(settings.hasOwnProperty("urlExcludeScope")){
+        document.getElementById("webappURLExcludeScope").value = settings.urlExcludeScope;
+    }
+    if(settings.hasOwnProperty("responceExcludeScope")){
+        document.getElementById("webappResponceExcludeScope").value = settings.responceExcludeScope;
+    }
+    if(settings.hasOwnProperty("idParamNameRegexp")){
+        document.getElementById("idParamNameRegexp").value = settings.idParamNameRegexp;
+    }
+    if(settings.hasOwnProperty("idParamValRegexp")){
+        document.getElementById("idParamValRegexp").value = settings.idParamValRegexp;
+    }
 
     capturer.listening = false;
     var list = document.getElementById("depList");
@@ -348,6 +393,13 @@ function importSettingsFromFile(file){
         row.appendChild(cell);
         cell = document.createElement("listcell");
         cell.setAttribute("label",settings.useCases[i].user);
+        row.appendChild(cell);
+        cell = document.createElement("listcell");
+        if(/* (typeof settings.useCases[i].exclude == "undefined") && */settings.useCases[i].exclude ){
+            cell.setAttribute("label","X");
+        }else{
+            cell.setAttribute("label","");
+        }
         row.appendChild(cell);
         list.appendChild(row);
     }

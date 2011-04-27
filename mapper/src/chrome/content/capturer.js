@@ -21,7 +21,7 @@ Capturer.prototype = {
         }
     },
 
-    newSession :function(sname, user){
+    newSession :function(sname, user, excludeFromGraph){
         this.clicks_count = 0;
         this.pageload_count = 0;
         this.submits_count = 0;
@@ -34,7 +34,8 @@ Capturer.prototype = {
             type: "SessionCreated",
             name : sname,
             user: user,
-            time: now.getTime()
+            time: now.getTime(),
+            exclude: excludeFromGraph
         };
         cur_sess[cur_sess.length] = {type: "UCCreated", time: now.getTime()};
 

@@ -81,6 +81,22 @@
     </bean>
     <bean id="dynCredUp" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimpleDynamicCredentialsUpdater" />
 
+    <bean id="suppressForumDelete" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
+        <constructor-arg value=".*page=edit_forums.*delete=Delete.*" />
+        <constructor-arg type="int" value="40"/> <!-- MuLTILINE and DOTALL-->
+    </bean>
+    <bean id="suppressForumSave" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
+        <constructor-arg value=".*page=edit_forums.*save=Save.*" />
+        <constructor-arg type="int" value="40"/> <!-- MuLTILINE and DOTALL-->
+    </bean>
+    <bean id="suppr" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.PatternBasedSuppress">
+        <constructor-arg>
+            <list>
+                <ref bean="suppressForumDelete"/>
+                <ref bean="suppressForumSave"/>
+            </list>
+        </constructor-arg>
+    </bean>
     <bean id="properties" class="su.msu.cs.lvk.accorute.WebAppProperties" factory-method="getInstance">
         <property name="actionService" ref="actionService"/>
         <property name="contextService" ref="contextService"/>
@@ -108,6 +124,7 @@
         <property name="dynCredUpd" ref="dynCredUp"/>
         <property name="captureFileName" value="../mapper/captures/easy_jsp_forum-capture.txt" />
         <property name="mainPage" ref="mainPage" />
+        <property name="suppressDecision" ref="suppr" />
     </bean>
     <bean id="mainPage" class="java.net.URL">
         <constructor-arg value="http://10.0.0.13:8080/easy_jsp_forum/" />

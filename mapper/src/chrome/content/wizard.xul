@@ -14,14 +14,34 @@
                 <tabpanel id="wam_basicTab" orient="vertical" flex="1">
                     <grid>
                         <rows>
-                            <caption label="Basic settings"/>
+                            <caption label="Scope"/>
                             <row align="center">
-                                <label value="Scope regexp:"/>
-                                <textbox id="webappScopeRegexp" value=".*"/>
+                                <label value="Include urls:"/>
+                                <textbox id="webappURLIncludeScope" value=".*"/>
                             </row>
-                            <caption label="Dynamic tokens"/>
+                            <row>
+                                <label value="Exclude urls:"/>
+                                <textbox id="webappURLExcludeScope" value="(?!)"/>
+                            </row>
+                            <row>
+                                <label value="Do not process responses:"/>
+                                <textbox id="webappResponceExcludeScope" value="(?!)"/>
+                            </row>
+                            <caption label="Entity id parameters"/>
+                            <row align="center">
+                                <label value="Name regex:"/>
+                                <textbox id="idParamNameRegexp" value="(?!)"/>
+                                <label value="value regex:"/>
+                                <textbox id="idParamValRegexp" value="(?!)"/>
+                            </row>
+                        </rows>
+                    </grid>
+                    <caption label="Dynamic tokens"/>
+                    <grid>
+                        <rows>
                             <row align="center">
                                 <label value="Name:"/>
+
                                 <textbox id="webappSessTokenName"/>
                                 <label value="Location:"/>
                                 <menulist id = "webappSessTokenLocSelect">
@@ -137,16 +157,19 @@
                             </rows>
                         </grid>
                         <button id="start-stop-button" onclick = "startUC();" label="Start" />
+                        <checkbox id="exclude_from_graph_cb" checked="false" label="Exclude usecase from graph"/>
                     </hbox>
                     <caption label="Recorded Sessions" />
                     <listbox id = "sessList" flex="1" >
                         <listhead>
                             <listheader label="Session Name" flex="1"/>
                             <listheader label="User" flex="1"/>
+                            <listheader label="Excl" flex="0"/>
                         </listhead>
                          <listcols>
                             <listcol flex="1"/>
                             <listcol flex="1"/>
+                             <listcol flex="0"/>
                         </listcols>
                     </listbox>
                 </tabpanel>

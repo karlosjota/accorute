@@ -1,5 +1,5 @@
 {
-  "scope": ".*10\\.0\\.0\\.10.*",
+  "urlIncludeScope": ".*10\\.0\\.0\\.10.*",
   "roles": [
     {
       "name": "public",

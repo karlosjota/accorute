@@ -31,16 +31,16 @@
         <level value="trace"/>
     </logger>
     <logger name="su.msu.cs.lvk.accorute.tasks.FormBasedAuthTask">
-        <level value="trace"/>
+        <level value="debug"/>
     </logger>
     <logger name="su.msu.cs.lvk.accorute.decisions.SimpleDynamicCredentialsUpdater">
-        <level value="trace"/>
+        <level value="debug"/>
     </logger>
     <logger name="su.msu.cs.lvk.accorute.tasks.SimpleDetectSpikes">
         <level value="trace"/>
     </logger>
     <logger name="su.msu.cs.lvk.accorute.tasks.HtmlElementActionPerformer">
-        <level value="trace"/>
+        <level value="debug"/>
     </logger>
     <!--<logger name="org.apache.http" >
         <level value="trace" />
@@ -54,9 +54,9 @@
 
     <logger name="su.msu.cs.lvk.accorute.http.model.Sitemap">
         <level value="trace"/>
-    </logger>      <!--
-    <logger name="su.msu.cs.lvk.accorute.decisions.ActionEqualsIfNameValueEquals">
-        <level value="trace"/>
     </logger>
-    -->
+    <logger name="su.msu.cs.lvk.accorute.decisions.ActionEqualsIfNameValueEquals">
+        <level value="warn"/>
+    </logger>
+
 </log4j:configuration>

@@ -1,5 +1,9 @@
 {
-  "scope": ".*10\\.0\\.0\\.13:8080\\/easy_jsp_forum\\/index\\.jsp.*",
+  "urlIncludeScope": ".*10\\.0\\.0\\.13:8080\\/easy_jsp_forum\\/.*",
+  "urlExcludeScope": "(?!)",
+  "responceExcludeScope": "(?!)",
+  "idParamNameRegexp": ".*[Ii][Dd].*",
+  "idParamValRegexp": "[0-9]{4}",
   "roles": [
     {
       "name": "public",
@@ -179,47 +183,63 @@
   "useCases": [
     {
       "name": "edit_member",
-      "user": "admin1"
+      "user": "admin1",
+      "exclude": false
     },
     {
       "name": "create_forum",
-      "user": "admin1"
+      "user": "admin1",
+      "exclude": false
     },
     {
       "name": "assign_forum",
-      "user": "admin1"
+      "user": "admin1",
+      "exclude": false
     },
     {
       "name": "create_thread",
-      "user": "member1"
+      "user": "member1",
+      "exclude": false
     },
     {
       "name": "reply_thread",
-      "user": "member1"
+      "user": "member1",
+      "exclude": false
     },
     {
       "name": "update_profile",
-      "user": "member1"
+      "user": "member1",
+      "exclude": false
     },
     {
       "name": "edit_forum",
-      "user": "mod1"
+      "user": "mod1",
+      "exclude": false
     },
     {
       "name": "edit_message",
-      "user": "mod1"
+      "user": "mod1",
+      "exclude": false
     },
     {
       "name": "delete_reply",
-      "user": "mod1"
+      "user": "mod1",
+      "exclude": false
     },
     {
       "name": "delete_thread",
-      "user": "mod1"
+      "user": "mod1",
+      "exclude": false
     },
     {
       "name": "delete_member",
-      "user": "admin1"
+      "user": "admin1",
+      "exclude": false
+    },
+    {
+      "name": "secondary_delete",
+      "user": "pub1",
+      "exclude": true
     }
   ],
   "dynamicTokens": [
@@ -261,13 +281,13 @@
           },
           {
             "name": "password",
-            "value": "",
+            "value": "member1",
             "type": "password",
             "checked": false
           },
           {
             "name": "cpassword",
-            "value": "",
+            "value": "member1",
             "type": "password",
             "checked": false
           },
@@ -1119,6 +1139,79 @@
       {
         "type": "SessionFinished",
         "time": 1300364967654,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "secondary_delete",
+        "user": "pub1",
+        "time": 1303810327223,
+        "exclude": true
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303810327223
+      },
+      {
+        "time": 1303810328611,
+        "type": "formSubmitted",
+        "action": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_forums",
+        "cookie": "JSESSIONID=C2063E8622EB7EE63F89037CEC051F6A; JSESSIONID=97A12FD3129C34CBD7E2343675F7D5CF",
+        "method": "post",
+        "elements": [
+          {
+            "name": "boxid",
+            "value": "1934",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "eboxname",
+            "value": "fuck",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "esortdesc",
+            "value": "geese",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "delete",
+            "value": "Delete",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_forums"
+        }
+      },
+      {
+        "time": 1303810329162,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_forums",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.13:8080/easy_jsp_forum/index.jsp?page=edit_forums"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303810330151
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303810330151,
         "clicks": 0,
         "submits": 1,
         "pages": 1

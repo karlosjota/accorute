@@ -1,0 +1,105 @@
+<html>
+<body>
+<table>
+<form method="post" name="editFrm" action="index.jsp?page=edit_members">
+<input type="hidden" name="memberid" value="6">
+<tr>
+        <td align="center">
+                <table border="0" cellspacing="1" cellpadding="3" align="center">
+                        <tr bgcolor="#6699CC"> 
+                                <td colspan="2" align="center"><font color="#FFFFFF">
+                                        &nbsp;&nbsp;<b>Edit Member Form</b></font>
+                                </td>
+                        </tr>
+
+                        <tr bgcolor="#E7E7E7"> 
+                                <td width="150">
+                                        &nbsp;Username:
+                                </td>
+                                <td>
+                                        <font face="Verdana"><input type = "text" name = "username" size = 40 maxlength = 100 value = "member2"></font>
+                                </td>
+                        </tr>
+                        <tr bgcolor="#E7E7E7"> 
+                                <td width="150">
+
+                                        &nbsp;Password:
+                                </td>
+                                <td>
+                                        <font face="Verdana"><input type = "password" name = "password" size = 40 maxlength = 100></font>
+                                </td>
+                        </tr>
+                        <tr bgcolor="#E7E7E7"> 
+                                <td width="150">
+                                        &nbsp;Confirmation Password:
+                                </td>
+
+                                <td>
+                                        <font face="Verdana"><input type = "password" name = "cpassword" size = 40 maxlength = 100></font>
+                                </td>
+                        </tr>
+                        <tr bgcolor="#E7E7E7"> 
+                                <td width="150">
+                                        &nbsp;First Name:
+                                </td>
+                                <td>
+                                        <font face="Verdana"><input type = "text" name = "firstname" size = 40 maxlength = 100 value = "Forum"></font>
+
+                                </td>
+                        </tr>
+                        <tr bgcolor="#E7E7E7"> 
+                                <td width="150">
+                                        &nbsp;Last Name:
+                                </td>
+                                <td>
+                                        <font face="Verdana"><input type = "text" name = "lastname" size = 40 maxlength = 100 value = "Member"></font>
+                                </td>
+                        </tr>
+
+                        <tr bgcolor="#E7E7E7"> 
+                                <td width="150">
+                                        &nbsp;Email Address:
+                                </td>
+                                <td>
+                                        <font face="Verdana"><input type = "text" name = "email" size = 40 maxlength = 100 value = "mod@forum.com"></font>
+                                </td>
+                        </tr>
+                        <tr bgcolor="#E7E7E7"> 
+                                <td width="100">
+
+                                        &nbsp;Participant type:
+                                </td>
+                                <td>
+                                        <input type="radio" name="type" value="Administrator" >&nbsp;&nbsp;Administrator<br>
+                                        <input type="radio" name="type" value="Moderator" >&nbsp;&nbsp;Moderator<br>
+                                        <input type="radio" name="type" value="Member" checked>&nbsp;&nbsp;Member<br>
+                                </td>
+                        </tr>
+
+                        <tr bgcolor="#E7E7E7"> 
+                                <td width="150">
+                                        &nbsp;Registration Date:
+                                </td>
+                                <td>
+                                        Thu Dec 21 10:44:38 ICT 2006
+                                </td>
+                        </tr>
+                        <tr bgcolor="#D9DBDE"> 
+                                <td colspan="2">
+                                        <table width="100%">
+
+                                                <tr>
+                                                        <td width="50%" align="left"><input name="delete" type="submit" value="Delete" onClick="return confirmDel()"></td>
+                                                        <td width="50%" align="right"><input name="save" type="submit" value="Save"></td>
+                                                </tr>
+                                        </table>
+                                </td>
+                        </tr>
+                </table>
+        </td>
+
+</tr>
+</form>
+</table>
+</body>
+</html>
