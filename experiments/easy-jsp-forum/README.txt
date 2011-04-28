@@ -3,6 +3,9 @@ http://sourceforge.net/projects/easyjspforum/
 
 This web app is taken from the UCSB paper.
 
+==============================================
+1. AcCoRuTe manual run
+==============================================
 To obtain results, AcCoRuTe tool was run 3 times.
 
 During the first run, the following flaws were detected:
@@ -25,3 +28,23 @@ HtmlUnit javascript engine, the action itself wasn't discovered.
 
 flaws 5 and 4 are described in Felmetsger et al.
 Flaws 1,2,3 were previously unknown.
+
+================================================
+2. AcCoRuTe static analysis run
+================================================
+When decision about state-changing vs state-preserving actions was made based on
+static analysis, the following results were obtained:
+
+1. Due to lack of parameter-value functionality in static analyser,
+    only param names were considered
+2. That resulted to false negatives, that prevented AcCoRuTe from
+    identifying certain actions as state-changing.
+3. That's why the sitemap creation process was incorrect and no flaws were
+    identified during scan.
+
+================================================
+3. Basic method run
+================================================
+During the basic method run, all actions were considered state-unchanging.
+As a result, sitemap generation process was vaguely incorrect and undeterministic.
+No real flaws were identified during scan.

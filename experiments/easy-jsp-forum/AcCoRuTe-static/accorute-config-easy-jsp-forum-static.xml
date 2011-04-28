@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="log4jInitialization" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetClass" value="org.springframework.util.Log4jConfigurer"/>
+        <property name="targetMethod" value="initLogging"/>
+        <property name="arguments">
+            <list>
+                <value>file:src/resources/log4j-config.xml</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="cookieService" scope="prototype" class="su.msu.cs.lvk.accorute.storage.dao.RAM.CollectionCookieService">
+    </bean>
+    <bean id="actionService" scope="prototype" class="su.msu.cs.lvk.accorute.storage.dao.RAM.CollectionActionService">
+    </bean>
+    <bean id="contextService" scope="prototype" class="su.msu.cs.lvk.accorute.storage.dao.RAM.CollectionContextService">
+    </bean>
+    <bean id="convService" scope="prototype" class="su.msu.cs.lvk.accorute.storage.dao.RAM.CollectionConversationService">
+    </bean>
+    <bean id="mapService" scope="prototype" class="su.msu.cs.lvk.accorute.storage.dao.RAM.CollectionSitemapService">
+    </bean>
+    <bean id="userService" scope="prototype" class="su.msu.cs.lvk.accorute.storage.dao.RAM.CollectionUserService">
+    </bean>
+
+    <bean id="taskman" class="su.msu.cs.lvk.accorute.taskmanager.TaskManager" scope="prototype" />
+
+    <bean id="simpleRCD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimpleRCD"/>
+    <bean id="simplePVD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimplePVD"/>
+    <bean id="staticAnalysisChSt" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.StaticAnalysisAcChStDec">
+        <constructor-arg value="../static_analysis/easy_jsp_forum/easy_jsp_forum-results_DML.txt"/>
+    </bean>
+    <bean id="notFoundRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
+        <constructor-arg value=".*(ERROR:\s*The\s*page\s*you\s*requested\s*is\s*not\s*available|HTTP\s*Status\s*404).*" />
+        <constructor-arg type="int" value="40"/> <!-- MuLTILINE and DOTALL-->
+    </bean>
+    <bean id="prohibRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
+        <constructor-arg value="" />
+        <constructor-arg type="int" value="40"/>
+    </bean>
+    <bean id="expireRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
+        <constructor-arg value=".*(Please\s*login\s*so\s*that\s*you\s*can\s*start\s*viewing\s*and\s*posting\s*your\s*messages).*" />
+        <constructor-arg type="int" value="40"/>
+    </bean>
+    <bean id="errorRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
+        <constructor-arg type="java.lang.String" value=".*(The\s*server\s*encountered\s*an\s*internal\s*error).*" />
+        <constructor-arg type="int" value="40"/>
+    </bean>
+    <bean id="respClass" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.PatternResponceClassifier">
+        <constructor-arg ref="notFoundRegex" />
+        <constructor-arg ref="prohibRegex" />
+        <constructor-arg ref="expireRegex" />
+        <constructor-arg ref="errorRegex" />
+    </bean>
+    <bean id="pageEqD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.LevensteinPageEqualityDecision"/>
+    <bean id="acEqD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.ActionEqualsIfNameValueEquals"/>
+    <bean id="scopeRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
+        <constructor-arg value="http:\/\/10\.0\.0\.13:8080\/easy_jsp_forum\/.*" />
+    </bean>
+    <bean id="formFillerFactory" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.MultiStateFormFillFactory" >
+        <constructor-arg value="test" />
+        <constructor-arg value="test" />
+        <constructor-arg value="true" />
+        <constructor-arg value="true" />
+        <constructor-arg value="true" />
+    </bean>
+    <bean id="loginPageURL" scope="prototype" class="java.net.URL" >
+        <constructor-arg value="http://10.0.0.13:8080/easy_jsp_forum/"/>
+    </bean>
+    <bean id="authFactory" scope="prototype" class="su.msu.cs.lvk.accorute.tasks.FormBasedAuthTaskFactory">
+        <constructor-arg ref="loginPageURL" />
+        <constructor-arg value="0" />
+    </bean>
+    <bean id="simpleAGD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.LevensteinAGD" />
+    <bean id="proxy" scope="prototype" class="org.apache.http.HttpHost">
+        <constructor-arg value="localhost"/>
+        <constructor-arg value="8008"/>
+    </bean>
+    <bean id="httpcl" scope="prototype" class="su.msu.cs.lvk.accorute.utils.HttpClientProxyFactory" factory-method="create">
+        <constructor-arg ref="proxy"/>
+    </bean>
+    <bean id="dynCredUp" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimpleDynamicCredentialsUpdater" />
+
+    <bean id="properties" class="su.msu.cs.lvk.accorute.WebAppProperties" factory-method="getInstance">
+        <property name="actionService" ref="actionService"/>
+        <property name="contextService" ref="contextService"/>
+        <property name="cookieService" ref="cookieService" />
+        <property name="userService" ref="userService"/>
+        <property name="sitemapService" ref="mapService"/>
+        <property name="conversationService" ref="convService"/>
+        <property name="taskManager" ref="taskman" />
+        <property name="roles">
+            <list>
+            </list>
+        </property>
+        <property name="rcd" ref="simpleRCD"/>
+        <property name="pvd" ref="simplePVD"/>
+        <property name="chStateDec" ref="staticAnalysisChSt" />
+        <property name="respClassificator" ref="respClass" />
+        <property name="pageEqDec" ref="pageEqD" />
+        <property name="acEqDec" ref="acEqD" />
+        <property name="urlIncludeScope" ref="scopeRegex" />
+        <property name="formFillerFactory" ref="formFillerFactory" />
+        <property name="authTaskFactory" ref="authFactory" />
+        <property name="agd" ref="simpleAGD" />
+        <property name="httpClient" ref="httpcl"/>
+        <property name="proxy" ref="proxy" />
+        <property name="dynCredUpd" ref="dynCredUp"/>
+        <property name="captureFileName" value="../mapper/captures/easy_jsp_forum-capture.txt" />
+        <property name="mainPage" ref="mainPage" />
+    </bean>
+    <bean id="mainPage" class="java.net.URL">
+        <constructor-arg value="http://10.0.0.13:8080/easy_jsp_forum/" />
+    </bean>
+
+</beans>
+
+        

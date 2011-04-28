@@ -42,7 +42,7 @@ public class StaticAnalysisAcChStDec implements ActionChangesStateDecision{
         String path = null;
         HashMap<String, ActionParameter> availParams = new HashMap<String, ActionParameter>();
         for(ActionParameter p : params){
-            availParams.put(p.getValue(),p);
+            availParams.put(p.getName(),p);
             if(p.getName().equals("path")){
                 path = p.getValue();
             }
@@ -58,20 +58,30 @@ public class StaticAnalysisAcChStDec implements ActionChangesStateDecision{
         if(neededParamsVariants == null)
             return false;
         for(HashSet<String> neededParams: neededParamsVariants){
+            boolean flag = true;
             for(String reqParam: neededParams){
-                if(!availParams.keySet().contains(reqParam))
-                    return false;
+                if(!availParams.keySet().contains(reqParam)){
+                    flag = false;
+                    break;
+                }
             }
-            for(Map.Entry<String, ActionParameter> entry:availParams.entrySet()){
+            if(!flag)
+                continue;
+            return true;
+            /*for(Map.Entry<String, ActionParameter> entry:availParams.entrySet()){
                 if(!neededParams.contains(entry.getKey()) && (
                        entry.getValue().getLocation() == ActionParameterLocation.QUERY  ||
                        entry.getValue().getLocation() == ActionParameterLocation.BODY
                     )  )
                 {
-                    return false;
+                    flag = false;
+                    break;
                 }
             }
+            if(!flag)
+                continue;
+            return true;   */
         }
-        return true;
+        return false;
     }
 }

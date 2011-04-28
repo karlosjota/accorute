@@ -1,0 +1,202 @@
+<WebApp>
+  <usecases>
+    <usecase>
+      <spikeset from="public" to="public"/>
+      <spikeset from="user" to="user">
+        <action id="0" name="tmp">
+          <params>
+            <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.13"/>
+            <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="8080"/>
+            <param location="QUERY" meaning="AUTOMATIC" name="page" role="UNKNOWN" type="STRING" value="view_profile"/>
+            <param location="QUERY" meaning="AUTOMATIC" name="memberid" role="UNKNOWN" type="STRING" value="3"/>
+            <param location="URL" meaning="AUTOMATIC" name="path" role="UNKNOWN" type="STRING" value="/easy_jsp_forum/index.jsp"/>
+          </params>
+        </action>
+      </spikeset>
+      <spikeset from="moder" to="moder">
+        <action id="0" name="tmp">
+          <params>
+            <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.13"/>
+            <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="8080"/>
+            <param location="QUERY" meaning="AUTOMATIC" name="page" role="UNKNOWN" type="STRING" value="view_profile"/>
+            <param location="QUERY" meaning="AUTOMATIC" name="memberid" role="UNKNOWN" type="STRING" value="2"/>
+            <param location="URL" meaning="AUTOMATIC" name="path" role="UNKNOWN" type="STRING" value="/easy_jsp_forum/index.jsp"/>
+          </params>
+        </action>
+      </spikeset>
+      <spikeset from="public" to="user"/>
+      <spikeset from="admin" to="admin">
+        <action id="0" name="tmp">
+          <params>
+            <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.13"/>
+            <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="8080"/>
+            <param location="QUERY" meaning="AUTOMATIC" name="page" role="UNKNOWN" type="STRING" value="view_profile"/>
+            <param location="QUERY" meaning="AUTOMATIC" name="memberid" role="UNKNOWN" type="STRING" value="0"/>
+            <param location="URL" meaning="AUTOMATIC" name="path" role="UNKNOWN" type="STRING" value="/easy_jsp_forum/index.jsp"/>
+          </params>
+        </action>
+        <action id="0" name="tmp">
+          <params>
+            <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.13"/>
+            <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="8080"/>
+            <param location="QUERY" meaning="AUTOMATIC" name="page" role="UNKNOWN" type="STRING" value="view_profile"/>
+            <param location="QUERY" meaning="AUTOMATIC" name="memberid" role="UNKNOWN" type="STRING" value="1"/>
+            <param location="URL" meaning="AUTOMATIC" name="path" role="UNKNOWN" type="STRING" value="/easy_jsp_forum/index.jsp"/>
+          </params>
+        </action>
+      </spikeset>
+      <spikeset from="public" to="moder"/>
+      <spikeset from="moder" to="admin">
+        <action id="0" name="tmp">
+          <params>
+            <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.13"/>
+            <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="8080"/>
+            <param location="QUERY" meaning="AUTOMATIC" name="page" role="UNKNOWN" type="STRING" value="view_profile"/>
+            <param location="QUERY" meaning="AUTOMATIC" name="memberid" role="UNKNOWN" type="STRING" value="0"/>
+            <param location="URL" meaning="AUTOMATIC" name="path" role="UNKNOWN" type="STRING" value="/easy_jsp_forum/index.jsp"/>
+          </params>
+        </action>
+        <action id="0" name="tmp">
+          <params>
+            <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.13"/>
+            <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="8080"/>
+            <param location="QUERY" meaning="AUTOMATIC" name="page" role="UNKNOWN" type="STRING" value="view_profile"/>
+            <param location="QUERY" meaning="AUTOMATIC" name="memberid" role="UNKNOWN" type="STRING" value="1"/>
+            <param location="URL" meaning="AUTOMATIC" name="path" role="UNKNOWN" type="STRING" value="/easy_jsp_forum/index.jsp"/>
+          </params>
+        </action>
+      </spikeset>
+      <spikeset from="user" to="moder">
+        <action id="0" name="tmp">
+          <params>
+            <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.13"/>
+            <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="8080"/>
+            <param location="QUERY" meaning="AUTOMATIC" name="page" role="UNKNOWN" type="STRING" value="view_profile"/>
+            <param location="QUERY" meaning="AUTOMATIC" name="memberid" role="UNKNOWN" type="STRING" value="2"/>
+            <param location="URL" meaning="AUTOMATIC" name="path" role="UNKNOWN" type="STRING" value="/easy_jsp_forum/index.jsp"/>
+          </params>
+        </action>
+      </spikeset>
+      <spikeset from="public" to="admin"/>
+      <spikeset from="user" to="admin">
+        <action id="0" name="tmp">
+          <params>
+            <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.13"/>
+            <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="8080"/>
+            <param location="QUERY" meaning="AUTOMATIC" name="page" role="UNKNOWN" type="STRING" value="view_profile"/>
+            <param location="QUERY" meaning="AUTOMATIC" name="memberid" role="UNKNOWN" type="STRING" value="0"/>
+            <param location="URL" meaning="AUTOMATIC" name="path" role="UNKNOWN" type="STRING" value="/easy_jsp_forum/index.jsp"/>
+          </params>
+        </action>
+        <action id="0" name="tmp">
+          <params>
+            <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.13"/>
+            <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="8080"/>
+            <param location="QUERY" meaning="AUTOMATIC" name="page" role="UNKNOWN" type="STRING" value="view_profile"/>
+            <param location="QUERY" meaning="AUTOMATIC" name="memberid" role="UNKNOWN" type="STRING" value="1"/>
+            <param location="URL" meaning="AUTOMATIC" name="path" role="UNKNOWN" type="STRING" value="/easy_jsp_forum/index.jsp"/>
+          </params>
+        </action>
+      </spikeset>
+    </usecase>
+  </usecases>
+  <summary>
+    <spikeset from="public" to="public"/>
+    <spikeset from="user" to="user">
+      <action id="0" name="tmp">
+        <params>
+          <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.13"/>
+          <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="8080"/>
+          <param location="QUERY" meaning="AUTOMATIC" name="page" role="UNKNOWN" type="STRING" value="view_profile"/>
+          <param location="QUERY" meaning="AUTOMATIC" name="memberid" role="UNKNOWN" type="STRING" value="3"/>
+          <param location="URL" meaning="AUTOMATIC" name="path" role="UNKNOWN" type="STRING" value="/easy_jsp_forum/index.jsp"/>
+        </params>
+      </action>
+    </spikeset>
+    <spikeset from="moder" to="moder">
+      <action id="0" name="tmp">
+        <params>
+          <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.13"/>
+          <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="8080"/>
+          <param location="QUERY" meaning="AUTOMATIC" name="page" role="UNKNOWN" type="STRING" value="view_profile"/>
+          <param location="QUERY" meaning="AUTOMATIC" name="memberid" role="UNKNOWN" type="STRING" value="2"/>
+          <param location="URL" meaning="AUTOMATIC" name="path" role="UNKNOWN" type="STRING" value="/easy_jsp_forum/index.jsp"/>
+        </params>
+      </action>
+    </spikeset>
+    <spikeset from="public" to="user"/>
+    <spikeset from="admin" to="admin">
+      <action id="0" name="tmp">
+        <params>
+          <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.13"/>
+          <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="8080"/>
+          <param location="QUERY" meaning="AUTOMATIC" name="page" role="UNKNOWN" type="STRING" value="view_profile"/>
+          <param location="QUERY" meaning="AUTOMATIC" name="memberid" role="UNKNOWN" type="STRING" value="0"/>
+          <param location="URL" meaning="AUTOMATIC" name="path" role="UNKNOWN" type="STRING" value="/easy_jsp_forum/index.jsp"/>
+        </params>
+      </action>
+      <action id="0" name="tmp">
+        <params>
+          <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.13"/>
+          <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="8080"/>
+          <param location="QUERY" meaning="AUTOMATIC" name="page" role="UNKNOWN" type="STRING" value="view_profile"/>
+          <param location="QUERY" meaning="AUTOMATIC" name="memberid" role="UNKNOWN" type="STRING" value="1"/>
+          <param location="URL" meaning="AUTOMATIC" name="path" role="UNKNOWN" type="STRING" value="/easy_jsp_forum/index.jsp"/>
+        </params>
+      </action>
+    </spikeset>
+    <spikeset from="public" to="moder"/>
+    <spikeset from="moder" to="admin">
+      <action id="0" name="tmp">
+        <params>
+          <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.13"/>
+          <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="8080"/>
+          <param location="QUERY" meaning="AUTOMATIC" name="page" role="UNKNOWN" type="STRING" value="view_profile"/>
+          <param location="QUERY" meaning="AUTOMATIC" name="memberid" role="UNKNOWN" type="STRING" value="0"/>
+          <param location="URL" meaning="AUTOMATIC" name="path" role="UNKNOWN" type="STRING" value="/easy_jsp_forum/index.jsp"/>
+        </params>
+      </action>
+      <action id="0" name="tmp">
+        <params>
+          <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.13"/>
+          <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="8080"/>
+          <param location="QUERY" meaning="AUTOMATIC" name="page" role="UNKNOWN" type="STRING" value="view_profile"/>
+          <param location="QUERY" meaning="AUTOMATIC" name="memberid" role="UNKNOWN" type="STRING" value="1"/>
+          <param location="URL" meaning="AUTOMATIC" name="path" role="UNKNOWN" type="STRING" value="/easy_jsp_forum/index.jsp"/>
+        </params>
+      </action>
+    </spikeset>
+    <spikeset from="user" to="moder">
+      <action id="0" name="tmp">
+        <params>
+          <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.13"/>
+          <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="8080"/>
+          <param location="QUERY" meaning="AUTOMATIC" name="page" role="UNKNOWN" type="STRING" value="view_profile"/>
+          <param location="QUERY" meaning="AUTOMATIC" name="memberid" role="UNKNOWN" type="STRING" value="2"/>
+          <param location="URL" meaning="AUTOMATIC" name="path" role="UNKNOWN" type="STRING" value="/easy_jsp_forum/index.jsp"/>
+        </params>
+      </action>
+    </spikeset>
+    <spikeset from="public" to="admin"/>
+    <spikeset from="user" to="admin">
+      <action id="0" name="tmp">
+        <params>
+          <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.13"/>
+          <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="8080"/>
+          <param location="QUERY" meaning="AUTOMATIC" name="page" role="UNKNOWN" type="STRING" value="view_profile"/>
+          <param location="QUERY" meaning="AUTOMATIC" name="memberid" role="UNKNOWN" type="STRING" value="0"/>
+          <param location="URL" meaning="AUTOMATIC" name="path" role="UNKNOWN" type="STRING" value="/easy_jsp_forum/index.jsp"/>
+        </params>
+      </action>
+      <action id="0" name="tmp">
+        <params>
+          <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.13"/>
+          <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="8080"/>
+          <param location="QUERY" meaning="AUTOMATIC" name="page" role="UNKNOWN" type="STRING" value="view_profile"/>
+          <param location="QUERY" meaning="AUTOMATIC" name="memberid" role="UNKNOWN" type="STRING" value="1"/>
+          <param location="URL" meaning="AUTOMATIC" name="path" role="UNKNOWN" type="STRING" value="/easy_jsp_forum/index.jsp"/>
+        </params>
+      </action>
+    </spikeset>
+  </summary>
+</WebApp>
