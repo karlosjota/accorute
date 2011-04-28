@@ -1,0 +1,6647 @@
+{
+  "urlIncludeScope": ".*10\\.0\\.0\\.10(:80)?/pyforum/.*",
+  "urlExcludeScope": "(?!)",
+  "responceExcludeScope": "(?!)",
+  "idParamNameRegexp": "(.*_id_.*)|(__web2py_positional_argument[0-9]*)",
+  "idParamValRegexp": "[0-9]{1,3}",
+  "roles": [
+    {
+      "name": "public",
+      "parent": "N/A"
+    },
+    {
+      "name": "user",
+      "parent": "public"
+    },
+    {
+      "name": "administrator",
+      "parent": "user"
+    }
+  ],
+  "users": [
+    {
+      "name": "Administrator",
+      "role": "administrator",
+      "credentials": {
+        "login": "Administrator",
+        "password": "Administrator",
+        "auth_alias": "Administrator"
+      }
+    },
+    {
+      "name": "Administrator-2",
+      "role": "administrator",
+      "credentials": {
+        "login": "Administrator-2",
+        "password": "Administrator-2",
+        "auth_alias": "Administrator-2"
+      }
+    },
+    {
+      "name": "Member-1",
+      "role": "user",
+      "credentials": {
+        "login": "Member-1",
+        "password": "Member-1",
+        "auth_alias": "Member-1"
+      }
+    },
+    {
+      "name": "Member-2",
+      "role": "user",
+      "credentials": {
+        "login": "Member-2",
+        "password": "Member-2",
+        "auth_alias": "Member-2"
+      }
+    },
+    {
+      "name": "Public-1",
+      "role": "public",
+      "credentials": {
+        "login": "Public-1",
+        "password": ""
+      }
+    },
+    {
+      "name": "Public-2",
+      "role": "public",
+      "credentials": {
+        "login": "Public-2",
+        "password": ""
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "from": "add_closed_unmoderated_forum_to_public_category : Administrator",
+      "to": "add_public_category : Administrator"
+    },
+    {
+      "from": "add_closed_moderated_forum_to_public_category : Administrator",
+      "to": "add_public_category : Administrator"
+    },
+    {
+      "from": "add_open_unmoderated_forum_to_public_category : Administrator",
+      "to": "add_public_category : Administrator"
+    },
+    {
+      "from": "add_open_moderated_forum_to_public_category : Administrator",
+      "to": "add_public_category : Administrator"
+    },
+    {
+      "from": "add_closed_unmoderated_forum_to_login_category : Administrator",
+      "to": "add_login_visible_category : Administrator"
+    },
+    {
+      "from": "add_closed_moderated_forum_to_login_category : Administrator",
+      "to": "add_login_visible_category : Administrator"
+    },
+    {
+      "from": "add_open_unmoderated_forum_to_login_category : Administrator",
+      "to": "add_login_visible_category : Administrator"
+    },
+    {
+      "from": "add_open_moderated_forum_to_login_category : Administrator",
+      "to": "add_login_visible_category : Administrator"
+    },
+    {
+      "from": "add_closed_unmoderated_forum_to_admin_category : Administrator",
+      "to": "add_admin_visible_category : Administrator"
+    },
+    {
+      "from": "add_closed_moderated_forum_to_admin_category : Administrator",
+      "to": "add_admin_visible_category : Administrator"
+    },
+    {
+      "from": "add_open_unmoderated_forum_to_admin_category : Administrator",
+      "to": "add_admin_visible_category : Administrator"
+    },
+    {
+      "from": "add_open_moderated_forum_to_admin_category : Administrator",
+      "to": "add_admin_visible_category : Administrator"
+    },
+    {
+      "from": "add_topic_to_open_unmoderated_public_forum : Member-1",
+      "to": "add_open_unmoderated_forum_to_public_category : Administrator"
+    },
+    {
+      "from": "add_topic_to_open_moderated_public_forum : Member-1",
+      "to": "add_open_moderated_forum_to_public_category : Administrator"
+    },
+    {
+      "from": "add_topic_to_closed_unmoderated_public_forum : Member-1",
+      "to": "add_closed_unmoderated_forum_to_public_category : Administrator"
+    },
+    {
+      "from": "add_topic_to_closed_moderated_public_forum : Member-1",
+      "to": "add_closed_moderated_forum_to_public_category : Administrator"
+    },
+    {
+      "from": "add_topic_to_closed_unmoderated_admin_forum : Administrator",
+      "to": "add_closed_unmoderated_forum_to_admin_category : Administrator"
+    },
+    {
+      "from": "add_topic_to_closed_moderated_admin_forum : Administrator",
+      "to": "add_closed_moderated_forum_to_admin_category : Administrator"
+    },
+    {
+      "from": "add_topic_to_open_unmoderated_admin_forum : Administrator",
+      "to": "add_open_unmoderated_forum_to_admin_category : Administrator"
+    },
+    {
+      "from": "add_topic_to_open_moderated_admin_forum : Administrator",
+      "to": "add_open_moderated_forum_to_admin_category : Administrator"
+    },
+    {
+      "from": "reply_topic_to_closed_unmoderated_public_forum : Member-1",
+      "to": "add_topic_to_closed_unmoderated_public_forum : Member-1"
+    },
+    {
+      "from": "reply_topic_to_closed_moderated_public_forum : Member-1",
+      "to": "add_topic_to_closed_moderated_public_forum : Member-1"
+    },
+    {
+      "from": "reply_topic_to_open_unmoderated_public_forum : Member-1",
+      "to": "add_topic_to_open_unmoderated_public_forum : Member-1"
+    },
+    {
+      "from": "reply_topic_to_open_moderated_public_forum : Member-1",
+      "to": "add_topic_to_open_moderated_public_forum : Member-1"
+    },
+    {
+      "from": "reply_topic_to_closed_unmoderated_admin_forum : Administrator",
+      "to": "add_topic_to_closed_unmoderated_admin_forum : Administrator"
+    },
+    {
+      "from": "reply_topic_to_closed_moderated_admin_forum : Administrator",
+      "to": "add_topic_to_closed_moderated_admin_forum : Administrator"
+    },
+    {
+      "from": "reply_topic_to_open_unmoderated_admin_forum : Administrator",
+      "to": "add_topic_to_open_unmoderated_admin_forum : Administrator"
+    },
+    {
+      "from": "reply_topic_to_open_moderated_admin_forum : Administrator",
+      "to": "add_topic_to_open_moderated_admin_forum : Administrator"
+    },
+    {
+      "from": "post_pm : Member-1",
+      "to": "allow_pm : Administrator"
+    },
+    {
+      "from": "move_pm : Administrator",
+      "to": "post_pm : Member-1"
+    },
+    {
+      "from": "edit_topic : Administrator",
+      "to": "add_topic_to_open_moderated_admin_forum : Administrator"
+    }
+  ],
+  "cancellations": [
+    {
+      "from": "move_pm : Administrator",
+      "to": "move_pm : Administrator"
+    },
+    {
+      "from": "empty_pm_trash : Administrator",
+      "to": "move_pm : Administrator"
+    }
+  ],
+  "useCases": [
+    {
+      "name": "edit_configuration",
+      "user": "Administrator",
+      "exclude": true
+    },
+    {
+      "name": "add_public_category",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "add_login_visible_category",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "add_admin_visible_category",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "add_closed_unmoderated_forum_to_public_category",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "add_closed_moderated_forum_to_public_category",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "add_open_unmoderated_forum_to_public_category",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "add_open_moderated_forum_to_public_category",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "add_closed_unmoderated_forum_to_login_category",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "add_closed_moderated_forum_to_login_category",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "add_open_unmoderated_forum_to_login_category",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "add_open_moderated_forum_to_login_category",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "add_closed_unmoderated_forum_to_admin_category",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "add_closed_moderated_forum_to_admin_category",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "add_open_unmoderated_forum_to_admin_category",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "add_open_moderated_forum_to_admin_category",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "edit_forum",
+      "user": "Administrator",
+      "exclude": true
+    },
+    {
+      "name": "edit_user_profile",
+      "user": "Administrator",
+      "exclude": true
+    },
+    {
+      "name": "disable_user_profile",
+      "user": "Administrator",
+      "exclude": true
+    },
+    {
+      "name": "enable_user_profile",
+      "user": "Administrator",
+      "exclude": true
+    },
+    {
+      "name": "subscribe_to_forum",
+      "user": "Administrator",
+      "exclude": true
+    },
+    {
+      "name": "unsubscribe_from_forum",
+      "user": "Administrator",
+      "exclude": true
+    },
+    {
+      "name": "add_topic_to_closed_unmoderated_public_forum",
+      "user": "Member-1",
+      "exclude": false
+    },
+    {
+      "name": "reply_topic_to_closed_unmoderated_public_forum",
+      "user": "Member-1",
+      "exclude": false
+    },
+    {
+      "name": "add_topic_to_closed_moderated_public_forum",
+      "user": "Member-1",
+      "exclude": false
+    },
+    {
+      "name": "reply_topic_to_closed_moderated_public_forum",
+      "user": "Member-1",
+      "exclude": false
+    },
+    {
+      "name": "add_topic_to_open_unmoderated_public_forum",
+      "user": "Member-1",
+      "exclude": false
+    },
+    {
+      "name": "reply_topic_to_open_unmoderated_public_forum",
+      "user": "Member-1",
+      "exclude": false
+    },
+    {
+      "name": "add_topic_to_open_moderated_public_forum",
+      "user": "Member-1",
+      "exclude": false
+    },
+    {
+      "name": "reply_topic_to_open_moderated_public_forum",
+      "user": "Member-1",
+      "exclude": false
+    },
+    {
+      "name": "add_topic_to_closed_unmoderated_admin_forum",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "reply_topic_to_closed_unmoderated_admin_forum",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "add_topic_to_closed_moderated_admin_forum",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "reply_topic_to_closed_moderated_admin_forum",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "add_topic_to_open_unmoderated_admin_forum",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "reply_topic_to_open_unmoderated_admin_forum",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "add_topic_to_open_moderated_admin_forum",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "reply_topic_to_open_moderated_admin_forum",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "edit_topic",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "remove_topics",
+      "user": "Administrator",
+      "exclude": true
+    },
+    {
+      "name": "edit_category",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "allow_pm",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "post_pm",
+      "user": "Member-1",
+      "exclude": false
+    },
+    {
+      "name": "move_pm",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "empty_pm_trash",
+      "user": "Administrator",
+      "exclude": false
+    },
+    {
+      "name": "recover_password",
+      "user": "Public-1",
+      "exclude": true
+    }
+  ],
+  "dynamicTokens": [
+    {
+      "name": "session_id_pyforum",
+      "location": "cookie"
+    }
+  ],
+  "trace": [
+    [
+      {
+        "type": "SessionCreated",
+        "name": "edit_configuration",
+        "user": "Administrator",
+        "time": 1303974760032,
+        "exclude": true
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303974760032
+      },
+      {
+        "time": 1303974762327,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-bba395c8-1ae0-4c0e-907e-1fe0aa7fdc9e",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "save_sys_params",
+            "value": "Save New configuration",
+            "type": "submit",
+            "checked": false
+          },
+          {
+            "name": "new_property_id_1",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "new_property_value_1",
+            "value": "20",
+            "type": "textarea"
+          },
+          {
+            "name": "new_property_id_2",
+            "value": "2",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "new_property_value_2",
+            "value": "",
+            "type": "textarea"
+          },
+          {
+            "name": "new_property_id_3",
+            "value": "3",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "new_property_value_3",
+            "value": "250",
+            "type": "textarea"
+          },
+          {
+            "name": "new_property_id_4",
+            "value": "4",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "new_property_value_4",
+            "value": "True",
+            "type": "textarea"
+          },
+          {
+            "name": "new_property_id_5",
+            "value": "5",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "new_property_value_5",
+            "value": "en",
+            "type": "textarea"
+          },
+          {
+            "name": "new_property_id_6",
+            "value": "6",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "new_property_value_6",
+            "value": "",
+            "type": "textarea"
+          },
+          {
+            "name": "new_property_id_7",
+            "value": "7",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "new_property_value_7",
+            "value": "localhost",
+            "type": "textarea"
+          },
+          {
+            "name": "new_property_id_8",
+            "value": "8",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "new_property_value_8",
+            "value": "",
+            "type": "textarea"
+          },
+          {
+            "name": "new_property_id_9",
+            "value": "9",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "new_property_value_9",
+            "value": "",
+            "type": "textarea"
+          },
+          {
+            "name": "new_property_id_10",
+            "value": "10",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "new_property_value_10",
+            "value": "True",
+            "type": "textarea"
+          },
+          {
+            "name": "new_property_id_11",
+            "value": "11",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "new_property_value_11",
+            "value": "50",
+            "type": "textarea"
+          },
+          {
+            "name": "new_property_id_12",
+            "value": "12",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "new_property_value_12",
+            "value": "50000",
+            "type": "textarea"
+          },
+          {
+            "name": "new_property_id_13",
+            "value": "13",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "new_property_value_13",
+            "value": "5",
+            "type": "textarea"
+          },
+          {
+            "name": "new_property_id_14",
+            "value": "14",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "new_property_value_14",
+            "value": "5",
+            "type": "textarea"
+          },
+          {
+            "name": "new_property_id_15",
+            "value": "15",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "new_property_value_15",
+            "value": "15",
+            "type": "textarea"
+          },
+          {
+            "name": "new_property_id_16",
+            "value": "16",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "new_property_value_16",
+            "value": "Welcome to pyForum",
+            "type": "textarea"
+          },
+          {
+            "name": "new_property_id_17",
+            "value": "17",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "new_property_value_17",
+            "value": "True",
+            "type": "textarea"
+          },
+          {
+            "name": "save_sys_params",
+            "value": "Save New configuration",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/system_config"
+        }
+      },
+      {
+        "time": 1303974762691,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/system_config",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/system_config"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303974764315
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303974764315,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "add_public_category",
+        "user": "Administrator",
+        "time": 1303974841365,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303974841365
+      },
+      {
+        "time": 1303974842358,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-bba395c8-1ae0-4c0e-907e-1fe0aa7fdc9e",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "cat_name",
+            "value": "public category",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "cat_desc",
+            "value": "public category description",
+            "type": "textarea"
+          },
+          {
+            "name": "zadmin_access",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_access",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_access",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_access",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_access",
+            "value": "on",
+            "type": "checkbox",
+            "checked": true
+          },
+          {
+            "name": "add_cat",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/add_category"
+        }
+      },
+      {
+        "time": 1303974842819,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/categories",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/categories"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303974843419
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303974843419,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "add_login_visible_category",
+        "user": "Administrator",
+        "time": 1303974897317,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303974897317
+      },
+      {
+        "time": 1303974898646,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-bba395c8-1ae0-4c0e-907e-1fe0aa7fdc9e",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "cat_name",
+            "value": "login_visible_category",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "cat_desc",
+            "value": "login_visible_category description",
+            "type": "textarea"
+          },
+          {
+            "name": "zadmin_access",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_access",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_access",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_access",
+            "value": "on",
+            "type": "checkbox",
+            "checked": true
+          },
+          {
+            "name": "public_access",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_cat",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/add_category"
+        }
+      },
+      {
+        "time": 1303974899073,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/categories",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/categories"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303974900234
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303974900234,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "add_admin_visible_category",
+        "user": "Administrator",
+        "time": 1303974937549,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303974937549
+      },
+      {
+        "time": 1303974938326,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-bba395c8-1ae0-4c0e-907e-1fe0aa7fdc9e",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "cat_name",
+            "value": "admin_visible_category",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "cat_desc",
+            "value": "admin_visible_category description",
+            "type": "textarea"
+          },
+          {
+            "name": "zadmin_access",
+            "value": "on",
+            "type": "checkbox",
+            "checked": true
+          },
+          {
+            "name": "zmember_access",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_access",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_access",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_access",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_cat",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/add_category"
+        }
+      },
+      {
+        "time": 1303974938789,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/categories",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/categories"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303974939330
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303974939330,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "add_closed_unmoderated_forum_to_public_category",
+        "user": "Administrator",
+        "time": 1303975258571,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303975258571
+      },
+      {
+        "time": 1303975261372,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-bba395c8-1ae0-4c0e-907e-1fe0aa7fdc9e",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "title",
+            "value": "public closed unmoderated forum",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "description",
+            "value": "public closed unmoderated forum",
+            "type": "textarea"
+          },
+          {
+            "name": "new_cat_id",
+            "value": "1",
+            "type": "select-one"
+          },
+          {
+            "name": "moderated_forum",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "anonymous_view",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zadmin_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zadmin_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "latest_topics",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_forum",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/add_forum/1"
+        }
+      },
+      {
+        "time": 1303975261819,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/1",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/forums/1"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303975263935
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303975263935,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "add_closed_moderated_forum_to_public_category",
+        "user": "Administrator",
+        "time": 1303975294563,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303975294563
+      },
+      {
+        "time": 1303975297011,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-bba395c8-1ae0-4c0e-907e-1fe0aa7fdc9e",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "title",
+            "value": "public closed moderated forum ",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "description",
+            "value": "public closed moderated forum ",
+            "type": "textarea"
+          },
+          {
+            "name": "new_cat_id",
+            "value": "1",
+            "type": "select-one"
+          },
+          {
+            "name": "moderated_forum",
+            "value": "on",
+            "type": "checkbox",
+            "checked": true
+          },
+          {
+            "name": "anonymous_view",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zadmin_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zadmin_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "latest_topics",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_forum",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/add_forum/1"
+        }
+      },
+      {
+        "time": 1303975297471,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/1",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/forums/1"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303975311008
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303975311008,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "add_open_unmoderated_forum_to_public_category",
+        "user": "Administrator",
+        "time": 1303975363185,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303975363185
+      },
+      {
+        "time": 1303975366355,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-bba395c8-1ae0-4c0e-907e-1fe0aa7fdc9e",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "title",
+            "value": "public open unmoderated forum ",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "description",
+            "value": "public open unmoderated forum ",
+            "type": "textarea"
+          },
+          {
+            "name": "new_cat_id",
+            "value": "1",
+            "type": "select-one"
+          },
+          {
+            "name": "moderated_forum",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "anonymous_view",
+            "value": "on",
+            "type": "checkbox",
+            "checked": true
+          },
+          {
+            "name": "zadmin_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zadmin_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "latest_topics",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_forum",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/add_forum/1"
+        }
+      },
+      {
+        "time": 1303975366812,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/1",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/forums/1"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303975368007
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303975368007,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "add_open_moderated_forum_to_public_category",
+        "user": "Administrator",
+        "time": 1303975385722,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303975385722
+      },
+      {
+        "time": 1303975386594,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-bba395c8-1ae0-4c0e-907e-1fe0aa7fdc9e",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "title",
+            "value": "public open moderated forum ",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "description",
+            "value": "public open moderated forum ",
+            "type": "textarea"
+          },
+          {
+            "name": "new_cat_id",
+            "value": "1",
+            "type": "select-one"
+          },
+          {
+            "name": "moderated_forum",
+            "value": "on",
+            "type": "checkbox",
+            "checked": true
+          },
+          {
+            "name": "anonymous_view",
+            "value": "on",
+            "type": "checkbox",
+            "checked": true
+          },
+          {
+            "name": "zadmin_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zadmin_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "latest_topics",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_forum",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/add_forum/1"
+        }
+      },
+      {
+        "time": 1303975387062,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/1",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/forums/1"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303975387551
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303975387551,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "add_closed_unmoderated_forum_to_login_category",
+        "user": "Administrator",
+        "time": 1303975708151,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303975708151
+      },
+      {
+        "time": 1303975709016,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "title",
+            "value": "closed unmoderated forum in moderated category",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "description",
+            "value": "closed unmoderated forum in moderated category\u000a",
+            "type": "textarea"
+          },
+          {
+            "name": "new_cat_id",
+            "value": "2",
+            "type": "select-one"
+          },
+          {
+            "name": "moderated_forum",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "anonymous_view",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zadmin_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zadmin_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "latest_topics",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_forum",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/add_forum/2"
+        }
+      },
+      {
+        "time": 1303975709500,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/2",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/forums/2"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303975710340
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303975710340,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "add_closed_moderated_forum_to_login_category",
+        "user": "Administrator",
+        "time": 1303975743528,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303975743528
+      },
+      {
+        "time": 1303975744440,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "title",
+            "value": "closed moderated forum in login category",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "description",
+            "value": "closed moderated forum in login category",
+            "type": "textarea"
+          },
+          {
+            "name": "new_cat_id",
+            "value": "2",
+            "type": "select-one"
+          },
+          {
+            "name": "moderated_forum",
+            "value": "on",
+            "type": "checkbox",
+            "checked": true
+          },
+          {
+            "name": "anonymous_view",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zadmin_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zadmin_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "latest_topics",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_forum",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/add_forum/2"
+        }
+      },
+      {
+        "time": 1303975744903,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/2",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/forums/2"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303975745708
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303975745708,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "add_open_unmoderated_forum_to_login_category",
+        "user": "Administrator",
+        "time": 1303975784935,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303975784935
+      },
+      {
+        "time": 1303975785736,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "title",
+            "value": "open unmoderated forum in login category",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "description",
+            "value": "open unmoderated forum in login category",
+            "type": "textarea"
+          },
+          {
+            "name": "new_cat_id",
+            "value": "2",
+            "type": "select-one"
+          },
+          {
+            "name": "moderated_forum",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "anonymous_view",
+            "value": "on",
+            "type": "checkbox",
+            "checked": true
+          },
+          {
+            "name": "zadmin_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zadmin_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "latest_topics",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_forum",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/add_forum/2"
+        }
+      },
+      {
+        "time": 1303975786222,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/2",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/forums/2"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303975786780
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303975786780,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "add_open_moderated_forum_to_login_category",
+        "user": "Administrator",
+        "time": 1303975856927,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303975856927
+      },
+      {
+        "time": 1303975858112,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "title",
+            "value": "open moderated forum in login category",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "description",
+            "value": "open moderated forum in login category",
+            "type": "textarea"
+          },
+          {
+            "name": "new_cat_id",
+            "value": "2",
+            "type": "select-one"
+          },
+          {
+            "name": "moderated_forum",
+            "value": "on",
+            "type": "checkbox",
+            "checked": true
+          },
+          {
+            "name": "anonymous_view",
+            "value": "on",
+            "type": "checkbox",
+            "checked": true
+          },
+          {
+            "name": "zadmin_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zadmin_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "latest_topics",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_forum",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/add_forum/2"
+        }
+      },
+      {
+        "time": 1303975858581,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/2",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/forums/2"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303975859307
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303975859307,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "add_closed_unmoderated_forum_to_admin_category",
+        "user": "Administrator",
+        "time": 1303976335819,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303976335819
+      },
+      {
+        "time": 1303976336708,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "title",
+            "value": "closed unmoderated forum in admin category",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "description",
+            "value": "closed unmoderated forum in admin category",
+            "type": "textarea"
+          },
+          {
+            "name": "new_cat_id",
+            "value": "3",
+            "type": "select-one"
+          },
+          {
+            "name": "moderated_forum",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "anonymous_view",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zadmin_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zadmin_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "latest_topics",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_forum",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/add_forum/3"
+        }
+      },
+      {
+        "time": 1303976337184,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/3",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/forums/3"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303976337728
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303976337728,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "add_closed_moderated_forum_to_admin_category",
+        "user": "Administrator",
+        "time": 1303976373627,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303976373627
+      },
+      {
+        "time": 1303976375284,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "title",
+            "value": "closed moderated forum in admin category ",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "description",
+            "value": "closed moderated forum in admin category ",
+            "type": "textarea"
+          },
+          {
+            "name": "new_cat_id",
+            "value": "3",
+            "type": "select-one"
+          },
+          {
+            "name": "moderated_forum",
+            "value": "on",
+            "type": "checkbox",
+            "checked": true
+          },
+          {
+            "name": "anonymous_view",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zadmin_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zadmin_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "latest_topics",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_forum",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/add_forum/3"
+        }
+      },
+      {
+        "time": 1303976375762,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/3",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/forums/3"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303976376375
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303976376375,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "add_open_unmoderated_forum_to_admin_category",
+        "user": "Administrator",
+        "time": 1303976479450,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303976479450
+      },
+      {
+        "time": 1303976480147,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "title",
+            "value": "open unmoderated forum in admin category",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "description",
+            "value": "open unmoderated forum in admin category",
+            "type": "textarea"
+          },
+          {
+            "name": "new_cat_id",
+            "value": "3",
+            "type": "select-one"
+          },
+          {
+            "name": "moderated_forum",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "anonymous_view",
+            "value": "on",
+            "type": "checkbox",
+            "checked": true
+          },
+          {
+            "name": "zadmin_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zadmin_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "latest_topics",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_forum",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/add_forum/3"
+        }
+      },
+      {
+        "time": 1303976480644,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/3",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/forums/3"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303976481534
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303976481534,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "add_open_moderated_forum_to_admin_category",
+        "user": "Administrator",
+        "time": 1303976501082,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303976501082
+      },
+      {
+        "time": 1303976501987,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "title",
+            "value": "open moderated forum in admin category ",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "description",
+            "value": "open moderated forum in admin category ",
+            "type": "textarea"
+          },
+          {
+            "name": "new_cat_id",
+            "value": "3",
+            "type": "select-one"
+          },
+          {
+            "name": "moderated_forum",
+            "value": "on",
+            "type": "checkbox",
+            "checked": true
+          },
+          {
+            "name": "anonymous_view",
+            "value": "on",
+            "type": "checkbox",
+            "checked": true
+          },
+          {
+            "name": "zadmin_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zadmin_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "latest_topics",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_forum",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/add_forum/3"
+        }
+      },
+      {
+        "time": 1303976502466,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/3",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/forums/3"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303976503103
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303976503103,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "edit_forum",
+        "user": "Administrator",
+        "time": 1303976694296,
+        "exclude": true
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303976694296
+      },
+      {
+        "time": 1303976695665,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "forum_id",
+            "value": "9",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "title",
+            "value": "closed unmoderated forum in admin category",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "description",
+            "value": "closed unmoderated forum in admin category",
+            "type": "textarea"
+          },
+          {
+            "name": "new_cat_id",
+            "value": "3",
+            "type": "select-one"
+          },
+          {
+            "name": "moderated_forum",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "anonymous_view",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zadmin_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_add",
+            "value": "on",
+            "type": "checkbox",
+            "checked": true
+          },
+          {
+            "name": "zadmin_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "public_reply",
+            "value": "on",
+            "type": "checkbox",
+            "checked": true
+          },
+          {
+            "name": "latest_topics",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "update_forum",
+            "value": "Update",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/edit_forum/9"
+        }
+      },
+      {
+        "time": 1303976696141,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/3",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/forums/3"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303976697005
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303976697005,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "edit_user_profile",
+        "user": "Administrator",
+        "time": 1303976957246,
+        "exclude": true
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303976957246
+      },
+      {
+        "time": 1303976959327,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "username",
+            "value": "Member-1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "warn_disable",
+            "value": "Warning. Disabling a user will prevent him/her from logging into the system (you can change this later). Please confirm",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "warn_enable",
+            "value": "Please confirm you wish to enable this user",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "new_passwd",
+            "value": "",
+            "type": "password",
+            "checked": false
+          },
+          {
+            "name": "new_passwd_confirm",
+            "value": "",
+            "type": "password",
+            "checked": false
+          },
+          {
+            "name": "real_name",
+            "value": "",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "web_page",
+            "value": "",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "country",
+            "value": "",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "signature",
+            "value": "",
+            "type": "textarea"
+          },
+          {
+            "name": "lang_code",
+            "value": "",
+            "type": "select-one"
+          },
+          {
+            "name": "allow_pm_use",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "avatar_data",
+            "value": "",
+            "type": "file",
+            "checked": false
+          },
+          {
+            "name": "new_role",
+            "value": "2",
+            "type": "select-one"
+          },
+          {
+            "name": "update_b",
+            "value": "Update Profile",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/user_edit/Member-1"
+        }
+      },
+      {
+        "time": 1303976959837,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/users",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/users"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303976960363
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303976960363,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "disable_user_profile",
+        "user": "Administrator",
+        "time": 1303976973966,
+        "exclude": true
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303976973966
+      },
+      {
+        "time": 1303976978272,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "username",
+            "value": "Member-1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "warn_disable",
+            "value": "Warning. Disabling a user will prevent him/her from logging into the system (you can change this later). Please confirm",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "warn_enable",
+            "value": "Please confirm you wish to enable this user",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "new_passwd",
+            "value": "",
+            "type": "password",
+            "checked": false
+          },
+          {
+            "name": "new_passwd_confirm",
+            "value": "",
+            "type": "password",
+            "checked": false
+          },
+          {
+            "name": "real_name",
+            "value": "",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "web_page",
+            "value": "",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "country",
+            "value": "",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "signature",
+            "value": "",
+            "type": "textarea"
+          },
+          {
+            "name": "lang_code",
+            "value": "",
+            "type": "select-one"
+          },
+          {
+            "name": "allow_pm_use",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "avatar_data",
+            "value": "",
+            "type": "file",
+            "checked": false
+          },
+          {
+            "name": "new_role",
+            "value": "2",
+            "type": "select-one"
+          },
+          {
+            "name": "disable_b",
+            "value": "Disable User",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/user_edit/Member-1"
+        }
+      },
+      {
+        "time": 1303976978754,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/users",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/users"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303976979907
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303976979907,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "enable_user_profile",
+        "user": "Administrator",
+        "time": 1303977010614,
+        "exclude": true
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303977010614
+      },
+      {
+        "time": 1303977012759,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "username",
+            "value": "Member-1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "warn_disable",
+            "value": "Warning. Disabling a user will prevent him/her from logging into the system (you can change this later). Please confirm",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "warn_enable",
+            "value": "Please confirm you wish to enable this user",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "new_passwd",
+            "value": "",
+            "type": "password",
+            "checked": false
+          },
+          {
+            "name": "new_passwd_confirm",
+            "value": "",
+            "type": "password",
+            "checked": false
+          },
+          {
+            "name": "real_name",
+            "value": "",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "web_page",
+            "value": "",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "country",
+            "value": "",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "signature",
+            "value": "",
+            "type": "textarea"
+          },
+          {
+            "name": "lang_code",
+            "value": "",
+            "type": "select-one"
+          },
+          {
+            "name": "allow_pm_use",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "avatar_data",
+            "value": "",
+            "type": "file",
+            "checked": false
+          },
+          {
+            "name": "new_role",
+            "value": "2",
+            "type": "select-one"
+          },
+          {
+            "name": "enable_b",
+            "value": "Enable User",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/user_edit/Member-1"
+        }
+      },
+      {
+        "time": 1303977013241,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/users",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/users"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303977013875
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303977013875,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "subscribe_to_forum",
+        "user": "Administrator",
+        "time": 1303977074622,
+        "exclude": true
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303977074622
+      },
+      {
+        "time": 1303977075866,
+        "type": "linkClicked",
+        "href": "http://10.0.0.10/pyforum/default/view_forum/1/1",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_forum/1/0"
+        }
+      },
+      {
+        "time": 1303977076186,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=None",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_forum/1/1",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_forum/1/1"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303977077138
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303977077138,
+        "clicks": 1,
+        "submits": 0,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "unsubscribe_from_forum",
+        "user": "Administrator",
+        "time": 1303977087902,
+        "exclude": true
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303977087902
+      },
+      {
+        "time": 1303977088891,
+        "type": "linkClicked",
+        "href": "http://10.0.0.10/pyforum/default/view_forum/1/0",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_forum/1/1"
+        }
+      },
+      {
+        "time": 1303977089213,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=None",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_forum/1/0",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_forum/1/0"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303977089890
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303977089890,
+        "clicks": 1,
+        "submits": 0,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "add_topic_to_closed_unmoderated_public_forum",
+        "user": "Member-1",
+        "time": 1303977242573,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303977242573
+      },
+      {
+        "time": 1303977244350,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "forum_id",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "c",
+            "value": "SEVaaWdJTmk=",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "title",
+            "value": "add_topic_to_closed_unmoderated_public_forum",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "content",
+            "value": "add_topic_to_closed_unmoderated_public_forum",
+            "type": "textarea"
+          },
+          {
+            "name": "add_signature",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_subscription",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_topic",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/add_topic/1"
+        }
+      },
+      {
+        "time": 1303977244866,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=None",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_forum/1?added=1",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_forum/1?added=1"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303977245289
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303977245289,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "reply_topic_to_closed_unmoderated_public_forum",
+        "user": "Member-1",
+        "time": 1303977534252,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303977534252
+      },
+      {
+        "time": 1303977536108,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "topic_id",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "forum_id",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "action",
+            "value": "remove",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "confirm_delete_msg",
+            "value": "Please confirm the removal of the selected topics",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "warn_delete_parent_msg",
+            "value": "Warning: Removing this topic will remove all its sibling topics",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "confirm_inapp",
+            "value": "Please confirm you wish to report this topic as inappropriate",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "c",
+            "value": "am92SXlV",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "response_content",
+            "value": "reply_topic_to_closed_unmoderated_public_forum",
+            "type": "textarea"
+          },
+          {
+            "name": "add",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_topic/1"
+        }
+      },
+      {
+        "time": 1303977536502,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=None",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_topic/1",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/1",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/1",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/edit_forum/3",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_topic/1",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_topic/1"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303977537439
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303977537439,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "add_topic_to_closed_moderated_public_forum",
+        "user": "Member-1",
+        "time": 1303977581584,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303977581584
+      },
+      {
+        "time": 1303977583707,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "forum_id",
+            "value": "2",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "c",
+            "value": "ZEVGZWhl",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "title",
+            "value": "add_topic_to_closed_moderated_public_forum",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "content",
+            "value": "add_topic_to_closed_moderated_public_forum",
+            "type": "textarea"
+          },
+          {
+            "name": "add_signature",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_subscription",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_topic",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/add_topic/2"
+        }
+      },
+      {
+        "time": 1303977584196,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=None",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_topic/1",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/1",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/1",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/edit_forum/3",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_forum/2?added=1",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_forum/2?added=1"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303977585935
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303977585935,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "reply_topic_to_closed_moderated_public_forum",
+        "user": "Member-1",
+        "time": 1303977637568,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303977637568
+      },
+      {
+        "time": 1303977638787,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "topic_id",
+            "value": "3",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "forum_id",
+            "value": "2",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "action",
+            "value": "remove",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "confirm_delete_msg",
+            "value": "Please confirm the removal of the selected topics",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "warn_delete_parent_msg",
+            "value": "Warning: Removing this topic will remove all its sibling topics",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "confirm_inapp",
+            "value": "Please confirm you wish to report this topic as inappropriate",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "c",
+            "value": "UW9QT0ppZGk=",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "response_content",
+            "value": "reply_topic_to_closed_moderated_public_forum",
+            "type": "textarea"
+          },
+          {
+            "name": "add",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_topic/3#add_comment"
+        }
+      },
+      {
+        "time": 1303977639194,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=None",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_topic/1",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/1",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/1",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/edit_forum/3",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_topic/3",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_topic/3"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303977639942
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303977639942,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "add_topic_to_open_unmoderated_public_forum",
+        "user": "Member-1",
+        "time": 1303977673650,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303977673650
+      },
+      {
+        "time": 1303977674395,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "forum_id",
+            "value": "3",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "c",
+            "value": "UU92dXNFZ08=",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "title",
+            "value": "add_topic_to_open_unmoderated_public_forum",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "content",
+            "value": "add_topic_to_open_unmoderated_public_forum",
+            "type": "textarea"
+          },
+          {
+            "name": "add_signature",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_subscription",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_topic",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/add_topic/3"
+        }
+      },
+      {
+        "time": 1303977674868,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=None",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_topic/1",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/1",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/1",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/edit_forum/3",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_forum/3?added=1",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_forum/3?added=1"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303977675678
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303977675678,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "reply_topic_to_open_unmoderated_public_forum",
+        "user": "Member-1",
+        "time": 1303977702279,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303977702279
+      },
+      {
+        "time": 1303977703234,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "topic_id",
+            "value": "5",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "forum_id",
+            "value": "3",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "action",
+            "value": "remove",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "confirm_delete_msg",
+            "value": "Please confirm the removal of the selected topics",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "warn_delete_parent_msg",
+            "value": "Warning: Removing this topic will remove all its sibling topics",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "confirm_inapp",
+            "value": "Please confirm you wish to report this topic as inappropriate",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "c",
+            "value": "cnVsT1lF",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "response_content",
+            "value": "reply_topic_to_open_unmoderated_public_forum",
+            "type": "textarea"
+          },
+          {
+            "name": "add",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_topic/5"
+        }
+      },
+      {
+        "time": 1303977703641,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=None",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_topic/1",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/1",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/1",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/edit_forum/3",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_topic/5",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_topic/5"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303977704406
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303977704406,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "add_topic_to_open_moderated_public_forum",
+        "user": "Member-1",
+        "time": 1303977747311,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303977747311
+      },
+      {
+        "time": 1303977748242,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "forum_id",
+            "value": "4",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "c",
+            "value": "dE92RWNVbGlNZQ==",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "title",
+            "value": "add_topic_to_open_moderated_public_forum",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "content",
+            "value": "add_topic_to_open_moderated_public_forum",
+            "type": "textarea"
+          },
+          {
+            "name": "add_signature",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_subscription",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_topic",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/add_topic/4"
+        }
+      },
+      {
+        "time": 1303977748795,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=None",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_topic/1",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/1",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/1",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/edit_forum/3",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_forum/4?added=1",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_forum/4?added=1"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303977749582
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303977749582,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "reply_topic_to_open_moderated_public_forum",
+        "user": "Member-1",
+        "time": 1303977774950,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303977774950
+      },
+      {
+        "time": 1303977775746,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "topic_id",
+            "value": "7",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "forum_id",
+            "value": "4",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "action",
+            "value": "remove",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "confirm_delete_msg",
+            "value": "Please confirm the removal of the selected topics",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "warn_delete_parent_msg",
+            "value": "Warning: Removing this topic will remove all its sibling topics",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "confirm_inapp",
+            "value": "Please confirm you wish to report this topic as inappropriate",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "c",
+            "value": "SkVOSXFVbGlLRQ==",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "response_content",
+            "value": "reply_topic_to_open_moderated_public_forum",
+            "type": "textarea"
+          },
+          {
+            "name": "add",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_topic/7"
+        }
+      },
+      {
+        "time": 1303977776154,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=None",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_topic/1",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/1",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/forums/1",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/edit_forum/3",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_topic/7",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_topic/7"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303977776989
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303977776989,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "add_topic_to_closed_unmoderated_admin_forum",
+        "user": "Administrator",
+        "time": 1303978082203,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303978082203
+      },
+      {
+        "time": 1303978083377,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "forum_id",
+            "value": "9",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "c",
+            "value": "Vmlob1JV",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "title",
+            "value": "add_topic_to_closed_unmoderated_admin_forum",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "content",
+            "value": "add_topic_to_closed_unmoderated_admin_forum",
+            "type": "textarea"
+          },
+          {
+            "name": "add_signature",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_subscription",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "locked_flag",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "sticky_flag",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "system_announcement_flag",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "creation_user",
+            "value": "Administrator",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "creation_date",
+            "value": "2011-04-28 04:07:33",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "modifying_user",
+            "value": "Administrator",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "modifying_date",
+            "value": "2011-04-28 04:07:33",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "add_topic",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/add_topic/9"
+        }
+      },
+      {
+        "time": 1303978084972,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_forum/9?added=1",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_forum/10",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_forum/11",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_forum/12",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_forum/9?added=1"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303978085547
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303978085547,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "reply_topic_to_closed_unmoderated_admin_forum",
+        "user": "Administrator",
+        "time": 1303978125482,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303978125482
+      },
+      {
+        "time": 1303978128263,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "topic_id",
+            "value": "9",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "forum_id",
+            "value": "9",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "action",
+            "value": "remove",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "confirm_delete_msg",
+            "value": "Please confirm the removal of the selected topics",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "warn_delete_parent_msg",
+            "value": "Warning: Removing this topic will remove all its sibling topics",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "confirm_inapp",
+            "value": "Please confirm you wish to report this topic as inappropriate",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "c",
+            "value": "UVV0RUxVUE8=",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "remove_topic_parent_9",
+            "value": "9",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "response_content",
+            "value": "reply_topic_to_closed_unmoderated_admin_forum",
+            "type": "textarea"
+          },
+          {
+            "name": "add",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_topic/9"
+        }
+      },
+      {
+        "time": 1303978128707,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_topic/9",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_forum/10",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_forum/11",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_forum/12",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_topic/9"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303978129230
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303978129230,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "add_topic_to_closed_moderated_admin_forum",
+        "user": "Administrator",
+        "time": 1303978168421,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303978168421
+      },
+      {
+        "time": 1303978169111,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "forum_id",
+            "value": "10",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "c",
+            "value": "ZEluT01FbG9yVQ==",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "title",
+            "value": "add_topic_to_closed_moderated_admin_forum",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "content",
+            "value": "add_topic_to_closed_moderated_admin_forum",
+            "type": "textarea"
+          },
+          {
+            "name": "add_signature",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_subscription",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "locked_flag",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "sticky_flag",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "system_announcement_flag",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "creation_user",
+            "value": "Administrator",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "creation_date",
+            "value": "2011-04-28 04:09:01",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "modifying_user",
+            "value": "Administrator",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "modifying_date",
+            "value": "2011-04-28 04:09:01",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "add_topic",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/add_topic/10"
+        }
+      },
+      {
+        "time": 1303978169634,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_forum/10?added=1",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_forum/11",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_forum/12",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_forum/10?added=1"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303978170531
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303978170531,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "reply_topic_to_closed_moderated_admin_forum",
+        "user": "Administrator",
+        "time": 1303978184352,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303978184352
+      },
+      {
+        "time": 1303978186376,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "topic_id",
+            "value": "11",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "forum_id",
+            "value": "10",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "action",
+            "value": "remove",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "confirm_delete_msg",
+            "value": "Please confirm the removal of the selected topics",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "warn_delete_parent_msg",
+            "value": "Warning: Removing this topic will remove all its sibling topics",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "confirm_inapp",
+            "value": "Please confirm you wish to report this topic as inappropriate",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "c",
+            "value": "ck9RZWR1aGU=",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "remove_topic_parent_11",
+            "value": "11",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "response_content",
+            "value": "reply_topic_to_closed_moderated_admin_forum",
+            "type": "textarea"
+          },
+          {
+            "name": "add",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_topic/11"
+        }
+      },
+      {
+        "time": 1303978186787,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_topic/11",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_forum/11",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_forum/12",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_topic/11"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303978187579
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303978187579,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "add_topic_to_open_unmoderated_admin_forum",
+        "user": "Administrator",
+        "time": 1303978215880,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303978215880
+      },
+      {
+        "time": 1303978216575,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "forum_id",
+            "value": "11",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "c",
+            "value": "TkVKdVJ1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "title",
+            "value": "add_topic_to_open_unmoderated_admin_forum",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "content",
+            "value": "add_topic_to_open_unmoderated_admin_forum",
+            "type": "textarea"
+          },
+          {
+            "name": "add_signature",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_subscription",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "locked_flag",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "sticky_flag",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "system_announcement_flag",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "creation_user",
+            "value": "Administrator",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "creation_date",
+            "value": "2011-04-28 04:09:47",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "modifying_user",
+            "value": "Administrator",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "modifying_date",
+            "value": "2011-04-28 04:09:47",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "add_topic",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/add_topic/11"
+        }
+      },
+      {
+        "time": 1303978217113,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_forum/11?added=1",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_forum/12",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_forum/11?added=1"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303978217570
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303978217570,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "reply_topic_to_open_unmoderated_admin_forum",
+        "user": "Administrator",
+        "time": 1303978234168,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303978234168
+      },
+      {
+        "time": 1303978234864,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "topic_id",
+            "value": "13",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "forum_id",
+            "value": "11",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "action",
+            "value": "remove",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "confirm_delete_msg",
+            "value": "Please confirm the removal of the selected topics",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "warn_delete_parent_msg",
+            "value": "Warning: Removing this topic will remove all its sibling topics",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "confirm_inapp",
+            "value": "Please confirm you wish to report this topic as inappropriate",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "c",
+            "value": "a0VoRXlJ",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "remove_topic_parent_13",
+            "value": "13",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "response_content",
+            "value": "reply_topic_to_open_unmoderated_admin_forum",
+            "type": "textarea"
+          },
+          {
+            "name": "add",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_topic/13"
+        }
+      },
+      {
+        "time": 1303978235289,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_topic/13",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_forum/12",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_topic/13"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303978235962
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303978235962,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "add_topic_to_open_moderated_admin_forum",
+        "user": "Administrator",
+        "time": 1303978273870,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303978273870
+      },
+      {
+        "time": 1303978274470,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "forum_id",
+            "value": "12",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "c",
+            "value": "dElmT3NP",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "title",
+            "value": "add_topic_to_open_moderated_admin_forum",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "content",
+            "value": "add_topic_to_open_moderated_admin_forum",
+            "type": "textarea"
+          },
+          {
+            "name": "add_signature",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "add_subscription",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "locked_flag",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "sticky_flag",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "system_announcement_flag",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "creation_user",
+            "value": "Administrator",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "creation_date",
+            "value": "2011-04-28 04:10:52",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "modifying_user",
+            "value": "Administrator",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "modifying_date",
+            "value": "2011-04-28 04:10:52",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "add_topic",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/add_topic/12"
+        }
+      },
+      {
+        "time": 1303978275001,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_forum/12?added=1",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_forum/12?added=1"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303978276380
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303978276380,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "reply_topic_to_open_moderated_admin_forum",
+        "user": "Administrator",
+        "time": 1303978286231,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303978286231
+      },
+      {
+        "time": 1303978291990,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "topic_id",
+            "value": "15",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "forum_id",
+            "value": "12",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "action",
+            "value": "remove",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "confirm_delete_msg",
+            "value": "Please confirm the removal of the selected topics",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "warn_delete_parent_msg",
+            "value": "Warning: Removing this topic will remove all its sibling topics",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "confirm_inapp",
+            "value": "Please confirm you wish to report this topic as inappropriate",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "c",
+            "value": "SEV3ZVN1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "remove_topic_parent_15",
+            "value": "15",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "response_content",
+            "value": "reply_topic_to_open_moderated_admin_forum",
+            "type": "textarea"
+          },
+          {
+            "name": "add",
+            "value": "Add",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_topic/15"
+        }
+      },
+      {
+        "time": 1303978292474,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_topic/15",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_topic/15"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303978293057
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303978293057,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "edit_topic",
+        "user": "Administrator",
+        "time": 1303978791047,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303978791047
+      },
+      {
+        "time": 1303978800499,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "warn_removal",
+            "value": "Warning - Removing this topic will remove all of its children topics as well. Please confirm.",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "topic_id",
+            "value": "15",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "title",
+            "value": "add_topic_to_open_moderated_admin_forum",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "content",
+            "value": "edited",
+            "type": "textarea"
+          },
+          {
+            "name": "locked_flag",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "sticky_flag",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "system_announcement_flag",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "creation_user",
+            "value": "Administrator",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "creation_date",
+            "value": "2011-04-28 04:10:52",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "modifying_user",
+            "value": "Administrator",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "modifying_date",
+            "value": "2011-04-28 04:11:15",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "edit_topic",
+            "value": "Update",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/edit_topic/15"
+        }
+      },
+      {
+        "time": 1303978801064,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_topic/13",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_topic/15",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_topic/15"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303978801462
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303978801462,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "remove_topics",
+        "user": "Administrator",
+        "time": 1303978819407,
+        "exclude": true
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303978819407
+      },
+      {
+        "time": 1303978821418,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "topic_id",
+            "value": "15",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "forum_id",
+            "value": "12",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "action",
+            "value": "remove",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "confirm_delete_msg",
+            "value": "Please confirm the removal of the selected topics",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "warn_delete_parent_msg",
+            "value": "Warning: Removing this topic will remove all its sibling topics",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "confirm_inapp",
+            "value": "Please confirm you wish to report this topic as inappropriate",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "c",
+            "value": "bnV2SWxF",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "remove",
+            "value": "Remove Checked Topics",
+            "type": "submit",
+            "checked": false
+          },
+          {
+            "name": "remove_topic_parent_15",
+            "value": "15",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "remove_topic_child_16",
+            "value": "16",
+            "type": "checkbox",
+            "checked": true
+          },
+          {
+            "name": "response_content",
+            "value": "",
+            "type": "textarea"
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_topic/15"
+        }
+      },
+      {
+        "time": 1303978821818,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_topic/13",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_topic/15",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/view_topic/15"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303978825166
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303978825166,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "edit_category",
+        "user": "Administrator",
+        "time": 1303978906774,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303978906774
+      },
+      {
+        "time": 1303978907794,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "cat_id",
+            "value": "2",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "cat_name",
+            "value": "login_visible_category",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "cat_desc",
+            "value": "login_visible_category description",
+            "type": "textarea"
+          },
+          {
+            "name": "zadmin_access",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_access",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "zmember_vip_access",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "auth_access",
+            "value": "on",
+            "type": "checkbox",
+            "checked": true
+          },
+          {
+            "name": "public_access",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "update_cat",
+            "value": "Update",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/edit_category/2"
+        }
+      },
+      {
+        "time": 1303978908320,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/view_topic/13",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/categories",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/zadmin/categories"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303978908749
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303978908749,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "allow_pm",
+        "user": "Administrator",
+        "time": 1303979202523,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303979202523
+      },
+      {
+        "time": 1303979203431,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "username",
+            "value": "Administrator",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "new_passwd",
+            "value": "",
+            "type": "password",
+            "checked": false
+          },
+          {
+            "name": "new_passwd_confirm",
+            "value": "",
+            "type": "password",
+            "checked": false
+          },
+          {
+            "name": "real_name",
+            "value": "",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "web_page",
+            "value": "",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "country",
+            "value": "",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "signature",
+            "value": "",
+            "type": "textarea"
+          },
+          {
+            "name": "lang_code",
+            "value": "",
+            "type": "select-one"
+          },
+          {
+            "name": "allow_pm_use",
+            "value": "on",
+            "type": "checkbox",
+            "checked": true
+          },
+          {
+            "name": "avatar_data",
+            "value": "",
+            "type": "file",
+            "checked": false
+          },
+          {
+            "name": "update_b",
+            "value": "Update Profile",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/preferences"
+        }
+      },
+      {
+        "time": 1303979203995,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/preferences?lang=",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/del_category/2",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/preferences?lang="
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303979204579
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303979204579,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "post_pm",
+        "user": "Member-1",
+        "time": 1303979289033,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303979289033
+      },
+      {
+        "time": 1303979290119,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "mto",
+            "value": "Administrator",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "subject",
+            "value": "pm-admin",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "new_msg",
+            "value": "pm-admin",
+            "type": "textarea"
+          },
+          {
+            "name": "new_b",
+            "value": "Send",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/pm/message_new"
+        }
+      },
+      {
+        "time": 1303979290602,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/pm/index",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/del_category/2",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/pm/index"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303979291619
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303979291619,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "move_pm",
+        "user": "Administrator",
+        "time": 1303979335778,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303979335778
+      },
+      {
+        "time": 1303979343295,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "empty_b_msg",
+            "value": "Please confirm you wish to permanently remove the messages from the trash",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "moveto",
+            "value": "4",
+            "type": "select-one"
+          },
+          {
+            "name": "move_b",
+            "value": "Move",
+            "type": "submit",
+            "checked": false
+          },
+          {
+            "name": "remove_pm_id_1",
+            "value": "1",
+            "type": "checkbox",
+            "checked": true
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/pm/index"
+        }
+      },
+      {
+        "time": 1303979343664,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/pm/index",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/del_category/2",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/pm/index"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303979344650
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303979344650,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "empty_pm_trash",
+        "user": "Administrator",
+        "time": 1303979359306,
+        "exclude": false
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303979359306
+      },
+      {
+        "time": 1303979362135,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "empty_b_msg",
+            "value": "Please confirm you wish to permanently remove the messages from the trash",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "moveto",
+            "value": "",
+            "type": "select-one"
+          },
+          {
+            "name": "empty_b",
+            "value": "Empty Trash",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/pm/index"
+        }
+      },
+      {
+        "time": 1303979362509,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/pm/index",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/del_category/2",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/pm/index"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303979363010
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303979363010,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ],
+    [
+      {
+        "type": "SessionCreated",
+        "name": "recover_password",
+        "user": "Public-1",
+        "time": 1303979670815,
+        "exclude": true
+      },
+      {
+        "type": "UCCreated",
+        "time": 1303979670815
+      },
+      {
+        "time": 1303979678812,
+        "type": "formSubmitted",
+        "action": "",
+        "cookie": "session_id_pyforum=10.0.0.111-80db4cae-8c28-45f1-8f2c-4fe977b94856",
+        "method": "post",
+        "elements": [
+          {
+            "name": "",
+            "type": "fieldset"
+          },
+          {
+            "name": "form_submitted",
+            "value": "1",
+            "type": "hidden",
+            "checked": false
+          },
+          {
+            "name": "auth_alias",
+            "value": "",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "passwd",
+            "value": "",
+            "type": "password",
+            "checked": false
+          },
+          {
+            "name": "google_account",
+            "value": "on",
+            "type": "checkbox",
+            "checked": false
+          },
+          {
+            "name": "req_email",
+            "value": "invalid@example.com",
+            "type": "text",
+            "checked": false
+          },
+          {
+            "name": "request_pwd",
+            "value": "Request Password",
+            "type": "submit",
+            "checked": false
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/login#"
+        }
+      },
+      {
+        "time": 1303979679198,
+        "type": "pageLoaded",
+        "tabs": [
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/index?lang=",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/default/login",
+            "frames": []
+          },
+          {
+            "location": "http://10.0.0.10/pyforum/zadmin/del_category/2",
+            "frames": []
+          }
+        ],
+        "document": {
+          "location": "http://10.0.0.10/pyforum/default/login"
+        }
+      },
+      {
+        "type": "UCEnded",
+        "time": 1303979680559
+      },
+      {
+        "type": "SessionFinished",
+        "time": 1303979680559,
+        "clicks": 0,
+        "submits": 1,
+        "pages": 1
+      }
+    ]
+  ]
+}
+

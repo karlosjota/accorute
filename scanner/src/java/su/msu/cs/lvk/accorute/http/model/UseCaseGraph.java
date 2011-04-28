@@ -175,7 +175,7 @@ public class UseCaseGraph implements Comparator<UseCase> {
         addUC(u);
         return true;
     }
-    private void addUC(UseCase uc){
+    public void addUC(UseCase uc){
         ucDepGraph.addVertex(uc);
         ucCancelGraph.addVertex(uc);
     }

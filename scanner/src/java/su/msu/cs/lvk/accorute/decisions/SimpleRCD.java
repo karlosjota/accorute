@@ -108,7 +108,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
     public List<ActionParameter> decompose(Request r){
         throw new NotImplementedException(); //TODO: implement
     }
-    private static ActionParameter getParamByName(List<ActionParameter> params, String name){
+    protected static ActionParameter getParamByName(List<ActionParameter> params, String name){
         for(ActionParameter param: params ){
             if(param.getName().equals(name))
                 return param;
@@ -199,10 +199,10 @@ public class SimpleRCD extends RequestComposerDecomposer{
 
         return params;
     }
-    private ActionParameterMeaning decideActionMeaning(String name, ActionParameterLocation loc){
+    protected ActionParameterMeaning decideActionMeaning(String name, ActionParameterLocation loc){
         return decideActionMeaning(name, loc, new ArrayList<String>());
     }
-    private ActionParameterMeaning decideActionMeaning(String name, ActionParameterLocation loc, Collection<String> uControllable){
+    protected ActionParameterMeaning decideActionMeaning(String name, ActionParameterLocation loc, Collection<String> uControllable){
         if(loc == null)
             throw new RuntimeException("decideActionMeaning: location cannot be null");
         if(loc == WebAppProperties.getInstance().getDynTokenLoc(name))

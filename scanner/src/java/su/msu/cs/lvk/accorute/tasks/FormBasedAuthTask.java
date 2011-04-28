@@ -59,8 +59,10 @@ public class FormBasedAuthTask extends Task {
         client.setThrowExceptionOnFailingStatusCode(false);
         client.setThrowExceptionOnScriptError(false);
         HttpHost pr = WebAppProperties.getInstance().getProxy();
-        client.getProxyConfig().setProxyHost(pr.getHostName());
-        client.getProxyConfig().setProxyPort(pr.getPort());
+        if(pr != null){
+            client.getProxyConfig().setProxyHost(pr.getHostName());
+            client.getProxyConfig().setProxyPort(pr.getPort());
+        }
         try{
             logger.trace("Login task spawned");
             Page lPage = client.getPage(url);

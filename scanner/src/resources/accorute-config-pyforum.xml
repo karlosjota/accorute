@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="log4jInitialization" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetClass" value="org.springframework.util.Log4jConfigurer"/>
+        <property name="targetMethod" value="initLogging"/>
+        <property name="arguments">
+            <list>
+                <value>file:src/resources/log4j-config.xml</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="cookieService" scope="prototype" class="su.msu.cs.lvk.accorute.storage.dao.RAM.CollectionCookieService">
+    </bean>
+    <bean id="actionService" scope="prototype" class="su.msu.cs.lvk.accorute.storage.dao.RAM.CollectionActionService">
+    </bean>
+    <bean id="contextService" scope="prototype" class="su.msu.cs.lvk.accorute.storage.dao.RAM.CollectionContextService">
+    </bean>
+    <bean id="convService" scope="prototype" class="su.msu.cs.lvk.accorute.storage.dao.RAM.CollectionConversationService">
+    </bean>
+    <bean id="mapService" scope="prototype" class="su.msu.cs.lvk.accorute.storage.dao.RAM.CollectionSitemapService">
+    </bean>
+    <bean id="userService" scope="prototype" class="su.msu.cs.lvk.accorute.storage.dao.RAM.CollectionUserService">
+    </bean>
+
+    <bean id="taskman" class="su.msu.cs.lvk.accorute.taskmanager.TaskManager" scope="prototype" />
+
+    <bean id="web2pyRCD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.web2pyRCD"/>
+    <bean id="simplePVD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimplePVD"/>
+    <bean id="dummyChState" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.ConfigBasedChStateDec"/>
+    <bean id="notFoundRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
+        <constructor-arg value="&lt;html&gt;&lt;body&gt;&lt;h1&gt;invalid.*&lt;\\/h1&gt;&lt;\\/body&gt;&lt;\\/html&gt;" />
+        <constructor-arg type="int" value="40"/> <!-- MuLTILINE and DOTALL-->
+    </bean>
+    <bean id="prohibRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
+        <constructor-arg value=".*Contact the Administrator directly.*Logout.*" />
+        <constructor-arg type="int" value="40"/>
+    </bean>
+    <bean id="expireRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
+        <constructor-arg value=".*&lt;!-- User is not logged in //--&gt;.*" />
+        <constructor-arg type="int" value="40"/>
+    </bean>
+    <bean id="errorRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
+        <constructor-arg value=".*There was one or more messages generated while processing your request, please review the following.*" />
+        <constructor-arg type="int" value="40"/>
+    </bean>
+    <bean id="respClass" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.PatternResponceClassifier">
+        <constructor-arg ref="notFoundRegex" />
+        <constructor-arg ref="prohibRegex" />
+        <constructor-arg ref="expireRegex" />
+        <constructor-arg ref="errorRegex" />
+    </bean>
+    <bean id="pageEqD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.LevensteinPageEqualityDecision"/>
+    <bean id="acEqD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.ActionEqualsIfNameValueEquals"/>
+    <bean id="formFillerFactory" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.MultiStateFormFillFactory" >
+        <constructor-arg value="test" />
+        <constructor-arg value="test" />
+        <constructor-arg value="true" />
+        <constructor-arg value="true" />
+        <constructor-arg value="true" />
+    </bean>
+    <bean id="loginPageURL" scope="prototype" class="java.net.URL" >
+        <constructor-arg value="http://10.0.0.10/pyforum/default/index"/>
+    </bean>
+    <bean id="authFactory" scope="prototype" class="su.msu.cs.lvk.accorute.tasks.FormBasedAuthTaskFactory">
+        <constructor-arg ref="loginPageURL" />
+        <constructor-arg value="0" />
+    </bean>
+    <bean id="simpleAGD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.LevensteinAGD" />
+    <bean id="httpcl" scope="prototype" class="su.msu.cs.lvk.accorute.utils.HttpClientProxyFactory" factory-method="create">
+        <constructor-arg><null/></constructor-arg>
+    </bean>
+    <bean id="dynCredUp" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimpleDynamicCredentialsUpdater" />
+
+    <bean id="properties" class="su.msu.cs.lvk.accorute.WebAppProperties" factory-method="getInstance">
+        <property name="actionService" ref="actionService"/>
+        <property name="contextService" ref="contextService"/>
+        <property name="cookieService" ref="cookieService" />
+        <property name="userService" ref="userService"/>
+        <property name="sitemapService" ref="mapService"/>
+        <property name="conversationService" ref="convService"/>
+        <property name="taskManager" ref="taskman" />
+        <property name="roles">
+            <list>
+            </list>
+        </property>
+        <property name="rcd" ref="web2pyRCD"/>
+        <property name="pvd" ref="simplePVD"/>
+        <property name="chStateDec" ref="dummyChState" />
+        <property name="respClassificator" ref="respClass" />
+        <property name="pageEqDec" ref="pageEqD" />
+        <property name="acEqDec" ref="acEqD" />
+        <property name="formFillerFactory" ref="formFillerFactory" />
+        <property name="authTaskFactory" ref="authFactory" />
+        <property name="agd" ref="simpleAGD" />
+        <property name="httpClient" ref="httpcl"/>
+        <property name="dynCredUpd" ref="dynCredUp"/>
+        <property name="captureFileName" value="../mapper/captures/pyforum-capture.txt" />
+        <property name="mainPage" ref="mainPage" />
+    </bean>
+    <bean id="mainPage" class="java.net.URL">
+        <constructor-arg value="http://10.0.0.10/pyforum/default/index" />
+    </bean>
+
+</beans>
+
+        

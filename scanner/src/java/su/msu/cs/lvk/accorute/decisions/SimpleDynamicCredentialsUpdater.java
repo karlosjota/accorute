@@ -48,7 +48,12 @@ public class SimpleDynamicCredentialsUpdater implements DynamicCredentialsUpdate
         WebClient client = p.getWebClient();
         Set<com.gargoylesoftware.htmlunit.util.Cookie> cooks = client.getCookieManager().getCookies();
         URL u = p.getUrl();
-        CookieOrigin origin = new CookieOrigin(u.getHost(), u.getPort(),u.getPath(),false); // TODO: false here
+        CookieOrigin origin = new CookieOrigin(
+                u.getHost(),
+                (u.getPort()==-1)?u.getDefaultPort():u.getPort(),
+                u.getPath(),
+                false
+        ); // TODO: false here
         List<Cookie> cookies = new ArrayList<Cookie>();
         for(com.gargoylesoftware.htmlunit.util.Cookie cook: cooks){
             cookies.add(new BasicClientCookie(cook.getName(), cook.getValue()));

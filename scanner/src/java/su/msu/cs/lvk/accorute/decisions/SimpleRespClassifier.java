@@ -14,9 +14,9 @@ public class SimpleRespClassifier implements ResponseClassificator{
         String code = conv.getResponse().getStatusCode();
         if(code.equals("404"))
             return ResponseType.NOT_FOUND;
-        if(code.equals("200"))
+        if(code.startsWith("2") ||  code.startsWith("3"))
             return ResponseType.OKAY;
-        if(code.equals("403"))
+        if(code.startsWith("4"))
             return ResponseType.PROHIBITED;
         return ResponseType.ERROR;
     }

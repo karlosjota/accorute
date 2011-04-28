@@ -58,6 +58,8 @@ public class JSONConfigurator extends Task {
                 JSONArray elements = event.getJSONArray("elements");
                 for(int i=0; i< elements.length();i++){
                     String name = elements.getJSONObject(i).getString("name");
+                    if(name.equals(""))
+                        continue;
                     String value = elements.getJSONObject(i).getString("value");
                     String eltype = elements.getJSONObject(i).getString("type");
                     Boolean checked = false;
@@ -222,7 +224,7 @@ public class JSONConfigurator extends Task {
                                 UseCase uc = new UseCase(u.getUserRole(),act);
                                 nameUseCaseMap.put(sessname + " : " + uname, uc);
                                 if(! sessionCreatedEvt.has("exclude") || !sessionCreatedEvt.getBoolean("exclude")){
-                                    WebAppProperties.getInstance().getUcGraph().addUCIfNotPresent(uc);
+                                    WebAppProperties.getInstance().getUcGraph().addUC(uc);
                                     WebAppProperties.getInstance().getActionService().addOrUpdateAction(act);
                                 }
                                 WebAppProperties.getInstance().addStateChangingAction(act);

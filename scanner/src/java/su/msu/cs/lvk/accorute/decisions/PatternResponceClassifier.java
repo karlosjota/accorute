@@ -30,6 +30,10 @@ public class PatternResponceClassifier implements  ResponseClassificator{
     }
     public ResponseType getResponseType(Conversation conv) {
         String conversation = conv.getResponse().getTotallyDecodedBody();
+        SimpleRespClassifier classifier = new SimpleRespClassifier();
+        ResponseType t =  classifier.getResponseType(conv);
+        if( t != ResponseClassificator.ResponseType.OKAY)
+            return t;
         if(notFound.matcher(conversation).matches()){
             return ResponseType.NOT_FOUND;
         }

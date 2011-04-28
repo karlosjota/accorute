@@ -226,7 +226,7 @@ public class Main{
             //try{
             //    Thread.sleep(10000);
             //}catch(InterruptedException ex){}
-        }while(it.hasNext() && stateChangingSpikes.size() == 0);
+        }while(it.hasNext() && ucNum < 2 && stateChangingSpikes.size() == 0);
         WebAppProperties.getInstance().getTaskManager().terminate();
         WebAppProperties.getInstance().getTaskManager().waitForFinish();
         System.out.print(WebAppProperties.getInstance().getUcGraph());

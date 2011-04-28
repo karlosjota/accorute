@@ -25,7 +25,7 @@ public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutio
             return taskID.get(t1) - taskID.get(t2);
         else return p1-p2;
     }
-    final int maxThreads = 200;
+    final int maxThreads = 1000;
     final private Queue<Task> pendingTasks = new PriorityQueue<Task>(10,this);
     final private HashSet<Task> runningTasks = new HashSet<Task>();
     final private ThreadPoolExecutor executor = new  ThreadPoolExecutor(maxThreads/2,maxThreads,2,

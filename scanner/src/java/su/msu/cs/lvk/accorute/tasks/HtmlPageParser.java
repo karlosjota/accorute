@@ -100,9 +100,9 @@ public class HtmlPageParser extends Task implements DomChangeListener {
         catch(RuntimeException ex){
             //Dirty, dirty hack!!!
             if(ex.getMessage() == null)
-                logger.error("got runtime exception during click!", ex);
+                logger.error("got runtime exception during click!", ex);/*
             if(!ex.getMessage().equalsIgnoreCase("java.io.IOException: goes just as planned"))
-                logger.error("got runtime exception during click!", ex);
+                logger.error("got runtime exception during click!", ex);  */
         }
         userControllableFormFields.clear();
         //if there was no request, we can happily reproduce this action on current page
