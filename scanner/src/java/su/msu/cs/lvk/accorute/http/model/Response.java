@@ -45,6 +45,7 @@ import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.WebResponseData;
 import com.gargoylesoftware.htmlunit.util.NameValuePair;
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.cookie.CookieOrigin;
@@ -54,6 +55,7 @@ import org.apache.http.impl.cookie.BestMatchSpec;
 import org.apache.http.impl.cookie.RFC2109Spec;
 import org.apache.http.impl.cookie.RFC2965Spec;
 import org.apache.http.message.BasicHeader;
+import org.apache.http.util.EntityUtils;
 import su.msu.cs.lvk.accorute.http.constants.HTTPHeader;
 
 import java.io.ByteArrayOutputStream;
@@ -108,10 +110,13 @@ public class Response extends Message {
             addHeader(h.getName(),h.getValue());
         }
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        resp.getEntity().writeTo(os);
+        HttpEntity ent = resp.getEntity();
+        ent.writeTo(os);
+        ent.consumeContent();
         setContent(os.toByteArray());
         setStatusCode(Integer.toString(resp.getStatusLine().getStatusCode()));
         setStatusMessage(resp.getStatusLine().getReasonPhrase());
+        os.close();
 
     }
     public Response(WebResponse resp) throws IOException{

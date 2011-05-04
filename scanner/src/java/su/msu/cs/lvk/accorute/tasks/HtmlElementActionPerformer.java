@@ -114,6 +114,27 @@ public class HtmlElementActionPerformer extends Task {
         WebWindow w = webClient.openWindow(null,"tmpWindow");
         webClient.setThrowExceptionOnFailingStatusCode(false);
         webClient.setThrowExceptionOnScriptError(false);
+        webClient.setConfirmHandler(
+                new  ConfirmHandler(){
+                    public boolean handleConfirm(Page page, String message) {
+                        return true;
+                    }
+                }
+        );
+        webClient.setAlertHandler(
+                new AlertHandler() {
+                    public void handleAlert(Page page, String message) {
+                        return;
+                    }
+                }
+        );
+        webClient.setPromptHandler(
+                new PromptHandler() {
+                    public String handlePrompt(Page page, String message) {
+                        return "test";
+                    }
+                }
+        );
         if(page!=null){
             page.setEnclosingWindow(w);
             w.setEnclosedPage(page);

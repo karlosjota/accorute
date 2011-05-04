@@ -29,7 +29,7 @@
 
     <bean id="web2pyRCD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.web2pyRCD"/>
     <bean id="simplePVD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimplePVD"/>
-    <bean id="dummyChState" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.ConfigBasedChStateDec"/>
+    <bean id="dummyChState" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.PostChangeStateDecision"/>
     <bean id="notFoundRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
         <constructor-arg value="&lt;html&gt;&lt;body&gt;&lt;h1&gt;invalid.*&lt;\\/h1&gt;&lt;\\/body&gt;&lt;\\/html&gt;" />
         <constructor-arg type="int" value="40"/> <!-- MuLTILINE and DOTALL-->

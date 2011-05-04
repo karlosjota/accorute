@@ -71,6 +71,27 @@ public class HtmlPageParser extends Task implements DomChangeListener {
         };
         //create WebConnectionWrapper that calls back the callback on each request
         webClient.setWebConnection(falseWebConn);
+        webClient.setConfirmHandler(
+                new  ConfirmHandler(){
+                    public boolean handleConfirm(Page page, String message) {
+                        return true;
+                    }
+                }
+        );
+        webClient.setAlertHandler(
+                new AlertHandler() {
+                    public void handleAlert(Page page, String message) {
+                        return;
+                    }
+                }
+        );
+        webClient.setPromptHandler(
+                new PromptHandler() {
+                    public String handlePrompt(Page page, String message) {
+                        return "test";
+                    }
+                }
+        );
     }
     private void tryClick(HtmlElement htmlElement){
         userControllableFormFields.clear();

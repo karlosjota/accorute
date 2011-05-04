@@ -3,7 +3,10 @@ package su.msu.cs.lvk.accorute.utils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpVersion;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.params.ConnManagerParams;
+import org.apache.http.conn.params.ConnPerRoute;
 import org.apache.http.conn.params.ConnRoutePNames;
+import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -26,6 +29,12 @@ import org.apache.http.params.CoreProtocolPNames;
 public class HttpClientProxyFactory {
     public static AbstractHttpClient create(HttpHost proxy ){
         HttpParams params = new BasicHttpParams();
+        ConnPerRoute cpr = new ConnPerRoute() {
+            public int getMaxForRoute(HttpRoute httpRoute) {
+                return 1;
+            }
+        };
+        ConnManagerParams.setMaxConnectionsPerRoute(params, cpr);
         // Increase max total connection to 200
         //ConnManagerParams.setMaxTotalConnections(params, 200);
         // Increase default max connection per route to 20

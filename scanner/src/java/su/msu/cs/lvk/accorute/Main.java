@@ -223,10 +223,30 @@ public class Main{
             }
             taskman.waitForEmptyQueue();
             ucNum++;
-            //try{
-            //    Thread.sleep(10000);
-            //}catch(InterruptedException ex){}
-        }while(it.hasNext() && ucNum < 2 && stateChangingSpikes.size() == 0);
+            try{
+                //Output the XML
+                //set up a transformer
+                TransformerFactory transfac = TransformerFactory.newInstance();
+                Transformer trans = transfac.newTransformer();
+                trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+                trans.setOutputProperty(OutputKeys.INDENT, "yes");
+                trans.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+
+                //create string from xml tree
+                // get the supporting classes for the transformer
+                FileWriter writer = new FileWriter("report/report"+ucNum+".xml");
+                StreamResult result = new StreamResult(writer);
+                DOMSource    source = new DOMSource(curState);
+                // transform the xml document into a string
+                trans.transform(source, result);
+
+                // close the output file
+                writer.close();
+            }catch(Exception ex){
+                logger.fatal(ex);
+                return;
+            }
+        }while(it.hasNext() /*&& stateChangingSpikes.size() == 0*/);
         WebAppProperties.getInstance().getTaskManager().terminate();
         WebAppProperties.getInstance().getTaskManager().waitForFinish();
         System.out.print(WebAppProperties.getInstance().getUcGraph());

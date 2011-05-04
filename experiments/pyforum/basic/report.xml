@@ -1,0 +1,256 @@
+<WebApp>
+  <usecases>
+    <usecase>
+      <spikeset from="public" to="public"/>
+      <spikeset from="administrator" to="administrator">
+        <action id="0" name="tmp">
+          <params>
+            <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.10"/>
+            <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="80"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_application" role="UNKNOWN" type="STRING" value="pyforum"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_controller" role="UNKNOWN" type="STRING" value="pm"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_function" role="UNKNOWN" type="STRING" value="message_new"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_positional_argument0" role="UNKNOWN" type="STRING" value="Administrator"/>
+            <param location="BODY" meaning="USERCONTROLLABLE" name="form_submitted" role="UNKNOWN" type="STRING" value="1"/>
+            <param location="BODY" meaning="USERCONTROLLABLE" name="mto" role="UNKNOWN" type="STRING" value="test"/>
+            <param location="BODY" meaning="USERCONTROLLABLE" name="subject" role="UNKNOWN" type="STRING" value="test"/>
+            <param location="BODY" meaning="USERCONTROLLABLE" name="new_msg" role="UNKNOWN" type="STRING" value="test"/>
+            <param location="BODY" meaning="AUTOMATIC" name="new_b" role="UNKNOWN" type="STRING" value="Send"/>
+          </params>
+        </action>
+      </spikeset>
+      <spikeset from="user" to="user">
+        <action id="0" name="tmp">
+          <params>
+            <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.10"/>
+            <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="80"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_application" role="UNKNOWN" type="STRING" value="pyforum"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_controller" role="UNKNOWN" type="STRING" value="pm"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_function" role="UNKNOWN" type="STRING" value="message_new"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_positional_argument0" role="UNKNOWN" type="STRING" value="Member-1"/>
+            <param location="BODY" meaning="USERCONTROLLABLE" name="form_submitted" role="UNKNOWN" type="STRING" value="1"/>
+            <param location="BODY" meaning="USERCONTROLLABLE" name="mto" role="UNKNOWN" type="STRING" value="test"/>
+            <param location="BODY" meaning="USERCONTROLLABLE" name="subject" role="UNKNOWN" type="STRING" value="test"/>
+            <param location="BODY" meaning="USERCONTROLLABLE" name="new_msg" role="UNKNOWN" type="STRING" value="test"/>
+            <param location="BODY" meaning="AUTOMATIC" name="new_b" role="UNKNOWN" type="STRING" value="Send"/>
+          </params>
+        </action>
+        <action id="0" name="tmp">
+          <params>
+            <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.10"/>
+            <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="80"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_application" role="UNKNOWN" type="STRING" value="pyforum"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_controller" role="UNKNOWN" type="STRING" value="pm"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_function" role="UNKNOWN" type="STRING" value="message_new"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_positional_argument0" role="UNKNOWN" type="STRING" value="Member-1"/>
+          </params>
+        </action>
+      </spikeset>
+      <spikeset from="public" to="user"/>
+      <spikeset from="public" to="administrator"/>
+      <spikeset from="user" to="administrator">
+        <action id="0" name="tmp">
+          <params>
+            <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.10"/>
+            <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="80"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_application" role="UNKNOWN" type="STRING" value="pyforum"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_controller" role="UNKNOWN" type="STRING" value="pm"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_function" role="UNKNOWN" type="STRING" value="message_new"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_positional_argument0" role="UNKNOWN" type="STRING" value="Member-1"/>
+          </params>
+        </action>
+        <action id="0" name="tmp">
+          <params>
+            <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.10"/>
+            <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="80"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_application" role="UNKNOWN" type="STRING" value="pyforum"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_controller" role="UNKNOWN" type="STRING" value="zadmin"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_function" role="UNKNOWN" type="STRING" value="user_edit"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_positional_argument0" role="UNKNOWN" type="STRING" value="Administrator-2"/>
+          </params>
+        </action>
+        <action id="0" name="tmp">
+          <params>
+            <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.10"/>
+            <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="80"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_application" role="UNKNOWN" type="STRING" value="pyforum"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_controller" role="UNKNOWN" type="STRING" value="zadmin"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_function" role="UNKNOWN" type="STRING" value="user_edit"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_positional_argument0" role="UNKNOWN" type="STRING" value="Member-2"/>
+          </params>
+        </action>
+        <action id="0" name="tmp">
+          <params>
+            <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.10"/>
+            <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="80"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_application" role="UNKNOWN" type="STRING" value="pyforum"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_controller" role="UNKNOWN" type="STRING" value="zadmin"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_function" role="UNKNOWN" type="STRING" value="user_edit"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_positional_argument0" role="UNKNOWN" type="STRING" value="Member-1"/>
+          </params>
+        </action>
+        <action id="0" name="tmp">
+          <params>
+            <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.10"/>
+            <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="80"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_application" role="UNKNOWN" type="STRING" value="pyforum"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_controller" role="UNKNOWN" type="STRING" value="pm"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_function" role="UNKNOWN" type="STRING" value="message_new"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_positional_argument0" role="UNKNOWN" type="STRING" value="Administrator"/>
+            <param location="BODY" meaning="USERCONTROLLABLE" name="form_submitted" role="UNKNOWN" type="STRING" value="1"/>
+            <param location="BODY" meaning="USERCONTROLLABLE" name="mto" role="UNKNOWN" type="STRING" value="test"/>
+            <param location="BODY" meaning="USERCONTROLLABLE" name="subject" role="UNKNOWN" type="STRING" value="test"/>
+            <param location="BODY" meaning="USERCONTROLLABLE" name="new_msg" role="UNKNOWN" type="STRING" value="test"/>
+            <param location="BODY" meaning="AUTOMATIC" name="new_b" role="UNKNOWN" type="STRING" value="Send"/>
+          </params>
+        </action>
+        <action id="0" name="tmp">
+          <params>
+            <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.10"/>
+            <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="80"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_application" role="UNKNOWN" type="STRING" value="pyforum"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_controller" role="UNKNOWN" type="STRING" value="pm"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_function" role="UNKNOWN" type="STRING" value="message_new"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_positional_argument0" role="UNKNOWN" type="STRING" value="Administrator"/>
+          </params>
+        </action>
+        <action id="0" name="tmp">
+          <params>
+            <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.10"/>
+            <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="80"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_application" role="UNKNOWN" type="STRING" value="pyforum"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_controller" role="UNKNOWN" type="STRING" value="zadmin"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_function" role="UNKNOWN" type="STRING" value="user_edit"/>
+            <param location="URL" meaning="AUTOMATIC" name="__web2py_positional_argument0" role="UNKNOWN" type="STRING" value="Administrator"/>
+          </params>
+        </action>
+      </spikeset>
+    </usecase>
+  </usecases>
+  <summary>
+    <spikeset from="public" to="public"/>
+    <spikeset from="administrator" to="administrator">
+      <action id="0" name="tmp">
+        <params>
+          <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.10"/>
+          <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="80"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_application" role="UNKNOWN" type="STRING" value="pyforum"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_controller" role="UNKNOWN" type="STRING" value="pm"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_function" role="UNKNOWN" type="STRING" value="message_new"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_positional_argument0" role="UNKNOWN" type="STRING" value="Administrator"/>
+          <param location="BODY" meaning="USERCONTROLLABLE" name="form_submitted" role="UNKNOWN" type="STRING" value="1"/>
+          <param location="BODY" meaning="USERCONTROLLABLE" name="mto" role="UNKNOWN" type="STRING" value="test"/>
+          <param location="BODY" meaning="USERCONTROLLABLE" name="subject" role="UNKNOWN" type="STRING" value="test"/>
+          <param location="BODY" meaning="USERCONTROLLABLE" name="new_msg" role="UNKNOWN" type="STRING" value="test"/>
+          <param location="BODY" meaning="AUTOMATIC" name="new_b" role="UNKNOWN" type="STRING" value="Send"/>
+        </params>
+      </action>
+    </spikeset>
+    <spikeset from="user" to="user">
+      <action id="0" name="tmp">
+        <params>
+          <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.10"/>
+          <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="80"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_application" role="UNKNOWN" type="STRING" value="pyforum"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_controller" role="UNKNOWN" type="STRING" value="pm"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_function" role="UNKNOWN" type="STRING" value="message_new"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_positional_argument0" role="UNKNOWN" type="STRING" value="Member-1"/>
+          <param location="BODY" meaning="USERCONTROLLABLE" name="form_submitted" role="UNKNOWN" type="STRING" value="1"/>
+          <param location="BODY" meaning="USERCONTROLLABLE" name="mto" role="UNKNOWN" type="STRING" value="test"/>
+          <param location="BODY" meaning="USERCONTROLLABLE" name="subject" role="UNKNOWN" type="STRING" value="test"/>
+          <param location="BODY" meaning="USERCONTROLLABLE" name="new_msg" role="UNKNOWN" type="STRING" value="test"/>
+          <param location="BODY" meaning="AUTOMATIC" name="new_b" role="UNKNOWN" type="STRING" value="Send"/>
+        </params>
+      </action>
+      <action id="0" name="tmp">
+        <params>
+          <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.10"/>
+          <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="80"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_application" role="UNKNOWN" type="STRING" value="pyforum"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_controller" role="UNKNOWN" type="STRING" value="pm"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_function" role="UNKNOWN" type="STRING" value="message_new"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_positional_argument0" role="UNKNOWN" type="STRING" value="Member-1"/>
+        </params>
+      </action>
+    </spikeset>
+    <spikeset from="public" to="user"/>
+    <spikeset from="public" to="administrator"/>
+    <spikeset from="user" to="administrator">
+      <action id="0" name="tmp">
+        <params>
+          <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.10"/>
+          <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="80"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_application" role="UNKNOWN" type="STRING" value="pyforum"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_controller" role="UNKNOWN" type="STRING" value="pm"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_function" role="UNKNOWN" type="STRING" value="message_new"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_positional_argument0" role="UNKNOWN" type="STRING" value="Member-1"/>
+        </params>
+      </action>
+      <action id="0" name="tmp">
+        <params>
+          <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.10"/>
+          <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="80"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_application" role="UNKNOWN" type="STRING" value="pyforum"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_controller" role="UNKNOWN" type="STRING" value="zadmin"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_function" role="UNKNOWN" type="STRING" value="user_edit"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_positional_argument0" role="UNKNOWN" type="STRING" value="Administrator-2"/>
+        </params>
+      </action>
+      <action id="0" name="tmp">
+        <params>
+          <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.10"/>
+          <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="80"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_application" role="UNKNOWN" type="STRING" value="pyforum"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_controller" role="UNKNOWN" type="STRING" value="zadmin"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_function" role="UNKNOWN" type="STRING" value="user_edit"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_positional_argument0" role="UNKNOWN" type="STRING" value="Member-2"/>
+        </params>
+      </action>
+      <action id="0" name="tmp">
+        <params>
+          <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.10"/>
+          <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="80"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_application" role="UNKNOWN" type="STRING" value="pyforum"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_controller" role="UNKNOWN" type="STRING" value="zadmin"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_function" role="UNKNOWN" type="STRING" value="user_edit"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_positional_argument0" role="UNKNOWN" type="STRING" value="Member-1"/>
+        </params>
+      </action>
+      <action id="0" name="tmp">
+        <params>
+          <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.10"/>
+          <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="80"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_application" role="UNKNOWN" type="STRING" value="pyforum"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_controller" role="UNKNOWN" type="STRING" value="pm"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_function" role="UNKNOWN" type="STRING" value="message_new"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_positional_argument0" role="UNKNOWN" type="STRING" value="Administrator"/>
+          <param location="BODY" meaning="USERCONTROLLABLE" name="form_submitted" role="UNKNOWN" type="STRING" value="1"/>
+          <param location="BODY" meaning="USERCONTROLLABLE" name="mto" role="UNKNOWN" type="STRING" value="test"/>
+          <param location="BODY" meaning="USERCONTROLLABLE" name="subject" role="UNKNOWN" type="STRING" value="test"/>
+          <param location="BODY" meaning="USERCONTROLLABLE" name="new_msg" role="UNKNOWN" type="STRING" value="test"/>
+          <param location="BODY" meaning="AUTOMATIC" name="new_b" role="UNKNOWN" type="STRING" value="Send"/>
+        </params>
+      </action>
+      <action id="0" name="tmp">
+        <params>
+          <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.10"/>
+          <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="80"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_application" role="UNKNOWN" type="STRING" value="pyforum"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_controller" role="UNKNOWN" type="STRING" value="pm"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_function" role="UNKNOWN" type="STRING" value="message_new"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_positional_argument0" role="UNKNOWN" type="STRING" value="Administrator"/>
+        </params>
+      </action>
+      <action id="0" name="tmp">
+        <params>
+          <param location="URL" meaning="AUTOMATIC" name="host" role="UNKNOWN" type="STRING" value="10.0.0.10"/>
+          <param location="URL" meaning="AUTOMATIC" name="port" role="UNKNOWN" type="NUMBER" value="80"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_application" role="UNKNOWN" type="STRING" value="pyforum"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_controller" role="UNKNOWN" type="STRING" value="zadmin"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_function" role="UNKNOWN" type="STRING" value="user_edit"/>
+          <param location="URL" meaning="AUTOMATIC" name="__web2py_positional_argument0" role="UNKNOWN" type="STRING" value="Administrator"/>
+        </params>
+      </action>
+    </spikeset>
+  </summary>
+</WebApp>
