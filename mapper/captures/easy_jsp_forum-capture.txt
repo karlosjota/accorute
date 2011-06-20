@@ -3,7 +3,7 @@
   "urlExcludeScope": "(?!)",
   "responceExcludeScope": "(?!)",
   "idParamNameRegexp": ".*[Ii][Dd].*",
-  "idParamValRegexp": "[0-9]{4}",
+  "idParamValRegexp": "[0-9]{1,4}",
   "roles": [
     {
       "name": "public",

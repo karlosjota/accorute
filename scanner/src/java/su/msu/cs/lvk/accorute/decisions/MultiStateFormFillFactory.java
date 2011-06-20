@@ -16,6 +16,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class MultiStateFormFillFactory implements FormFillerFactory {
+    public static int numInvokations = 0;
     public String defaultInputText = null;
     public String defaultTextAreaText = null;
     public boolean cycleSelects = false;
@@ -37,6 +38,7 @@ public class MultiStateFormFillFactory implements FormFillerFactory {
     }
 
     public FormFiller generate(HtmlForm f, EntityID ctx) {
+        numInvokations++;
         return new SimpleFormFill(
                 ctx,
                 f,
@@ -347,10 +349,11 @@ public class MultiStateFormFillFactory implements FormFillerFactory {
                 return currentSubmit;
             }
             //we definitely have a non-exhausted iterator!
-            boolean carry = false;
+            boolean carry;
             Iterator<RewindingFormStateIterator> it = currentState.iterator();
             // while we encounter exhausted iterators, rewind them
             do{
+                carry = false;
                 RewindingFormStateIterator rewIter = it.next();
                 if(!rewIter.hasNext()){
                     rewIter.rewind();

@@ -10,10 +10,10 @@
 
     <!-- Root Logger -->
     <root>
-        <priority value="debug" />
+        <priority value="warn" />
         <appender-ref ref="console" />
     </root>
-    <!-- <logger name="org.apache">
+    <logger name="org.apache">
         <level value="warn"/>
     </logger>
 
@@ -41,8 +41,8 @@
     </logger>
     <logger name="su.msu.cs.lvk.accorute.tasks.HtmlElementActionPerformer">
         <level value="debug"/>
-    </logger>   -->
-    <!--<logger name="org.apache.http" >
+    </logger>
+    <logger name="org.apache.http" >
         <level value="trace" />
     </logger>
     <logger name="su.msu.cs.lvk.accorute.tasks.SitemapCrawler">
@@ -57,6 +57,5 @@
     </logger>
     <logger name="su.msu.cs.lvk.accorute.decisions.ActionEqualsIfNameValueEquals">
         <level value="warn"/>
-    </logger>   -->
-
+    </logger>
 </log4j:configuration>

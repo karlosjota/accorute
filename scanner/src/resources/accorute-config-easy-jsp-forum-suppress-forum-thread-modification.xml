@@ -77,7 +77,7 @@
         <constructor-arg value="8008"/>
     </bean>
     <bean id="httpcl" scope="prototype" class="su.msu.cs.lvk.accorute.utils.HttpClientProxyFactory" factory-method="create">
-        <constructor-arg ref="proxy"/>
+        <constructor-arg><null/></constructor-arg>
     </bean>
     <bean id="dynCredUp" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimpleDynamicCredentialsUpdater" />
 
@@ -93,11 +93,17 @@
         <constructor-arg value=".*threadid=.*action=del.*" />
         <constructor-arg type="int" value="40"/>
     </bean>
+
+    <bean id="suppressForumAssign" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
+        <constructor-arg value=".*page=edit_forums.*assign=Assign.*" />
+        <constructor-arg type="int" value="40"/> <!-- MuLTILINE and DOTALL-->
+    </bean>
     <bean id="suppr" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.PatternBasedSuppress">
         <constructor-arg>
             <list>
                 <ref bean="suppressForumDelete"/>
                 <ref bean="suppressForumSave"/>
+                <ref bean="suppressForumAssign"/>
                 <ref bean="suppressThreadDelete"/>
             </list>
         </constructor-arg>
@@ -125,7 +131,7 @@
         <property name="authTaskFactory" ref="authFactory" />
         <property name="agd" ref="simpleAGD" />
         <property name="httpClient" ref="httpcl"/>
-        <property name="proxy" ref="proxy" />
+        <!--<property name="proxy" ref="proxy" />-->
         <property name="dynCredUpd" ref="dynCredUp"/>
         <property name="captureFileName" value="../mapper/captures/easy_jsp_forum-capture.txt" />
         <property name="mainPage" ref="mainPage" />

@@ -29,6 +29,7 @@ import java.util.*;
  */
 //TODO: AJAX is not yet supported! The accorute model itself is not ready now for AJAX.
 public class HtmlPageParser extends Task implements DomChangeListener {
+    public static int numInvokations = 0;
     private final HtmlPage page;
     private HtmlPage tmpPage;
     private final Callback4<HtmlPage,  ArrayList<DomAction>, HttpAction, Boolean> callback;
@@ -94,6 +95,7 @@ public class HtmlPageParser extends Task implements DomChangeListener {
         );
     }
     private void tryClick(HtmlElement htmlElement){
+
         userControllableFormFields.clear();
         HtmlForm form = htmlElement.getEnclosingForm();
         if(form != null){
@@ -103,6 +105,8 @@ public class HtmlPageParser extends Task implements DomChangeListener {
         logger.trace("Trying to click "+ path);
         //clone page
         //set a window
+        WebWindow cur_window = webClient.getCurrentWindow();
+
         WebWindow w = webClient.openWindow(null,"tmpWindow");
         tmpPage =  HtmlUnitUtils.clonePage(page,w);
         //get corresponding element...
@@ -119,14 +123,11 @@ public class HtmlPageParser extends Task implements DomChangeListener {
             logger.error("error in javascript!!!! Will continue. ",ee);
         }
         catch(RuntimeException ex){
-            //Dirty, dirty hack!!!
-            if(ex.getMessage() == null)
-                logger.error("got runtime exception during click!", ex);/*
-            if(!ex.getMessage().equalsIgnoreCase("java.io.IOException: goes just as planned"))
-                logger.error("got runtime exception during click!", ex);  */
+            logger.error("got runtime exception during click!", ex);
         }
         userControllableFormFields.clear();
-        //if there was no request, we can happily reproduce this action on current page
+        webClient.setCurrentWindow(cur_window);
+        webClient.getCache().clear();
         if(!wasRequest){
             logger.trace("click didn't produce a request");
             try{
@@ -220,6 +221,7 @@ public class HtmlPageParser extends Task implements DomChangeListener {
 
     @Override
     protected void start() {
+        numInvokations++;
         /*URL origUrl = page.getRequest().getURL();
         //1. create WebResponse from page : WebResponse(WebResponseData responseData, WebRequest request, long loadTime)
         WebResponse resp = page.getResponse().genWebResponse(origUrl);

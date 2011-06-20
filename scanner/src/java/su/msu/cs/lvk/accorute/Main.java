@@ -1,26 +1,23 @@
 package su.msu.cs.lvk.accorute;
 
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.w3c.dom.Document;
 import su.msu.cs.lvk.accorute.RBAC.Role;
+import su.msu.cs.lvk.accorute.decisions.MultiStateFormFillFactory;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 import su.msu.cs.lvk.accorute.tasks.*;
 import su.msu.cs.lvk.accorute.utils.Callback0;
-import su.msu.cs.lvk.accorute.utils.Callback3;
 import su.msu.cs.lvk.accorute.utils.RoleCompare;
 
 import org.w3c.dom.*;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.StringWriter;
 import java.util.*;
 import javax.xml.parsers.*;
 
@@ -39,6 +36,7 @@ import javax.xml.transform.stream.*;
 public class Main{
     private static Logger logger = Logger.getLogger(Main.class.getName());
     public static void main(String[] args){
+        long tstart =    System.nanoTime();
         if(args.length < 1){
             System.err.println(
                     "Usage: <program-name> <your_config.xml>, \n" +
@@ -62,7 +60,7 @@ public class Main{
         //clear dir of temp files...
         File reportDir = new File("report");
         for(File f : reportDir.listFiles()){
-            if(f.getAbsolutePath().endsWith(".dot") || f.getAbsolutePath().endsWith(".png"))
+            if(f.getAbsolutePath().endsWith(".dot")|| f.getAbsolutePath().endsWith(".png")|| f.getAbsolutePath().endsWith(".xml"))
                 f.delete();
         }
         TaskManager taskman = WebAppProperties.getInstance().getTaskManager();
@@ -185,7 +183,6 @@ public class Main{
                                         curState.appendChild(spikeSet);
                                         spikeSet.setAttribute("from",attackRole.getRoleName());
                                         spikeSet.setAttribute("to",victimRole.getRoleName());
-                                        Iterator<HttpAction> it = acts.iterator();
                                         String rolePair =  attackRole.getRoleName() + "->" + victimRole.getRoleName();
                                         Element summarySpikes;
                                         if(summaryRolePairs.containsKey(rolePair)){
@@ -197,11 +194,12 @@ public class Main{
                                             summry.appendChild(summarySpikes);
                                             summaryRolePairs.put(rolePair,summarySpikes);
                                         }
+                                        Iterator<HttpAction> it = acts.iterator();
                                         while(it.hasNext()){
                                             HttpAction act = it.next();
                                             boolean fresh = true;
                                             for(HttpAction a: spikes){
-                                                if(WebAppProperties.getInstance().getAcEqDec().ActionEquals(a,act)){
+                                                if(WebAppProperties.getInstance().getAcEqDec().ActionEqualsIgnoreIdentifiers(a,act)){
                                                     fresh = false;
                                                     break;
                                                 }
@@ -209,7 +207,6 @@ public class Main{
                                             act.appendToElement(spikeSet);
                                             if(fresh){
                                                 act.appendToElement(summarySpikes);
-                                            }else{
                                                 spikes.add(act);
                                             }
                                         }
@@ -239,19 +236,29 @@ public class Main{
                 DOMSource    source = new DOMSource(curState);
                 // transform the xml document into a string
                 trans.transform(source, result);
-
+                writer.append("Spike finding invokations: " + SimpleDetectSpikes.numInvokations);
+                writer.append("Spike checks: " + SimpleDetectSpikes.numChecks);
+                writer.append("Raw spikes detected: " + SimpleDetectSpikes.numRawSpikes);
+                writer.append("Unique spikes: " + spikes.size());
+                writer.append("Pages fetched: " + ResponseFetcher.numInvokations);
+                writer.append("Pages parsed: " + HtmlPageParser.numInvokations);
+                writer.append("Forms filled in: " + MultiStateFormFillFactory.numInvokations);
+                long tfinish=    System.nanoTime();
+                writer.append("Time " + (tfinish-tstart));
                 // close the output file
                 writer.close();
             }catch(Exception ex){
                 logger.fatal(ex);
                 return;
             }
-        }while(it.hasNext() /*&& stateChangingSpikes.size() == 0*/);
+
+        }while(it.hasNext() && stateChangingSpikes.size() == 0);
         WebAppProperties.getInstance().getTaskManager().terminate();
         WebAppProperties.getInstance().getTaskManager().waitForFinish();
         System.out.print(WebAppProperties.getInstance().getUcGraph());
         if( stateChangingSpikes.size() != 0)
             logger.fatal("State-changing spikes were found!");
+
         WebAppProperties.getInstance().getUcGraph().writeToFile("report/usecases.dot");
         try{
             //Output the XML

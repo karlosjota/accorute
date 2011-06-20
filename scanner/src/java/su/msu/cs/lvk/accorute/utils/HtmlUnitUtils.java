@@ -40,11 +40,11 @@ public class HtmlUnitUtils {
                 String name = input.getNameAttribute();
                 controllableFieldNames.add(name);
             }
-            //1.5 type=hidden
+            /*
             else if(type.equalsIgnoreCase("hidden")){
                 String name = input.getNameAttribute();
                 controllableFieldNames.add(name);
-            }
+            }*/
         }
 
         //selects

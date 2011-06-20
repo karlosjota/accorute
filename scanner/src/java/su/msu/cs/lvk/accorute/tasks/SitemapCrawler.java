@@ -89,7 +89,7 @@ public class SitemapCrawler extends Task implements Callback0{
                         siteMap.addEdge(
                                 siteMap.getNodeByID(fromNodeID),
                                 siteMap.getNodeByID(nId),
-                                new CorrespondentActions(chain,acts.getDomActions() ),
+                                new CorrespondentActions(acts.getHttpActions(),acts.getDomActions() ),
                                 c
                         );
                     }

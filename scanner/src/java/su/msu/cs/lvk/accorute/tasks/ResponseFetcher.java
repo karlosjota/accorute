@@ -27,6 +27,7 @@ import java.util.concurrent.Semaphore;
  */
 public class ResponseFetcher extends Task {
     final private HttpAction action;
+    static public int numInvokations = 0;
     final private EntityID contextID;
     private Conversation res;
     private boolean updateCreds = true;
@@ -47,6 +48,7 @@ public class ResponseFetcher extends Task {
     }
 
     protected void start() {
+        numInvokations++;
         setSuccessful(false);
         WebAppUser u = WebAppProperties.getInstance().getUserService().getUserByID(
                 WebAppProperties.getInstance().getContextService().getContextByID(contextID).getUserID()

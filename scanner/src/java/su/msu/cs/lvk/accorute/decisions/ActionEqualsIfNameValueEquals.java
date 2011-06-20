@@ -33,7 +33,9 @@ public class ActionEqualsIfNameValueEquals implements ActionEqualityDecision{
         }
         return null;
     }
-    public boolean ActionEquals(HttpAction a, HttpAction b) {
+
+    private boolean doCheckEquality(HttpAction a, HttpAction b, boolean checkID){
+
         //TODO: indeed very simple and incomplete
         List<ActionParameter> aParams = a.getActionParameters();
         List<ActionParameter> bParams = b.getActionParameters();
@@ -85,11 +87,13 @@ public class ActionEqualsIfNameValueEquals implements ActionEqualityDecision{
                             bVal += "/";
                     }
                 }
-                Matcher idNameMatcher = WebAppProperties.getInstance().getIdParamNameRegex().matcher(name);
-                Matcher aValMatcher = WebAppProperties.getInstance().getIdParamValueRegex().matcher(aVal);
-                Matcher bValMatcher = WebAppProperties.getInstance().getIdParamValueRegex().matcher(bVal);
-                if(idNameMatcher.matches() && aValMatcher.matches() && bValMatcher.matches() )
-                    continue;
+                if(!checkID){
+                    Matcher idNameMatcher = WebAppProperties.getInstance().getIdParamNameRegex().matcher(name);
+                    Matcher aValMatcher = WebAppProperties.getInstance().getIdParamValueRegex().matcher(aVal);
+                    Matcher bValMatcher = WebAppProperties.getInstance().getIdParamValueRegex().matcher(bVal);
+                    if(idNameMatcher.matches() && aValMatcher.matches() && bValMatcher.matches() )
+                        continue;
+                }
                 if(!aVal.equals(bVal)){
                     logger.trace( a + " != " +b +" because of " + name);
                     return false;
@@ -97,5 +101,11 @@ public class ActionEqualsIfNameValueEquals implements ActionEqualityDecision{
             }
         }
         return true;
+    }
+    public boolean ActionEquals(HttpAction a, HttpAction b){
+        return doCheckEquality(a, b, true);
+    }
+    public boolean ActionEqualsIgnoreIdentifiers(HttpAction a, HttpAction b) {
+        return doCheckEquality(a, b, false);
     }
 }

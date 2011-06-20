@@ -133,12 +133,12 @@ public class Sitemap {
             out.write("\tnode_"+entryNode.getNodeID().getId().toString()
                     + " [shape = record, style = filled, color = green, label = start];\n"
             );
-            out.write("\tnode_"+exitNode.getNodeID().getId().toString()
+            /*out.write("\tnode_"+exitNode.getNodeID().getId().toString()
                     + " [shape = record, style=filled, color = blue, label = \"state change\" ];\n"
             );
             out.write("\tnode_"+invalidNode.getNodeID().getId().toString()
                     + " [shape = record, style=filled, color = red, label = invalid ];\n"
-            );
+            );*/
             out.write("\tnode [shape = point, width = 0.4];\n");
             int i=0;
             final Map<String, String> labelNameLabelString = new HashMap<String,String>();
@@ -150,9 +150,15 @@ public class Sitemap {
                 String lblName;
                 if(!labelNameLabelString.containsKey(lblStr+"->"+id2)){
                     lblName = "label_"+i;
-                    out.write(lblName +" [ shape=record, label = \""+ lblStr + "\" ];\n");
+                    if(edge.getV2() == invalidNode){
+                        out.write(lblName +" [ shape=record, label = \""+ lblStr + "\", style=filled, color=red ];\n");
+                    }else if(edge.getV2() == exitNode){
+                        out.write(lblName +" [ shape=record, label = \""+ lblStr + "\", style=filled, color=lightblue ];\n");
+                    }else{
+                        out.write(lblName +" [ shape=record, label = \""+ lblStr + "\" ];\n");
+                        out.write(lblName+" -> "+"node_"+id2+" [arrowhead=vee];\n");
+                    }
                     labelNameLabelString.put(lblStr+"->"+id2, lblName);
-                    out.write(lblName+" -> "+"node_"+id2+" [arrowhead=vee];\n");
                     i++;
                 }else{
                     lblName = labelNameLabelString.get(lblStr+"->"+id2);
@@ -226,6 +232,16 @@ public class Sitemap {
             List<HttpAction> acts =  e.getLabel().getHttpActions();
             if(acts.size() != 0){
                 if(WebAppProperties.getInstance().getAcEqDec().ActionEquals(acts.get(0), act)){
+                    return e;
+                }
+            }
+        }
+        edges = actionDepGraph.edgeSet().iterator();
+        while (edges.hasNext()){
+            SitemapEdge e = edges.next();
+            List<HttpAction> acts =  e.getLabel().getHttpActions();
+            if(acts.size() != 0){
+                if(WebAppProperties.getInstance().getAcEqDec().ActionEqualsIgnoreIdentifiers(acts.get(0), act)){
                     return e;
                 }
             }

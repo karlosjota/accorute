@@ -21,6 +21,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Matcher;
 
 /**
  * Created by IntelliJ IDEA.
@@ -207,6 +208,11 @@ public class SimpleRCD extends RequestComposerDecomposer{
             throw new RuntimeException("decideActionMeaning: location cannot be null");
         if(loc == WebAppProperties.getInstance().getDynTokenLoc(name))
             return WebAppProperties.getInstance().getDynTokenMeaning(name);
+        Matcher idNameMatcher = WebAppProperties.getInstance().getIdParamNameRegex().matcher(name);
+        if(idNameMatcher.matches()){
+            return ActionParameterMeaning.IDENTIFIER;
+        }
+
         switch(loc){
             case BODY:{
                 if(uControllable.contains(name))

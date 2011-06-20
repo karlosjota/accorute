@@ -9,9 +9,9 @@ package su.msu.cs.lvk.accorute.http.constants;
  */
 public enum ActionParameterMeaning {
     /**
-     * Part of the action identifier.
+     * Changing identifier
      */
-    ACTIONIDENTIFIER,
+    IDENTIFIER,
 
     /**
      * E.g. username,password - never change

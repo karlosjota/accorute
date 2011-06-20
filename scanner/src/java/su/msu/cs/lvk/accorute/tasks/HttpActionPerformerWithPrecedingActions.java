@@ -37,7 +37,38 @@ public class HttpActionPerformerWithPrecedingActions extends Task{
     public Object getResult() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
-
+    private boolean hasExactMatchingIdentifiers(HttpAction a, List<HttpAction> templates){
+        List<ActionParameter> aParam = a.getActionParameters();
+        for(HttpAction b: templates){
+            List<ActionParameter> bParam = b.getActionParameters();
+            ListIterator<ActionParameter> it = aParam.listIterator();
+            boolean exact_match = true;
+            while(it.hasNext()){
+                ActionParameter param = it.next();
+                String pName = param.getName();
+                Pattern nameRegex = WebAppProperties.getInstance().getIdParamNameRegex();
+                Pattern valRegex = WebAppProperties.getInstance().getIdParamValueRegex();
+                if(!nameRegex.matcher(pName).matches() || !valRegex.matcher(param.getValue()).matches())
+                    continue;
+                boolean found = false;
+                boolean matched = false;
+                for(ActionParameter p: bParam){
+                    if(p.getName().equals(pName)){
+                        found = true;
+                        matched = p.getValue().equals(param.getValue());
+                        break;
+                    }
+                }
+                if(!found || !matched){
+                    exact_match = false;
+                    break;
+                }
+            }
+            if(exact_match)
+                return true;
+        }
+        return false;
+    }
     private void fixActionIdentifiers(HttpAction a, HttpAction b){
         List<ActionParameter> aParam = a.getActionParameters();
         List<ActionParameter> bParam = b.getActionParameters();
@@ -100,7 +131,9 @@ public class HttpActionPerformerWithPrecedingActions extends Task{
             setSuccessful(false);
             return;
         }
-        fixActionIdentifiers(act,e.getLabel().getHttpActions().get(0));
+        if(!hasExactMatchingIdentifiers(act,e.getLabel().getHttpActions())){
+            fixActionIdentifiers(act,e.getLabel().getHttpActions().get(0));
+        }
         Task task = new HtmlElementActionPerformer(
                     taskManager,
                     act,

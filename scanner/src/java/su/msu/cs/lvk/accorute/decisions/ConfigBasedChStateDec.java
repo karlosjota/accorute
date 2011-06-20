@@ -16,7 +16,7 @@ public class ConfigBasedChStateDec implements ActionChangesStateDecision{
     public boolean changesState(HttpAction action) {
         Collection<HttpAction> stch = WebAppProperties.getInstance().getStateChangingHttpActions();
         for(HttpAction t: stch){
-            if(WebAppProperties.getInstance().getAcEqDec().ActionEquals(t,action)){
+            if(WebAppProperties.getInstance().getAcEqDec().ActionEqualsIgnoreIdentifiers(t,action)){
                 return true;
             }
         }

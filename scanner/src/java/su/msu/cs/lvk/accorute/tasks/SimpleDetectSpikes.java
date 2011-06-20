@@ -17,6 +17,9 @@ import java.util.*;
  * To change this template use File | Settings | File Templates.
  */
 public class SimpleDetectSpikes extends Task{
+    public static int numInvokations = 0;
+    public static int numChecks = 0;
+    public static int numRawSpikes = 0;
     private final EntityID ctxID1;
     private final EntityID ctxID2;
     private final Set<HttpAction>  res = new HashSet<HttpAction>();
@@ -50,11 +53,15 @@ public class SimpleDetectSpikes extends Task{
                         }
                     }
             );
+
+            numChecks++;
             waitForTask(performer);
             if(performer.isSuccessful()){
                 Conversation conv = convs.get(0);
-                if(WebAppProperties.getInstance().getAgd().accessWasGranted(map.get(act), conv))
+                if(WebAppProperties.getInstance().getAgd().accessWasGranted(map.get(act), conv)){
                     successful = true;
+                    numRawSpikes++;
+                }
             }
             if(successful){
                 spikes.add(act);
@@ -65,6 +72,7 @@ public class SimpleDetectSpikes extends Task{
 
     @Override
     protected void start() {
+        numInvokations++;
         Sitemap s1 = WebAppProperties.getInstance().getSitemapService().getSitemapForContext(ctxID1);
         Sitemap s2 = WebAppProperties.getInstance().getSitemapService().getSitemapForContext(ctxID2);
         Map<HttpAction,Conversation> map1 = s1.getValidHttpActions();
@@ -81,7 +89,7 @@ public class SimpleDetectSpikes extends Task{
             Iterator<HttpAction> it2 = test12.iterator();
             while(it2.hasNext()){
                 HttpAction act2 = it2.next();
-                if(WebAppProperties.getInstance().getAcEqDec().ActionEquals(act,act2)){
+                if(WebAppProperties.getInstance().getAcEqDec().ActionEquals(act,act2)){   //TODO: ignore or not?
                     toDelete.add(act2);
                     break;
                 }

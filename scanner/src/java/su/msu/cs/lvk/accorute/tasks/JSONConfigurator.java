@@ -75,7 +75,7 @@ public class JSONConfigurator extends Task {
                         Usually, though, it should be thought about as usercontrollable
                      */
 
-                    if(eltype.equalsIgnoreCase("submit") /* ||eltype.equalsIgnoreCase("hidden")*/ ){
+                    if(eltype.equalsIgnoreCase("submit") ||eltype.equalsIgnoreCase("hidden") ){
                         mean = ActionParameterMeaning.AUTOMATIC;
                     }else{
                         mean = ActionParameterMeaning.USERCONTROLLABLE;

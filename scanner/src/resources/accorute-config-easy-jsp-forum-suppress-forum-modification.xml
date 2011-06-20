@@ -89,11 +89,16 @@
         <constructor-arg value=".*page=edit_forums.*save=Save.*" />
         <constructor-arg type="int" value="40"/> <!-- MuLTILINE and DOTALL-->
     </bean>
+    <bean id="suppressForumAssign" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
+        <constructor-arg value=".*page=edit_forums.*assign=Assign.*" />
+        <constructor-arg type="int" value="40"/> <!-- MuLTILINE and DOTALL-->
+    </bean>
     <bean id="suppr" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.PatternBasedSuppress">
         <constructor-arg>
             <list>
                 <ref bean="suppressForumDelete"/>
                 <ref bean="suppressForumSave"/>
+                <ref bean="suppressForumAssign"/>
             </list>
         </constructor-arg>
     </bean>

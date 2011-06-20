@@ -10,5 +10,6 @@ import su.msu.cs.lvk.accorute.http.model.HttpAction;
  * To change this template use File | Settings | File Templates.
  */
 public interface ActionEqualityDecision {
+    public boolean ActionEqualsIgnoreIdentifiers(HttpAction a, HttpAction b);
     public boolean ActionEquals(HttpAction a, HttpAction b);
 }

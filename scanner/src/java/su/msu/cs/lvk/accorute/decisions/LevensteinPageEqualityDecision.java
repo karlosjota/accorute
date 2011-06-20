@@ -17,6 +17,6 @@ public class LevensteinPageEqualityDecision implements HtmlPageEqualityDecision{
         String s2 = b.asXml()+" ";
         int distance = LevenshteinDistance.getLevenshteinDistance(s1,s2);
         int avglen = (s1.length() + s2.length())/2;
-        return ((double) distance / (double)avglen) < 0.005 ;
+        return ((double) distance / (double)avglen) < 0.0000000005 ;
     }
 }
