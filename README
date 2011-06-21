@@ -29,3 +29,4 @@ The tool consists of 2 major parts:
 
  * Web application markup helper, written as a FireFox extension.
  * Web application Access Control engine tester, a standalone Java application.
+
