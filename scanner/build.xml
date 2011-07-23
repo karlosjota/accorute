@@ -18,6 +18,10 @@
         <pathelement location="${out.dir}/scanner"/>
      </path>
 
+     <manifestclasspath property="lib.list" jarfile="${basedir}/scanner.jar">
+         <classpath refid="scanner.classpath" />
+     </manifestclasspath>
+
     <!-- ivy task definitions -->
     <path id="ivy.libs">
         <fileset dir="${project.dir}/lib.ivy">
@@ -125,6 +129,10 @@
     </copy>
 
     <jar destfile="${basedir}/scanner.jar" basedir="${out.dir}">
+        <manifest>
+            <attribute name="Main-Class" value="su.msu.cs.lvk.accorute.Main"/>
+            <attribute name="Class-Path" value="${lib.list}"/>
+        </manifest>
     </jar>
 
      <delete dir="${basedir}/out"/>
