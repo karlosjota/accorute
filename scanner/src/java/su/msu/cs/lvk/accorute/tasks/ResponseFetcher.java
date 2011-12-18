@@ -5,6 +5,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.cookie.Cookie;
+import org.apache.http.client.utils.URIUtils;
 import org.apache.http.cookie.MalformedCookieException;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.SyncBasicHttpContext;
@@ -86,7 +87,8 @@ public class ResponseFetcher extends Task {
         /*} catch (HttpException e) {
             logger.error("Fatal protocol violation: " + e.getMessage());*/
         } catch (IOException e) {
-            logger.error("Fatal transport error: " + e.getMessage());
+            logger.error("Fatal transport error: ");
+            e.printStackTrace();
         }
     }
 }
