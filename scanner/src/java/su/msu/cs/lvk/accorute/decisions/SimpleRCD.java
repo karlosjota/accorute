@@ -33,11 +33,15 @@ import java.util.regex.Matcher;
 public class SimpleRCD extends RequestComposerDecomposer{
     public URL getURL(List<ActionParameter> params){
         String Query = "";
-        String proto = "http";
+        String proto = getParamByName(params,"protocol").getValue();
         String host = getParamByName(params,"host").getValue();
         int port = new Integer(getParamByName(params,"port").getValue());
         if(port == -1){
-            port = 80;
+            if(proto.equalsIgnoreCase("http")){
+                port = 80;
+            }else if(proto.equalsIgnoreCase("https")){
+                port = 443;
+            }
         }
         String path = getParamByName(params,"path").getValue();
         for(ActionParameter param: params){
@@ -165,9 +169,17 @@ public class SimpleRCD extends RequestComposerDecomposer{
                 decideActionMeaning("host",ActionParameterLocation.URL,userControllable),
                 ActionParameterDatatype.STRING)
         );
+        params.add(new ActionParameter(
+                "protocol",
+                url.getProtocol(),
+                ActionParameterLocation.URL,
+                decideActionMeaning("protocol",ActionParameterLocation.URL,userControllable),
+                ActionParameterDatatype.STRING)
+        );
         int port = url.getPort();
-        if(port < 0)
-            port = 80;
+        if(port < 0){
+            port = url.getDefaultPort();
+        }
         params.add(new ActionParameter(
                 "port",
                 Integer.toString(port),
