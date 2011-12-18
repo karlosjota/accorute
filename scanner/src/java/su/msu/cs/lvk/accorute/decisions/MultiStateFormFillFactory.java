@@ -220,10 +220,23 @@ public class MultiStateFormFillFactory implements FormFillerFactory {
                     String name = input.getNameAttribute();
                     if(user.getStaticCredentials().containsKey(name)){
                         input.setValueAttribute(user.getStaticCredentials().get(name));
-                    }else if(name.toLowerCase().contains("mail")){
-                        input.setValueAttribute("test@example.org");//TODO: terrible cludge!
-                    }else if(defaultInputText!=null){
-                        input.setValueAttribute(defaultInputText);
+                    }else{
+                        boolean gotPartial = false;
+                        for (Map.Entry<String,String> e : user.getStaticCredentials().entrySet()){
+                            String key = e.getKey();
+                            if(name.toLowerCase().contains(key.toLowerCase())){
+                                gotPartial = true;
+                                input.setValueAttribute(e.getValue());
+                                break;
+                            }
+                        }
+                        if(!gotPartial){
+                            if(name.toLowerCase().contains("mail")){
+                                input.setValueAttribute("test@example.org");//TODO: terrible cludge!
+                            }else if(defaultInputText!=null){
+                                input.setValueAttribute(defaultInputText);
+                            }
+                        }
                     }
                 }
                 //1.2 type=password
