@@ -273,7 +273,12 @@ public class Request extends Message {
         }
         if(!hashost){
             String portpart="";
-            if(url.getPort() != -1){
+            int port = url.getPort();
+            if(port == 80 && url.getProtocol().equalsIgnoreCase("http"))
+                port = -1;
+            if(port == 443 && url.getProtocol().equalsIgnoreCase("https"))
+                port = -1;
+            if(port != -1){
                 portpart = ":"+url.getPort();
             }
             res.addHeader("Host",url.getHost()+portpart);
