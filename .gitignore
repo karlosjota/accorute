@@ -16,3 +16,5 @@ scanner/scanner.jar
 *.bbl
 *.blg
 *-blx.bib
+*.swp
+*.run.xml
