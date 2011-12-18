@@ -3,7 +3,6 @@ package su.msu.cs.lvk.accorute.utils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpVersion;
 import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.params.ConnManagerParams;
 import org.apache.http.conn.params.ConnPerRoute;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.routing.HttpRoute;
@@ -17,6 +16,16 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.CoreProtocolPNames;
+import org.apache.log4j.Logger;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.security.GeneralSecurityException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 
 /**
@@ -27,32 +36,39 @@ import org.apache.http.params.CoreProtocolPNames;
  * To change this template use File | Settings | File Templates.
  */
 public class HttpClientProxyFactory {
+    private static Logger logger = Logger.getLogger(HttpClientProxyFactory.class.getName());
     public static AbstractHttpClient create(HttpHost proxy ){
-        HttpParams params = new BasicHttpParams();
-        ConnPerRoute cpr = new ConnPerRoute() {
-            public int getMaxForRoute(HttpRoute httpRoute) {
-                return 1;
-            }
-        };
-        ConnManagerParams.setMaxConnectionsPerRoute(params, cpr);
-        // Increase max total connection to 200
-        //ConnManagerParams.setMaxTotalConnections(params, 200);
-        // Increase default max connection per route to 20
-        //ConnPerRouteBean connPerRoute = new ConnPerRouteBean(20);
-        // Increase max connections for localhost:80 to 50
-        //HttpHost localhost = new HttpHost("locahost", 80);
-        //connPerRoute.setMaxForRoute(new HttpRoute(localhost), 50);
-        //ConnManagerParams.setMaxConnectionsPerRoute(params, connPerRoute);
         SchemeRegistry schemeRegistry = new SchemeRegistry();
         schemeRegistry.register(
-                new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-        schemeRegistry.register(
-                new Scheme("http", PlainSocketFactory.getSocketFactory(), 8080));
-        schemeRegistry.register(
-                new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
-        ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
-        AbstractHttpClient httpClient = new DefaultHttpClient(cm, params);
+                new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
+        try{
+            X509TrustManager tm = new X509TrustManager() {
+                public void checkClientTrusted(X509Certificate[] xcs, String string) throws CertificateException {
+                }
+
+                public void checkServerTrusted(X509Certificate[] xcs, String string) throws CertificateException {
+                }
+
+                public X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+            };
+            SSLContext tlsCtx = SSLContext.getInstance("TLS");
+            tlsCtx.init(null,new TrustManager[]{tm},null);
+            SSLSocketFactory sf = new SSLSocketFactory(
+                    tlsCtx,
+                    SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER
+            );
+            schemeRegistry.register(
+                    new Scheme("https", 443,sf));
+        }catch(GeneralSecurityException ex){
+            logger.warn("Could not init TLS! HTTPS will be unavailable");
+        }
+        ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(schemeRegistry);
+        cm.setMaxTotal(1);
+        HttpParams params = new BasicHttpParams();
         params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
+        AbstractHttpClient httpClient = new DefaultHttpClient(cm, params);
         if(proxy != null){
             httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         }
