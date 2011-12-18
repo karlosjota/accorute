@@ -80,6 +80,7 @@ public class HtmlElementActionPerformer extends Task {
     }
     private WebConnection initConn(){
         WebConnection falseWebC= new FalsifyingWebConnection(webClient){
+            final UserContext contx = WebAppProperties.getInstance().getContextService().getContextByID(ctx);
             public WebResponse getResponse(WebRequest request) throws IOException {
                 //TODO:not so easy!!!
                 wasReq = true;
@@ -96,6 +97,7 @@ public class HtmlElementActionPerformer extends Task {
                 if(tsk.isSuccessful()){
                     Conversation conv = (Conversation) tsk.getResult();
                     convs.add(conv);
+                    WebAppProperties.getInstance().getDynCredUpd().updateCredentials(contx.getUserID(),conv);
                     return conv.getResponse().genWebResponse(conv.getRequest().getURL(),0, request);
                 }
                 throw new IOException();
@@ -187,19 +189,21 @@ public class HtmlElementActionPerformer extends Task {
                 logger.error("Could not fetch responce!!!");
                 return; //no success
             }
-            Conversation conv = (Conversation) tsk.getResult();
-            convs.add(conv);
+            Conversation conver = (Conversation) tsk.getResult();
+            convs.add(conver);
             acts.add(startHttpAct);
-            URL origUrl = conv.getRequest().getURL();
+            URL origUrl = conver.getRequest().getURL();
             //1. create WebResponse from page : WebResponse(WebResponseData responseData, WebRequest request, long loadTime)
-            WebResponse resp = conv.getResponse().genWebResponse(origUrl,1,conv.getRequest().genWebRequest());
+            WebResponse resp = conver.getResponse().genWebResponse(origUrl,1,conver.getRequest().genWebRequest());
             TopLevelWindow baseWindow = (TopLevelWindow) webClient.openWindow(null,"");
             Page page = baseWindow.getEnclosedPage();
             try{
                 Page newPage=webClient.loadWebResponseInto(resp, baseWindow);
                 if(newPage instanceof HtmlPage){
                     UserContext contx = WebAppProperties.getInstance().getContextService().getContextByID(ctx);
-                    WebAppProperties.getInstance().getDynCredUpd().updateCredentials(contx.getUserID(),conv);
+                    for(Conversation conv: convs){
+                        WebAppProperties.getInstance().getDynCredUpd().updateCredentials(contx.getUserID(),conv);
+                    }
                     WebAppProperties.getInstance().getDynCredUpd().updateCredentials(contx.getUserID(),(HtmlPage)newPage);
                     callback.CallMeBack(convs,acts,(HtmlPage)newPage);
                 }else{

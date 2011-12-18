@@ -1,11 +1,11 @@
 package su.msu.cs.lvk.accorute.tasks;
 
-import com.gargoylesoftware.htmlunit.Page;
-import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.*;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.util.FalsifyingWebConnection;
 import org.apache.http.HttpHost;
 import su.msu.cs.lvk.accorute.WebAppProperties;
 import su.msu.cs.lvk.accorute.decisions.FormFiller;
@@ -15,6 +15,8 @@ import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -29,6 +31,10 @@ public class FormBasedAuthTask extends Task {
     private final URL url;
     private final int formIndex;
     private final String submitXPath;
+    final private WebClient webClient = new WebClient(BrowserVersion.FIREFOX_3_6);
+    private Collection<String> userControllableFormFields = new ArrayList<String>();
+    private final ArrayList<Conversation> convs = new ArrayList<Conversation>();
+
 
     public FormBasedAuthTask(EntityID ctxID, TaskManager t, URL url, int formIndex, String submitXPath){
         super(t);
@@ -36,6 +42,7 @@ public class FormBasedAuthTask extends Task {
         this.url = url;
         this.formIndex = formIndex;
         this.submitXPath = submitXPath;
+        initConn();
     }
     public FormBasedAuthTask(EntityID ctxID, TaskManager t, URL url, int formIndex){
         super(t);
@@ -43,8 +50,34 @@ public class FormBasedAuthTask extends Task {
         this.url = url;
         this.formIndex = formIndex;
         this.submitXPath = null;
+        initConn();
     }
-
+    private WebConnection initConn(){
+        WebConnection falseWebC= new FalsifyingWebConnection(webClient){
+            final EntityID uid = WebAppProperties.getInstance().getContextService().getContextByID(ctxID).getUserID();
+            public WebResponse getResponse(WebRequest request) throws IOException {
+                //TODO:not so easy!!!
+                List<ActionParameter> param = WebAppProperties.getInstance().getRcd().decompose(
+                        request,
+                        userControllableFormFields
+                );
+                HttpAction act = new HttpAction("tmp", param);
+                logger.trace("Will request HttpAction " + act);
+                ResponseFetcher tsk = new ResponseFetcher(taskManager, act, ctxID);
+                waitForTask(tsk);
+                logger.trace("got responce from fetcher");
+                if(tsk.isSuccessful()){
+                    Conversation conv = (Conversation) tsk.getResult();
+                    convs.add(conv);
+                    WebAppProperties.getInstance().getDynCredUpd().updateCredentials(uid,conv);
+                    return conv.getResponse().genWebResponse(conv.getRequest().getURL(),0, request);
+                }
+                throw new IOException();
+            }
+        };
+        webClient.setWebConnection(falseWebC);
+        return falseWebC;
+    }
     @Override
     public Object getResult() {
         return null;
@@ -53,19 +86,33 @@ public class FormBasedAuthTask extends Task {
     @Override
     protected void start() {
         setSuccessful(false);
-
-        WebClient client = new WebClient();
-        client.setJavaScriptEnabled(true);
-        client.setThrowExceptionOnFailingStatusCode(false);
-        client.setThrowExceptionOnScriptError(false);
-        HttpHost pr = WebAppProperties.getInstance().getProxy();
-        if(pr != null){
-            client.getProxyConfig().setProxyHost(pr.getHostName());
-            client.getProxyConfig().setProxyPort(pr.getPort());
-        }
+        webClient.setJavaScriptEnabled(true);
+        webClient.setThrowExceptionOnFailingStatusCode(false);
+        webClient.setThrowExceptionOnScriptError(false);
+        webClient.setConfirmHandler(
+                new  ConfirmHandler(){
+                    public boolean handleConfirm(Page page, String message) {
+                        return true;
+                    }
+                }
+        );
+        webClient.setAlertHandler(
+                new AlertHandler() {
+                    public void handleAlert(Page page, String message) {
+                        return;
+                    }
+                }
+        );
+        webClient.setPromptHandler(
+                new PromptHandler() {
+                    public String handlePrompt(Page page, String message) {
+                        return "test";
+                    }
+                }
+        );
         try{
             logger.trace("Login task spawned");
-            Page lPage = client.getPage(url);
+            Page lPage = webClient.getPage(url);
             if(!(lPage instanceof HtmlPage)){
                 logger.error("Not a html page?!");
                 return;
@@ -98,15 +145,11 @@ public class FormBasedAuthTask extends Task {
                 return;
             }
             HtmlPage newPage = (HtmlPage) p;
-            WebAppProperties.getInstance().getDynCredUpd().updateCredentials(
-                    WebAppProperties.getInstance().getContextService().getContextByID(ctxID).getUserID(),
-                    (HtmlPage)newPage
-            );
-
             logger.trace("Login task finished successfully");
             setSuccessful(true);
         } catch (IOException e) {
             logger.error("Fatal transport error: " + e.getMessage());
+            e.printStackTrace();
             return;
         }
     }
