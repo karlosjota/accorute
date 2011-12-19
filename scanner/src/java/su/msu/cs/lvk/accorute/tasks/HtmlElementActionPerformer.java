@@ -75,7 +75,7 @@ public class HtmlElementActionPerformer extends Task {
         ctx = ctxID;
         callback = cb;
         falseWebConn = initConn();
-        page = HtmlUnitUtils.clonePage(pg,webClient.getCurrentWindow());
+        page = HtmlUnitUtils.clonePage(pg,webClient.getCurrentWindow(),ctx);
         startHttpAct = null;
     }
     private WebConnection initConn(){

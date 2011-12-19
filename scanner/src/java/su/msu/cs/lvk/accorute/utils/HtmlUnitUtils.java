@@ -1,13 +1,19 @@
 package su.msu.cs.lvk.accorute.utils;
 
-import com.gargoylesoftware.htmlunit.WebResponse;
-import com.gargoylesoftware.htmlunit.WebWindow;
+import com.gargoylesoftware.htmlunit.*;
 import com.gargoylesoftware.htmlunit.html.*;
+import com.gargoylesoftware.htmlunit.util.FalsifyingWebConnection;
 import org.w3c.dom.NamedNodeMap;
+import su.msu.cs.lvk.accorute.WebAppProperties;
+import su.msu.cs.lvk.accorute.http.model.*;
+import su.msu.cs.lvk.accorute.tasks.ResponseFetcher;
 
+import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
+import org.apache.log4j.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,6 +23,8 @@ import java.util.*;
  * To change this template use File | Settings | File Templates.
  */
 public class HtmlUnitUtils {
+
+    protected static Logger logger = Logger.getLogger(HtmlUnitUtils.class.getName());
     public static Collection<String> getUserControllableFormFields(HtmlForm form){
         Set<String> controllableFieldNames = new HashSet<String>();
         //1. input
@@ -64,11 +72,56 @@ public class HtmlUnitUtils {
         }
         return controllableFieldNames;
     }
-    public static HtmlPage clonePage(HtmlPage other, WebWindow w){
+    public static HtmlPage clonePage(final HtmlPage other,final WebWindow w, final EntityID ctx){
         try{
+            //XXX: DIRTYDIRTYDIRTY reflection
+            /*
             Method cl = other.getClass().getDeclaredMethod("clone",null);
             cl.setAccessible(true);
             HtmlPage p = (HtmlPage)cl.invoke(other,null);
+            p.setEnclosingWindow(w);
+            w.setEnclosedPage(p);
+            Field field = SgmlPage.class.getDeclaredField("webClient_");
+            field.setAccessible(true);
+            field.set(p, w.getWebClient());
+            if(other.getFocusedElement()!=null){
+                String focusPath = other.getFocusedElement().getCanonicalXPath();
+                p.setFocusedElement(p.<HtmlElement>getFirstByXPath(focusPath));
+            } */
+            WebClient webClient = w.getWebClient();
+            WebConnection oldWebConnection = webClient.getWebConnection();
+            WebConnection falseWebC= new FalsifyingWebConnection(webClient){
+                final UserContext contx = WebAppProperties.getInstance().getContextService().getContextByID(ctx);
+                public WebResponse getResponse(WebRequest request) throws IOException {
+                    List<ActionParameter> param = WebAppProperties.getInstance().getRcd().decompose(
+                            request
+                    );
+                    HttpAction act = new HttpAction("tmp", param);
+                    logger.trace("Intercepted action on page clone: " + act);
+                    Request req = WebAppProperties.getInstance().getRcd().compose(param, WebAppProperties.getInstance().getContextService().getContextByID(ctx));
+                    Collection<Conversation> convs = WebAppProperties.getInstance().getConversationService().getContextConversations(ctx);
+                    Conversation res = null;
+                    for(Conversation conv: convs){
+                        //WebAppProperties.getInstance().getRcd().
+                        List<ActionParameter> paramConv = WebAppProperties.getInstance().getRcd().decompose(
+                                conv.getRequest().genWebRequest()
+                        );
+                        HttpAction actConv = new HttpAction("tmp", paramConv);
+                        if(WebAppProperties.getInstance().getAcEqDec().ActionEquals(act, actConv)){
+                            res = conv;
+                            break;
+                        }
+                    }
+                    if(res == null){
+                        throw new IOException("Shit request on page cloning!!!");
+                    }
+                    return res.getResponse().genWebResponse(res.getRequest().getURL(),0, request);
+                }
+            };
+            webClient.setWebConnection(falseWebC);
+            PageCreator creator = w.getWebClient().getPageCreator();
+            HtmlPage p = (HtmlPage) creator.createPage(other.getWebResponse(),w);
+            webClient.setWebConnection(oldWebConnection);
             return p;
         }catch(Exception ex){
             HtmlPage p = new HtmlPage(other.getUrl(), other.getWebResponse(), w);

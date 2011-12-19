@@ -2,6 +2,7 @@ package su.msu.cs.lvk.accorute;
 
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import su.msu.cs.lvk.accorute.http.model.EntityID;
 import su.msu.cs.lvk.accorute.utils.HtmlUnitUtils;
 
 import java.io.IOException;
@@ -19,7 +20,7 @@ public class clonePage {
         WebClient w1 = new WebClient();
         try{
             HtmlPage p = w.getPage("http://127.0.0.1/accorute_tests/JS_menu_2/demo1/index.html");
-            HtmlPage p3 = HtmlUnitUtils.clonePage(p,w1.getCurrentWindow());
+            HtmlPage p3 = HtmlUnitUtils.clonePage(p,w1.getCurrentWindow(), new EntityID());
             p3.executeJavaScript("menu;");
         }catch(IOException e){
             System.out.println("FUCK!");

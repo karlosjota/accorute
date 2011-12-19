@@ -45,10 +45,6 @@ public class HtmlPageParser extends Task implements DomChangeListener {
         ctxID = ctx;
         logger.trace("HtmlPageParser created");
         webClient = new WebClient(BrowserVersion.FIREFOX_3_6);
-        //TODO: requests here may follow, need to intercept and add cookies.
-        //TODO: Still, content loaded on load (usually js and css, is almost always not protected by cookies.
-        page = HtmlUnitUtils.clonePage(_page,webClient.getCurrentWindow());
-        final HtmlPageParser thisParser = this;
         falseWebConn = new FalsifyingWebConnection(webClient){
             public WebResponse getResponse(WebRequest request) throws IOException {
                 wasRequest = true;
@@ -93,6 +89,9 @@ public class HtmlPageParser extends Task implements DomChangeListener {
                     }
                 }
         );
+        //TODO: requests here may follow, need to intercept and add cookies.
+        //TODO: Still, content loaded on load (usually js and css, is almost always not protected by cookies.
+        page = HtmlUnitUtils.clonePage(_page,webClient.getCurrentWindow(),ctxID);
     }
     private void tryClick(HtmlElement htmlElement){
 
@@ -108,7 +107,7 @@ public class HtmlPageParser extends Task implements DomChangeListener {
         WebWindow cur_window = webClient.getCurrentWindow();
 
         WebWindow w = webClient.openWindow(null,"tmpWindow");
-        tmpPage =  HtmlUnitUtils.clonePage(page,w);
+        tmpPage =  HtmlUnitUtils.clonePage(page,w,ctxID);
         //get corresponding element...
         HtmlElement el = tmpPage.getFirstByXPath(path);
         wasRequest = false;
