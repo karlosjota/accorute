@@ -36,12 +36,8 @@ public class SimpleRCD extends RequestComposerDecomposer{
         String proto = getParamByName(params,"protocol").getValue();
         String host = getParamByName(params,"host").getValue();
         int port = new Integer(getParamByName(params,"port").getValue());
-        if(port == -1){
-            if(proto.equalsIgnoreCase("http")){
-                port = 80;
-            }else if(proto.equalsIgnoreCase("https")){
-                port = 443;
-            }
+        if(proto.equalsIgnoreCase("http") && port == 80 || proto.equalsIgnoreCase("https") && port == 443){
+            port = -1;
         }
         String path = getParamByName(params,"path").getValue();
         for(ActionParameter param: params){
@@ -56,12 +52,20 @@ public class SimpleRCD extends RequestComposerDecomposer{
             }catch(UnsupportedEncodingException ueex){}
         }
         try{
-            return new URL(
-                    proto,
-                    host,
-                    port,
-                    path + ((Query.equals("")) ? "":("?"+Query.substring(0,Query.length()-1)))
+            if(port != -1){
+                return new URL(
+                        proto,
+                        host,
+                        port,
+                        path + ((Query.equals("")) ? "":("?"+Query.substring(0,Query.length()-1)))
                 );
+            }else{
+                return new URL(
+                        proto,
+                        host,
+                        path + ((Query.equals("")) ? "":("?"+Query.substring(0,Query.length()-1)))
+                );
+            }
         }catch(final MalformedURLException muex){
             return null;
         }
@@ -75,7 +79,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
         if(m == HttpMethod.POST){
             isPost = true;
         }else if(m!=HttpMethod.GET){
-            throw new NotImplementedException("Methods other than get and post are not supported");  
+            throw new NotImplementedException("Methods other than get and post are not supported");
         }
         if(isPost){
             String body = r.getRequestBody();
@@ -147,8 +151,12 @@ public class SimpleRCD extends RequestComposerDecomposer{
                 cookies.add (new BasicClientCookie(param.getName(), param.getValue()));
             }
         }
-        req.setCookies(new CookieDescriptor(cookies,new CookieOrigin(url.getHost(),url.getPort(),"",false), "Cookie", EntityID.NOT_INITIALIZED));
-        if(!Body.equals("")){      
+        if(url.getPort() != -1){
+            req.setCookies(new CookieDescriptor(cookies,new CookieOrigin(url.getHost(),url.getPort(),"",false), "Cookie", EntityID.NOT_INITIALIZED));
+        }else{
+            req.setCookies(new CookieDescriptor(cookies,new CookieOrigin(url.getHost(),url.getDefaultPort(),"",false), "Cookie", EntityID.NOT_INITIALIZED));
+        }
+        if(!Body.equals("")){
             req.setHeader("Content-Type", "application/x-www-form-urlencoded");
             req.setMethod("POST");
             Body = Body.substring(0,Body.length()-1);
@@ -193,11 +201,11 @@ public class SimpleRCD extends RequestComposerDecomposer{
             for(String pair : ar){
                 String [] nameValue = pair.split("=",2);
                 params.add(new ActionParameter(
-                    URLDecoder.decode(nameValue[0]),
-                    URLDecoder.decode( (nameValue.length>1)?nameValue[1]:""),
-                    ActionParameterLocation.QUERY,
-                    decideActionMeaning(URLDecoder.decode(nameValue[0]),ActionParameterLocation.QUERY,userControllable),
-                    ActionParameterDatatype.STRING)
+                        URLDecoder.decode(nameValue[0]),
+                        URLDecoder.decode( (nameValue.length>1)?nameValue[1]:""),
+                        ActionParameterLocation.QUERY,
+                        decideActionMeaning(URLDecoder.decode(nameValue[0]),ActionParameterLocation.QUERY,userControllable),
+                        ActionParameterDatatype.STRING)
                 );
             }
         }
@@ -262,7 +270,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
         }
         // TODO: $Version, $Path etc. are not supported yet!
         return params;
-        
+
     }
 
 }
