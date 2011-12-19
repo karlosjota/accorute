@@ -31,6 +31,8 @@ public class CollectionCookieService implements CookieService{
         Collection<ContextCookie> result = new ArrayList<ContextCookie>();
         String path = url.getPath();
         String host = url.getHost();
+        if(path.length() == 0)
+            path = "/";
         for(ContextCookie cook : cookies){
             String pth = cook.getPath();
             String hst = cook.getDomain();
