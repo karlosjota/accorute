@@ -26,6 +26,11 @@ public class CollectionConversationService implements ConversationService{
         conversation.setId(id);
         database.put(ctxID,conversation);
     }
+
+    public void clearContextConversations(EntityID ctxID) {
+        database.remove(ctxID);
+    }
+
     public Conversation getFirstConversationInContext(EntityID ctxID){
         Collection<Conversation> db = database.getCollection(ctxID);
         Conversation first = null;
@@ -45,5 +50,9 @@ public class CollectionConversationService implements ConversationService{
             }
         }
         return last;
+    }
+
+    public Collection<Conversation> getContextConversations(EntityID ctxID) {
+        return database.getCollection(ctxID);
     }
 }

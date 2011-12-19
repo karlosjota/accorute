@@ -83,6 +83,7 @@ public class ResponseFetcher extends Task {
                 res = new Conversation(req,resp);
                 WebAppProperties.getInstance().getDynCredUpd().updateCredentials(u.getUserID(),res);
             }*/
+            WebAppProperties.getInstance().getConversationService().addConversationToContext(contextID, res);
             setSuccessful(true);
         /*} catch (HttpException e) {
             logger.error("Fatal protocol violation: " + e.getMessage());*/

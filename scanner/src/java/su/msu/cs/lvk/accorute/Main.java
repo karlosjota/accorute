@@ -143,6 +143,8 @@ public class Main{
             for(Role r: WebAppProperties.getInstance().getRoles()){
                 EntityID ctxID1 = users1.get(r.getRoleName());
                 EntityID ctxID2 = users2.get(r.getRoleName());
+                WebAppProperties.getInstance().getConversationService().clearContextConversations(ctxID1);
+                WebAppProperties.getInstance().getConversationService().clearContextConversations(ctxID2);
                 taskman.addTask(new SitemapCrawler(taskman,startAct,ctxID1));
                 taskman.addTask(new SitemapCrawler(taskman,startAct,ctxID2));
             }
