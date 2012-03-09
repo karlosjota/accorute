@@ -40,6 +40,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
             port = -1;
         }
         String path = getParamByName(params,"path").getValue();
+        ActionParameter frag =  getParamByName(params,"frag");
         for(ActionParameter param: params){
             try{
                 if(param.getLocation() == ActionParameterLocation.QUERY){
@@ -57,13 +58,13 @@ public class SimpleRCD extends RequestComposerDecomposer{
                         proto,
                         host,
                         port,
-                        path + ((Query.equals("")) ? "":("?"+Query.substring(0,Query.length()-1)))
+                        path + ((Query.equals("")) ? "":("?"+Query.substring(0,Query.length()-1))) + ((frag != null )?"#"+frag.getValue():"")
                 );
             }else{
                 return new URL(
                         proto,
                         host,
-                        path + ((Query.equals("")) ? "":("?"+Query.substring(0,Query.length()-1)))
+                        path + ((Query.equals("")) ? "":("?"+Query.substring(0,Query.length()-1)))  + ((frag != null )?"#"+frag.getValue():"")
                 );
             }
         }catch(final MalformedURLException muex){
@@ -169,7 +170,16 @@ public class SimpleRCD extends RequestComposerDecomposer{
     }
     public List<ActionParameter> decomposeURL(URL url, Collection<String> userControllable) {
         ArrayList<ActionParameter> params = new ArrayList<ActionParameter>();
-
+        if(url.getRef() != null){
+            params.add(new ActionParameter(
+                    "frag",
+                    url.getRef(),
+                    ActionParameterLocation.URL,
+                    ActionParameterMeaning.USERCONTROLLABLE,
+                    ActionParameterDatatype.STRING
+                )
+            );
+        }
         params.add(new ActionParameter(
                 "host",
                 url.getHost(),
