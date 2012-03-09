@@ -8,6 +8,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 import su.msu.cs.lvk.accorute.RBAC.Role;
 import su.msu.cs.lvk.accorute.RBAC.SimpleRBACRole;
 import su.msu.cs.lvk.accorute.http.model.*;
+import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 import su.msu.cs.lvk.accorute.tasks.HtmlElementActionPerformer;
 import su.msu.cs.lvk.accorute.tasks.HtmlPageParser;
@@ -70,31 +71,36 @@ public class PageParserTest {
         WebAppProperties.getInstance().getContextService().addOrUpdateContext(u1Ctx);
         final TaskManager taskman = WebAppProperties.getInstance().getTaskManager();
         new Thread(taskman).start();
+        HtmlPage parseRoot = null;
         if(needAuth){
-            taskman.addTask(WebAppProperties.getInstance().getAuthTaskFactory().genContextedTask(u1Ctx.getContextID(),taskman));
+            Task authTask = WebAppProperties.getInstance().getAuthTaskFactory().genContextedTask(u1Ctx.getContextID(), taskman);
+            taskman.addTask(authTask);
             taskman.waitForEmptyQueue();
-        }
-        //Fetch the page
-        HttpAction startAct = new HttpAction("initial",WebAppProperties.getInstance().getRcd().decomposeURL(
-                pageToParse
-        ));
-        final List<CorrespondentActions> outRequests = new ArrayList<CorrespondentActions>();
-        final ArrayList<HtmlPage> pages = new ArrayList<HtmlPage>();
-        final HtmlElementActionPerformer tsk = new HtmlElementActionPerformer(
-                taskman,
-                startAct,
-                u1Ctx.getContextID(),
-                new Callback3<ArrayList<Conversation>, ArrayList<HttpAction>, HtmlPage>(){
-                    public void CallMeBack(ArrayList<Conversation> c , ArrayList<HttpAction> a, HtmlPage p){
-                        pages.add(p);
+            parseRoot = (HtmlPage) authTask.getResult();
+        }else{
+            //Fetch the page
+            HttpAction startAct = new HttpAction("initial",WebAppProperties.getInstance().getRcd().decomposeURL(
+                    pageToParse
+            ));
+            final ArrayList<HtmlPage> pages = new ArrayList<HtmlPage>();
+            final HtmlElementActionPerformer tsk = new HtmlElementActionPerformer(
+                    taskman,
+                    startAct,
+                    u1Ctx.getContextID(),
+                    new Callback3<ArrayList<Conversation>, ArrayList<HttpAction>, HtmlPage>(){
+                        public void CallMeBack(ArrayList<Conversation> c , ArrayList<HttpAction> a, HtmlPage p){
+                            pages.add(p);
+                        }
                     }
-                }
-        );
-        taskman.addTask(tsk);
-        taskman.waitForEmptyQueue();
+            );
+            taskman.addTask(tsk);
+            taskman.waitForEmptyQueue();
+            parseRoot = pages.get(0);
+        }
+        final List<CorrespondentActions> outRequests = new ArrayList<CorrespondentActions>();
         HtmlPageParser pageParser = new HtmlPageParser(
                 taskman,
-                pages.get(0),
+                parseRoot,
                 u1Ctx.getContextID(),
                 new Callback4<HtmlPage, ArrayList<DomAction>, HttpAction, Boolean>(){
                     public void CallMeBack(HtmlPage page, ArrayList<DomAction> domActions, HttpAction act, Boolean cancellable){
