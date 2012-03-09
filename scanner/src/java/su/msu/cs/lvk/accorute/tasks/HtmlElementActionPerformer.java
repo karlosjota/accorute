@@ -137,10 +137,12 @@ public class HtmlElementActionPerformer extends Task {
                     }
                 }
         );
+        webClient.setAjaxController(new NicelyResynchronizingAjaxController());
         if(page!=null){
             page.setEnclosingWindow(w);
             w.setEnclosedPage(page);
             page.getWebClient().setWebConnection(falseWebConn);
+
             DomAction last = actions.get(actions.size() - 1);
             HtmlElement el = page.getFirstByXPath(last.getXpathElString());
             switch (last.getType()){
@@ -162,6 +164,7 @@ public class HtmlElementActionPerformer extends Task {
                             setSuccessful(false);
                             return;
                         }
+                        webClient.waitForBackgroundJavaScript(10000);
                         if(newPage instanceof HtmlPage){
                             UserContext contx = WebAppProperties.getInstance().getContextService().getContextByID(ctx);
                             WebAppProperties.getInstance().getDynCredUpd().updateCredentials(contx.getUserID(),(HtmlPage)newPage);
@@ -198,7 +201,9 @@ public class HtmlElementActionPerformer extends Task {
             TopLevelWindow baseWindow = (TopLevelWindow) webClient.openWindow(null,"");
             Page page = baseWindow.getEnclosedPage();
             try{
+                //TODO: this creates invalid pages in terms of javascript!
                 Page newPage=webClient.loadWebResponseInto(resp, baseWindow);
+                webClient.waitForBackgroundJavaScript(12000);
                 if(newPage instanceof HtmlPage){
                     UserContext contx = WebAppProperties.getInstance().getContextService().getContextByID(ctx);
                     for(Conversation conv: convs){
