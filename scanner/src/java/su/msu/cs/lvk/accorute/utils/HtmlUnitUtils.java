@@ -2,7 +2,11 @@ package su.msu.cs.lvk.accorute.utils;
 
 import com.gargoylesoftware.htmlunit.*;
 import com.gargoylesoftware.htmlunit.html.*;
+import com.gargoylesoftware.htmlunit.javascript.SimpleScriptable;
+import com.gargoylesoftware.htmlunit.javascript.host.Window;
 import com.gargoylesoftware.htmlunit.util.FalsifyingWebConnection;
+import net.sourceforge.htmlunit.corejs.javascript.Context;
+import net.sourceforge.htmlunit.corejs.javascript.VMBridge;
 import org.w3c.dom.NamedNodeMap;
 import su.msu.cs.lvk.accorute.WebAppProperties;
 import su.msu.cs.lvk.accorute.http.model.*;
@@ -72,104 +76,113 @@ public class HtmlUnitUtils {
         }
         return controllableFieldNames;
     }
-    public static HtmlPage clonePage(final HtmlPage other,final WebWindow w, final EntityID ctx){
+    public static HtmlPage clonePage(final HtmlPage other,final WebWindow window, final EntityID ctx){
         try{
-            //XXX: DIRTYDIRTYDIRTY reflection
-            /*
             Method cl = other.getClass().getDeclaredMethod("clone",null);
             cl.setAccessible(true);
             HtmlPage p = (HtmlPage)cl.invoke(other,null);
-            p.setEnclosingWindow(w);
-            w.setEnclosedPage(p);
+            p.setEnclosingWindow(window);
+            window.setEnclosedPage(p);
             Field field = SgmlPage.class.getDeclaredField("webClient_");
             field.setAccessible(true);
-            field.set(p, w.getWebClient());
+            field.set(p, window.getWebClient());
             if(other.getFocusedElement()!=null){
                 String focusPath = other.getFocusedElement().getCanonicalXPath();
                 p.setFocusedElement(p.<HtmlElement>getFirstByXPath(focusPath));
-            } */
-            WebClient webClient = w.getWebClient();
-            WebConnection oldWebConnection = webClient.getWebConnection();
-            WebConnection falseWebC= new FalsifyingWebConnection(webClient){
-                final UserContext contx = WebAppProperties.getInstance().getContextService().getContextByID(ctx);
-                public WebResponse getResponse(WebRequest request) throws IOException {
-                    List<ActionParameter> param = WebAppProperties.getInstance().getRcd().decompose(
-                            request
-                    );
-                    HttpAction act = new HttpAction("tmp", param);
-                    logger.trace("Intercepted action on page clone: " + act);
-                    Request req = WebAppProperties.getInstance().getRcd().compose(param, WebAppProperties.getInstance().getContextService().getContextByID(ctx));
-                    Collection<Conversation> convs = WebAppProperties.getInstance().getConversationService().getContextConversations(ctx);
-                    Conversation res = null;
-                    for(Conversation conv: convs){
-                        //WebAppProperties.getInstance().getRcd().
-                        List<ActionParameter> paramConv = WebAppProperties.getInstance().getRcd().decompose(
-                                conv.getRequest().genWebRequest()
-                        );
-                        HttpAction actConv = new HttpAction("tmp", paramConv);
-                        if(WebAppProperties.getInstance().getAcEqDec().ActionEquals(act, actConv)){
-                            res = conv;
-                            break;
-                        }
-                    }
-                    if(res == null){
-                        throw new IOException("Shit request on page cloning!!!");
-                    }
-                    return res.getResponse().genWebResponse(res.getRequest().getURL(),0, request);
-                }
-            };
-            webClient.setWebConnection(falseWebC);
-            PageCreator creator = w.getWebClient().getPageCreator();
-            HtmlPage p = (HtmlPage) creator.createPage(other.getWebResponse(),w);
-            webClient.setWebConnection(oldWebConnection);
+            }
+            Method setPg = DomNode.class.getDeclaredMethod("setPage", SgmlPage.class);
+            setPg.setAccessible(true);
+            setPg.invoke((DomNode)p,(SgmlPage)p);
+            window.getWebClient().getJavaScriptEngine().getContextFactory().enterContext();
+            ((SimpleScriptable) p.getDocumentElement().getScriptObject()).getWindow().initialize(window);
             return p;
         }catch(Exception ex){
-            HtmlPage p = new HtmlPage(other.getUrl(), other.getWebResponse(), w);
-            p.setEnclosingWindow(w);
-            w.setEnclosedPage(p);
-            DomNode childNode = other.getFirstChild();
-            while(childNode != null){
-                DomNode newContents = childNode.cloneNode(true);
-                p.appendChild(newContents);
-                childNode = childNode.getNextSibling();
-            }
-            List<HtmlElement> scripts = p.getElementsByTagName("script");
-            p.getDocumentElement();
-            for(HtmlElement sc: scripts){
-                HtmlScript script = (HtmlScript)sc;
-                DomNode n = script.getParentNode();
-                HtmlScript newScript = (HtmlScript) p.createElement("script");
-                NamedNodeMap map =  script.getAttributes();
-                for(int i=0;i<map.getLength();i++){
-                    newScript.setAttribute(map.item(i).getNodeName(),map.item(i).getNodeValue());
+            logger.warn("Failed to clone page using introspection ", ex);
+            try{
+                WebClient webClient = window.getWebClient();
+                WebConnection oldWebConnection = webClient.getWebConnection();
+                WebConnection falseWebC= new FalsifyingWebConnection(webClient){
+                    final UserContext contx = WebAppProperties.getInstance().getContextService().getContextByID(ctx);
+                    public WebResponse getResponse(WebRequest request) throws IOException {
+                        List<ActionParameter> param = WebAppProperties.getInstance().getRcd().decompose(
+                                request
+                        );
+                        HttpAction act = new HttpAction("tmp", param);
+                        logger.trace("Intercepted action on page clone: \n" + act);
+                        Request req = WebAppProperties.getInstance().getRcd().compose(param, WebAppProperties.getInstance().getContextService().getContextByID(ctx));
+                        Collection<Conversation> convs = WebAppProperties.getInstance().getConversationService().getContextConversations(ctx);
+                        Conversation res = null;
+                        for(Conversation conv: convs){
+                            //WebAppProperties.getInstance().getRcd().
+                            List<ActionParameter> paramConv = WebAppProperties.getInstance().getRcd().decompose(
+                                    conv.getRequest().genWebRequest()
+                            );
+                            HttpAction actConv = new HttpAction("tmp", paramConv);
+                            if(WebAppProperties.getInstance().getAcEqDec().ActionEquals(act, actConv)){
+                                res = conv;
+                                break;
+                            }
+                        }
+                        if(res == null){
+                            throw new IOException("Shit request on page cloning!!!");
+                        }
+                        return res.getResponse().genWebResponse(res.getRequest().getURL(),0, request);
+                    }
+                };
+                webClient.setWebConnection(falseWebC);
+                PageCreator creator = window.getWebClient().getPageCreator();
+                HtmlPage p = (HtmlPage) creator.createPage(other.getWebResponse(),window);
+                webClient.setWebConnection(oldWebConnection);
+                return p;
+            }catch(Exception ex2){
+                logger.warn("Failed to clone page using request replay ", ex);
+                HtmlPage p = new HtmlPage(other.getUrl(), other.getWebResponse(), window);
+                p.setEnclosingWindow(window);
+                window.setEnclosedPage(p);
+                DomNode childNode = other.getFirstChild();
+                while(childNode != null){
+                    DomNode newContents = childNode.cloneNode(true);
+                    p.appendChild(newContents);
+                    childNode = childNode.getNextSibling();
                 }
-                newScript.setTextContent(script.getTextContent());
-                newScript.setNodeValue(script.getNodeValue());
-                n.removeChild(script);
-                n.appendChild(newScript);
-            }
-            List<HtmlElement> cssLinks = p.getElementsByTagName("link");
-            for(HtmlElement l: cssLinks){
-                HtmlLink link = (HtmlLink)l;
-                DomNode n = link.getParentNode();
-                HtmlLink newLink = (HtmlLink) p.createElement("link");
-                NamedNodeMap map =  link.getAttributes();
-                for(int i=0;i<map.getLength();i++){
-                    newLink.setAttribute(map.item(i).getNodeName(),map.item(i).getNodeValue());
+                List<HtmlElement> scripts = p.getElementsByTagName("script");
+                p.getDocumentElement();
+                for(HtmlElement sc: scripts){
+                    HtmlScript script = (HtmlScript)sc;
+                    DomNode n = script.getParentNode();
+                    HtmlScript newScript = (HtmlScript) p.createElement("script");
+                    NamedNodeMap map =  script.getAttributes();
+                    for(int i=0;i<map.getLength();i++){
+                        newScript.setAttribute(map.item(i).getNodeName(),map.item(i).getNodeValue());
+                    }
+                    newScript.setTextContent(script.getTextContent());
+                    newScript.setNodeValue(script.getNodeValue());
+                    n.removeChild(script);
+                    n.appendChild(newScript);
                 }
-                n.removeChild(link);
-                n.appendChild(newLink);
+                List<HtmlElement> cssLinks = p.getElementsByTagName("link");
+                for(HtmlElement l: cssLinks){
+                    HtmlLink link = (HtmlLink)l;
+                    DomNode n = link.getParentNode();
+                    HtmlLink newLink = (HtmlLink) p.createElement("link");
+                    NamedNodeMap map =  link.getAttributes();
+                    for(int i=0;i<map.getLength();i++){
+                        newLink.setAttribute(map.item(i).getNodeName(),map.item(i).getNodeValue());
+                    }
+                    n.removeChild(link);
+                    n.appendChild(newLink);
 
+                }
+                /*Map<Object, Object> repl = new HashMap<Object, Object>();
+                repl.put(other.getEnclosingWindow(), w);
+                Window newWin = (Window)  SerialClone.clone(((Window)other.getEnclosingWindow().getScriptObject()),repl);
+                w.setScriptObject(newWin);*/
+                if(other.getFocusedElement()!=null){
+                    String focusPath = other.getFocusedElement().getCanonicalXPath();
+                    p.setFocusedElement(p.<HtmlElement>getFirstByXPath(focusPath));
+                }
+                return p;
             }
-            /*Map<Object, Object> repl = new HashMap<Object, Object>();
-            repl.put(other.getEnclosingWindow(), w);
-            Window newWin = (Window)  SerialClone.clone(((Window)other.getEnclosingWindow().getScriptObject()),repl);
-            w.setScriptObject(newWin);*/
-            if(other.getFocusedElement()!=null){
-                String focusPath = other.getFocusedElement().getCanonicalXPath();
-                p.setFocusedElement(p.<HtmlElement>getFirstByXPath(focusPath));
-            }
-            return p;
         }
     }
 }
