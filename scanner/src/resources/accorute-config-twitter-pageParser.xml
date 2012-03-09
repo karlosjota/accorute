@@ -69,7 +69,7 @@
     </bean>
     <bean id="authFactory" scope="prototype" class="su.msu.cs.lvk.accorute.tasks.FormBasedAuthTaskFactory">
         <constructor-arg ref="loginPageURL" />
-        <constructor-arg value="1" />
+        <constructor-arg value="0" />
     </bean>
     <bean id="simpleAGD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.LevensteinAGD" />
     <bean id="proxy" scope="prototype" class="org.apache.http.HttpHost">
