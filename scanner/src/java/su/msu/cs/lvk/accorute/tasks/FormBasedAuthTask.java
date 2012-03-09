@@ -18,6 +18,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * Created by IntelliJ IDEA.
@@ -31,6 +32,7 @@ public class FormBasedAuthTask extends Task {
     private final URL url;
     private final int formIndex;
     private final String submitXPath;
+    private HtmlPage resultPage = null;
     final private WebClient webClient = new WebClient(BrowserVersion.FIREFOX_3_6);
     private Collection<String> userControllableFormFields = new ArrayList<String>();
     private final ArrayList<Conversation> convs = new ArrayList<Conversation>();
@@ -80,7 +82,7 @@ public class FormBasedAuthTask extends Task {
     }
     @Override
     public Object getResult() {
-        return null;
+        return resultPage;
     }
 
     @Override
@@ -89,6 +91,7 @@ public class FormBasedAuthTask extends Task {
         webClient.setJavaScriptEnabled(true);
         webClient.setThrowExceptionOnFailingStatusCode(false);
         webClient.setThrowExceptionOnScriptError(false);
+        webClient.setAjaxController(new NicelyResynchronizingAjaxController());
         webClient.setConfirmHandler(
                 new  ConfirmHandler(){
                     public boolean handleConfirm(Page page, String message) {
@@ -129,13 +132,20 @@ public class FormBasedAuthTask extends Task {
             }
             HtmlForm loginForm = forms.get(formIndex);
             FormFiller ffiller = WebAppProperties.getInstance().getFormFillerFactory().generate(loginForm, ctxID);
-            HtmlElement submitButton = ffiller.next();//fill in the submit
+
+            HtmlElement submitButton = null;
             //find the submit button and click it
             if(submitXPath != null){
                 submitButton = loginForm.getFirstByXPath(submitXPath);
                 if(submitButton == null){
                     logger.error("Submit button not present");
                     return;
+                }
+            }else{
+                try{
+                    submitButton = ffiller.next();//fill in the submit
+                }catch (NoSuchElementException ex){
+                    logger.error("The login form has no submit buttons ?!");
                 }
             }
             Page p = submitButton.click();
@@ -144,9 +154,13 @@ public class FormBasedAuthTask extends Task {
                 setSuccessful(false);
                 return;
             }
+            webClient.waitForBackgroundJavaScript(12000);
             HtmlPage newPage = (HtmlPage) p;
+            resultPage = newPage;
             logger.trace("Login task finished successfully");
             setSuccessful(true);
+
+
         } catch (IOException e) {
             logger.error("Fatal transport error: " + e.getMessage());
             e.printStackTrace();
