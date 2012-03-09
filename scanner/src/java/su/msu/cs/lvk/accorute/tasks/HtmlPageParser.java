@@ -6,10 +6,10 @@ import com.gargoylesoftware.htmlunit.javascript.host.Node;
 import com.gargoylesoftware.htmlunit.util.FalsifyingWebConnection;
 import com.gargoylesoftware.htmlunit.util.NameValuePair;
 import net.sourceforge.htmlunit.corejs.javascript.EcmaError;
+import net.sourceforge.htmlunit.corejs.javascript.NativeObject;
 import net.sourceforge.htmlunit.corejs.javascript.ScriptableObject;
 import su.msu.cs.lvk.accorute.WebAppProperties;
 import su.msu.cs.lvk.accorute.decisions.FormFiller;
-import su.msu.cs.lvk.accorute.http.constants.ActionParameterLocation;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
@@ -28,9 +28,10 @@ import java.util.*;
  * To change this template use File | Settings | File Templates.
  */
 //TODO: AJAX is not yet supported! The accorute model itself is not ready now for AJAX.
-public class HtmlPageParser extends Task implements DomChangeListener {
+public class HtmlPageParser extends Task implements DomChangeListener, HtmlAttributeChangeListener{
     public static int numInvokations = 0;
     private final HtmlPage page;
+    private final HtmlPage _oldp;
     private HtmlPage tmpPage;
     private final Callback4<HtmlPage,  ArrayList<DomAction>, HttpAction, Boolean> callback;
     private final WebClient webClient;
@@ -38,9 +39,13 @@ public class HtmlPageParser extends Task implements DomChangeListener {
     private Collection<String> userControllableFormFields = new ArrayList<String>();
     private WebConnection falseWebConn;
     private final EntityID ctxID;
+    private ArrayList<DomNode> affectedNodes = new ArrayList<DomNode>();
+    private boolean weMayHaveCausedRequest = false;
+    private boolean weMayHaveCausedDomOrAttrChange = false;
     private final ArrayList<DomAction> curActionChain = new ArrayList<DomAction>();
     public HtmlPageParser(TaskManager t, HtmlPage _page, EntityID ctx, Callback4<HtmlPage,  ArrayList<DomAction>, HttpAction, Boolean> cb) {
         super(t);
+        _oldp = _page;
         callback = cb;
         ctxID = ctx;
         logger.trace("HtmlPageParser created");
@@ -52,9 +57,9 @@ public class HtmlPageParser extends Task implements DomChangeListener {
                 List<ActionParameter> param = WebAppProperties.getInstance().getRcd().decompose(request,userControllableFormFields);
                 URL u = WebAppProperties.getInstance().getRcd().getURL(param);
                 boolean cancellable = false;
-                //if(u.getFile().endsWith(".js") || u.getFile().endsWith(".css"))
-                //    cancellable = true;
-                //TODO: ajax detection!!!!
+                if(!weMayHaveCausedRequest){
+                    logger.warn("Request not forced by us!!!");
+                }
                 callback.CallMeBack(tmpPage, (ArrayList<DomAction>) curActionChain.clone(),new HttpAction("tmp", param), cancellable);
                 WebResponseData wrd = new WebResponseData(
                         "<html></html>".getBytes(),
@@ -63,11 +68,8 @@ public class HtmlPageParser extends Task implements DomChangeListener {
                         new ArrayList<NameValuePair>()
                 );
                 return new WebResponse(wrd, request, 1);
-                /*throw new IOException("goes just as planned");*/
             }
         };
-        //create WebConnectionWrapper that calls back the callback on each request
-        webClient.setWebConnection(falseWebConn);
         webClient.setConfirmHandler(
                 new  ConfirmHandler(){
                     public boolean handleConfirm(Page page, String message) {
@@ -89,125 +91,121 @@ public class HtmlPageParser extends Task implements DomChangeListener {
                     }
                 }
         );
+        webClient.setAjaxController(new NicelyResynchronizingAjaxController());
         //TODO: requests here may follow, need to intercept and add cookies.
         //TODO: Still, content loaded on load (usually js and css, is almost always not protected by cookies.
         page = HtmlUnitUtils.clonePage(_page,webClient.getCurrentWindow(),ctxID);
+        webClient.setWebConnection(falseWebConn);
     }
-    private void tryClick(HtmlElement htmlElement){
-
+    private void tryClick(HtmlElement htmlElement) throws IOException{
         userControllableFormFields.clear();
         HtmlForm form = htmlElement.getEnclosingForm();
         if(form != null){
             userControllableFormFields.addAll(HtmlUnitUtils.getUserControllableFormFields(form));
         }
-        String path = htmlElement.getCanonicalXPath();
-        logger.trace("Trying to click "+ path);
-        //clone page
-        //set a window
-        WebWindow cur_window = webClient.getCurrentWindow();
-
-        WebWindow w = webClient.openWindow(null,"tmpWindow");
-        tmpPage =  HtmlUnitUtils.clonePage(page,w,ctxID);
-        //get corresponding element...
-        HtmlElement el = tmpPage.getFirstByXPath(path);
-        wasRequest = false;
-        curActionChain.add(new DomAction(path, DomActionType.CLICK));
-        //dry-run the action
         try{
-            el.click();
-        }catch(IOException ex) {
-            logger.warn("io exception while clicking",ex);
-        }
-        catch(EcmaError ee){
-            logger.error("error in javascript!!!! Will continue. ",ee);
-        }
-        catch(RuntimeException ex){
-            logger.error("got runtime exception during click!", ex);
-        }
-        userControllableFormFields.clear();
-        webClient.setCurrentWindow(cur_window);
-        webClient.getCache().clear();
-        if(!wasRequest){
-            logger.trace("click didn't produce a request");
-            try{
-                htmlElement.click();
-            }catch(IOException ex) {
-                logger.warn("exception while clicking",ex);
-            }catch(RuntimeException ex){
-                logger.error("got runtime exception during click!", ex);                
+            String path = htmlElement.getCanonicalXPath();
+            //clone page
+            //set a window
+            WebWindow cur_window = webClient.getCurrentWindow();
+
+            WebWindow w = webClient.openWindow(null,"tmpWindow");
+            tmpPage =  HtmlUnitUtils.clonePage(page,w,ctxID);
+            //get corresponding element...
+            HtmlElement el = tmpPage.getFirstByXPath(path);
+            if(el == null){
+                logger.fatal("Error after cloning a page: element not found by xpath " + path);
+                return;
             }
-        }else{
-            curActionChain.remove(curActionChain.size() - 1);    
+            wasRequest = false;
+            curActionChain.add(new DomAction(path, DomActionType.CLICK));
+            //dry-run the action
+            weMayHaveCausedRequest = true;
+            logger.trace("Trying to click "+ path);
+            el.click();
+            weMayHaveCausedRequest = false;
+            userControllableFormFields.clear();
+            webClient.setCurrentWindow(cur_window);
+            webClient.getCache().clear();
+            if(!wasRequest){
+                logger.trace("click didn't produce a request");
+                affectedNodes.clear();
+                weMayHaveCausedDomOrAttrChange = true;
+                htmlElement.click();
+                weMayHaveCausedDomOrAttrChange = false;
+                for(DomNode node: affectedNodes){
+                    if(node instanceof HtmlElement)
+                        emulateUserActions((HtmlElement)node);
+                }
+            }
+            curActionChain.remove(curActionChain.size() - 1);
+        }catch (NullPointerException ex){
+            //getFirstByXpath sometimes throws it
         }
     }
-    private void emulateUserActions(HtmlElement el) {
-        Map<HtmlForm, FormFiller> fillers = new HashMap<HtmlForm, FormFiller>();
-        List<HtmlElement> forms = el.getHtmlElementsByTagName("form");
-        for(HtmlElement f: forms){
-            HtmlForm form = (HtmlForm) f;
-            FormFiller filler = WebAppProperties.getInstance().getFormFillerFactory().generate(form,ctxID);
-            fillers.put(form,filler);
-        }
+    private void emulateUserActions(HtmlElement el) throws IOException{
+        /*
+            TODO: need to determine an order in which we do the actions
+            E.g. if an action would delete a block of DOM with attached event handlers,
+            we should first check that deleted block and then proceed with the action
+         */
         doJsActions(el);
-        List<HtmlAnchor> anchors = el.getHtmlElementsByTagName("a");
         logger.trace("emulateUserActions on " + el);
-        Iterable<HtmlElement> htmlChildren = el.getHtmlElementDescendants();
-        Iterator<HtmlElement> it = htmlChildren.iterator();
-        while (it.hasNext()) {
-            doJsActions(it.next());
+        for (HtmlElement elToClick : el.getHtmlElementDescendants()) {
+            if(!doJsActions(elToClick) && (elToClick instanceof  HtmlAnchor) && (!((HtmlAnchor)elToClick).getHrefAttribute().equals(DomElement.ATTRIBUTE_NOT_DEFINED))){
+                tryClick(elToClick);
+            }
         }
-        for(HtmlAnchor a:anchors){
-            //only click anchors that has a href
-            if(!a.getHrefAttribute().equals(DomElement.ATTRIBUTE_NOT_DEFINED))
-                tryClick(a);
-        }
-        forms = el.getHtmlElementsByTagName("form");
-        for(HtmlElement f: forms){
-
+        for(HtmlElement f: el.getHtmlElementsByTagName("form")){
             HtmlForm form = (HtmlForm) f;
             FormFiller filler;
-            if(fillers.containsKey(form)){
-                filler = fillers.get(form);
-            } else {
-                filler = WebAppProperties.getInstance().getFormFillerFactory().generate(form,ctxID);
-            }
+            filler = WebAppProperties.getInstance().getFormFillerFactory().generate(form,ctxID);
             while(filler.hasNext()){
                 tryClick(filler.next());
             }
         }
     }
-    private void doJsActions(HtmlElement htmlElement) {
+    private boolean isClickSensible(ScriptableObject scriptableObject){
+        if(! (scriptableObject instanceof  Node))
+            return false;
+        Node jsNode = (Node) scriptableObject;
+        if(
+                jsNode.hasEventHandlers("click") || NativeObject.hasProperty(scriptableObject, "onclick") && NativeObject.getProperty(scriptableObject, "onclick") != null ||
+                        jsNode.hasEventHandlers("mousedown") || NativeObject.hasProperty(scriptableObject, "onmousedown") && NativeObject.getProperty(scriptableObject, "onmousedown") != null ||
+                        jsNode.hasEventHandlers("mouseup") || NativeObject.hasProperty(scriptableObject, "onmouseup") && NativeObject.getProperty(scriptableObject, "onmouseup") != null
+                ){
+            return true; // Handler directly attached
+        }
+        Node parent = jsNode.getParent();
+        return (parent != null) && isClickSensible(parent);
+    }
+
+    /**
+     * Trigger various events that might have handlers installed
+     * @param htmlElement element on which to trigger actions
+     * @return true, iff we clicked on this element, false otherwise
+     * @throws IOException
+     */
+    private boolean doJsActions(HtmlElement htmlElement) throws IOException{
         String path = htmlElement.getCanonicalXPath();
-        logger.trace("doJsActions on " + path);
         ScriptableObject scriptableObject = htmlElement.getScriptObject();
         if (scriptableObject != null &&
                 scriptableObject instanceof Node)
         {
-            Node jsNode = (Node) scriptableObject;
-            //what we care is onclick event capability
-            if (jsNode.getEventHandler("onclick") != null) {
+            logger.trace("doJsActions on " + path + " " + scriptableObject.toString());
+            if(isClickSensible(scriptableObject)){
                 tryClick(htmlElement);
-            }
-            //TODO: currently we do not support the situation when request is made while doing this!
-            wasRequest = false;
-            if (jsNode.getEventHandler("onmouseover") != null) {
-                curActionChain.add(new DomAction(path, DomActionType.MOUSEOVER));
-                htmlElement.mouseOver();
-            }
-            if (jsNode.getEventHandler("onmousemove") != null) {
-                curActionChain.add(new DomAction(path, DomActionType.MOUSEMOVE));
-                htmlElement.mouseMove();
-            }
-            if(wasRequest){
-                logger.fatal("we do not support the situation when request is made while doing mouseOver and mouseMove!!!!");
+                return true;
             }
         }
+        return false;
     }
     public void nodeAdded(final DomChangeEvent event) {
-        logger.trace("DOM changed");
-        DomNode newNode = event.getChangedNode();
-        if (newNode instanceof HtmlElement){
-            emulateUserActions((HtmlElement)newNode);
+        DomNode changedNode = event.getChangedNode();
+        if(weMayHaveCausedDomOrAttrChange){
+            affectedNodes.add(changedNode);
+        }else{
+            logger.trace("Node was changed but we didn't cause it: " + changedNode);
         }
     }
 
@@ -215,33 +213,44 @@ public class HtmlPageParser extends Task implements DomChangeListener {
 
     @Override
     public Object getResult() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
+    }
+
+    public void attributeAdded(HtmlAttributeChangeEvent htmlAttributeChangeEvent) {
+        if(weMayHaveCausedDomOrAttrChange){
+            logger.trace("attributeAdded: " + htmlAttributeChangeEvent);
+            if(htmlAttributeChangeEvent.getName().startsWith("on"))
+                affectedNodes.add(htmlAttributeChangeEvent.getHtmlElement());
+        }else{
+            logger.trace("attribute changed but we didn't cause this, " + htmlAttributeChangeEvent);
+        }
+    }
+
+    public void attributeRemoved(HtmlAttributeChangeEvent htmlAttributeChangeEvent) {
+        /* nothing to do here */
+    }
+
+    public void attributeReplaced(HtmlAttributeChangeEvent htmlAttributeChangeEvent) {
+        if(weMayHaveCausedDomOrAttrChange){
+            logger.trace("attributeReplaced: " + htmlAttributeChangeEvent);
+            if(htmlAttributeChangeEvent.getName().startsWith("on"))
+                affectedNodes.add(htmlAttributeChangeEvent.getHtmlElement());
+        }else{
+            logger.trace("attribute changed but we didn't cause this, " + htmlAttributeChangeEvent);
+        }
     }
 
     @Override
     protected void start() {
         numInvokations++;
-        /*URL origUrl = page.getRequest().getURL();
-        //1. create WebResponse from page : WebResponse(WebResponseData responseData, WebRequest request, long loadTime)
-        WebResponse resp = page.getResponse().genWebResponse(origUrl);
-        TopLevelWindow baseWindow = (TopLevelWindow) webClient.openWindow(null,"");
-        try {
-            webClient.loadWebResponseInto(resp, baseWindow);
-        } catch (IOException ioex) {
-            baseWindow.close();
-            throw new IllegalStateException("Cannot receive IOException on converted Response object");
-        }
-        Page page = baseWindow.getEnclosedPage();
-        if (page instanceof HtmlPage) {
-            HtmlPage htmlPage = (HtmlPage) page;
-            //find and save all comments
-
-        }*/
         page.addDomChangeListener(this);
-        //find all HtmlElement nodes that have actions and execute them
+        page.addHtmlAttributeChangeListener(this);
         webClient.setThrowExceptionOnFailingStatusCode(false);
         webClient.setThrowExceptionOnScriptError(false);
-        emulateUserActions(page.getDocumentElement());
-        /*baseWindow.close();*/
+        try{
+            emulateUserActions(page.getDocumentElement());
+        }catch(IOException ex){
+            logger.error("IO exception while doing stuff");
+        }
     }
 }
