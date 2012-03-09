@@ -337,6 +337,8 @@ public class MultiStateFormFillFactory implements FormFillerFactory {
 
         public HtmlElement next() {
             if(currentSubmit == null){
+                if(!submitIter.hasNext())
+                    throw new NoSuchElementException();
                 currentSubmit = submitIter.next();
                 return currentSubmit;
             }
