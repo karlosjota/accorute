@@ -73,9 +73,7 @@ public class EntityID implements Comparable, Serializable {
      */
     @Override
     public String toString() {
-        return "EntityID{" +
-                "id=" + id +
-                '}';
+        return id.toString();
     }
 
     /**

@@ -45,7 +45,14 @@ public class ResponseFetcher extends Task {
     }
 
     public Object getResult() {
-        return res;  //To change body of implemented methods use File | Settings | File Templates.
+        if(getStatus() == TaskStatus.FINISHED)
+            return res;
+        else
+            return null;
+    }
+    public String toString(){
+        String prefix = super.toString() + "{" + contextID.getId().toString() + "}: ";
+        return prefix + action.toString();
     }
 
     protected void start() {
@@ -74,7 +81,7 @@ public class ResponseFetcher extends Task {
                 resp.setCtxID(contextID);
                 res = new Conversation(req, resp);
                 if(!isPublic)
-                    respCheckStatus = SessionValidityWatcher.getInstanceForContext(contextID).analyzeResponce(res, taskManager);
+                    respCheckStatus = SessionValidityWatcher.getInstanceForContext(contextID).analyzeResponce(res, this);
                 else
                     respCheckStatus = SessionValidityWatcher.RespCheckStatus.NOT_EXPIRED;
                 tried = true;

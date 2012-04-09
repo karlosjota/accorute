@@ -56,10 +56,6 @@ public class WebAppUser implements User {
 
     @Override
     public String toString() {
-        return "WebAppUser{" +
-                "userID=" + userID +
-                ", role=" + role +
-                ", staticCredentials=" + staticCredentials +
-                '}';
+        return staticCredentials.toString();
     }
 }

@@ -10,52 +10,34 @@
 
     <!-- Root Logger -->
     <root>
-        <priority value="warn" />
+        <priority value="trace" />
         <appender-ref ref="console" />
     </root>
     <logger name="org.apache">
-        <level value="warn"/>
+        <level value="trace"/>
     </logger>
 
     <logger name="com.gargoylesoftware">
-        <level value="fatal"/>
-    </logger>
-    <logger name="httpclient">
-        <level value="trace"/>
+        <level value="warn"/>
     </logger>
 
-    <logger name="su.msu.cs.lvk.accorute.tasks.SessionValidityWatcher">
+    <logger name="su.msu.cs.lvk.accorute.tasks">
         <level value="trace"/>
     </logger>
-    <logger name="su.msu.cs.lvk.accorute.tasks.ResponseFetcher">
+    <logger name="su.msu.cs.lvk.accorute.decisions">
         <level value="trace"/>
-    </logger>
-    <logger name="su.msu.cs.lvk.accorute.tasks.FormBasedAuthTask">
-        <level value="debug"/>
-    </logger>
-    <logger name="su.msu.cs.lvk.accorute.decisions.SimpleDynamicCredentialsUpdater">
-        <level value="debug"/>
-    </logger>
-    <logger name="su.msu.cs.lvk.accorute.tasks.SimpleDetectSpikes">
-        <level value="trace"/>
-    </logger>
-    <logger name="su.msu.cs.lvk.accorute.tasks.HtmlElementActionPerformer">
-        <level value="debug"/>
     </logger>
     <logger name="org.apache.http" >
-        <level value="trace" />
+        <level value="info" />
     </logger>
     <logger name="su.msu.cs.lvk.accorute.tasks.SitemapCrawler">
         <level value="debug"/>
     </logger>
     <logger name="com.gargoylesoftware.htmlunit.javascript.background.JavaScriptExecutor">
-        <level value="warn"/>
+        <level value="debug"/>
     </logger>
 
     <logger name="su.msu.cs.lvk.accorute.http.model.Sitemap">
         <level value="trace"/>
-    </logger>
-    <logger name="su.msu.cs.lvk.accorute.decisions.ActionEqualsIfNameValueEquals">
-        <level value="warn"/>
     </logger>
 </log4j:configuration>

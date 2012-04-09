@@ -51,9 +51,9 @@ public class SessionValidityWatcher {
         return watcher;
     }
 
-    synchronized private void syncReAuth(TaskManager tm){
+    synchronized private void syncReAuth(Task t){
         logger.trace(ctx + ":will reauth");
-        Task tsk = WebAppProperties.getInstance().getAuthTaskFactory().genContextedTask(ctx, tm);
+        Task tsk = WebAppProperties.getInstance().getAuthTaskFactory().genContextedTask(ctx, t.getTaskManager());
         finishedReauth = false;
         final SessionValidityWatcher _this = this;
         tsk.registerCallback(
@@ -67,7 +67,7 @@ public class SessionValidityWatcher {
                 }
             }
         );
-        tm.addWaitedTask(tsk);
+        t.getTaskManager().addWaitedTask(tsk, t);
         while(!finishedReauth){
             try{
                 wait();
@@ -83,7 +83,7 @@ public class SessionValidityWatcher {
      * EXPIRED , if the responce is expired, but not first of these ( high possibility benign )
      * EXPIRED_FIRST, if the responce is first of expired  ( high possibility caused session expiration )
      */
-    synchronized public RespCheckStatus analyzeResponce(Conversation conv, TaskManager tm){
+    synchronized public RespCheckStatus analyzeResponce(Conversation conv, Task task){
         ResponseClassificator.ResponseType type = WebAppProperties.getInstance().getRespClassificator().getResponseType(conv);
         if(curState == SessionWatcherState.TESTING){
             yetUntestedFetches--;
@@ -94,7 +94,7 @@ public class SessionValidityWatcher {
                     || type == ResponseClassificator.ResponseType.PROHIBITED
                     || type == ResponseClassificator.ResponseType.ERROR
             ){
-                syncReAuth(tm);
+                syncReAuth(task);
             }
             res = RespCheckStatus.NOT_EXPIRED;
             if(yetUntestedFetches == 0){
@@ -140,7 +140,7 @@ public class SessionValidityWatcher {
         //Expired session detected!!!
         if(concurrentFetches == 0){
             //I'm all alone and all is clear
-            syncReAuth(tm);
+            syncReAuth(task);
             curState = SessionWatcherState.NORMAL;
             logger.trace(ctx + ":I'm returning from analyzeResponce cause I'm alone");
             notifyAll();
@@ -150,7 +150,7 @@ public class SessionValidityWatcher {
         yetUnjoinedFetches = concurrentFetches;
         logger.trace(ctx + ":"+yetUnjoinedFetches + " left to join");
         yetUntestedFetches = concurrentFetches + 1;
-        syncReAuth(tm);
+        syncReAuth(task);
         while(yetUnjoinedFetches > 0){
             try{
                 wait();

@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import su.msu.cs.lvk.accorute.utils.Callback0;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -18,7 +19,29 @@ import java.util.List;
  * Abstract class for a task that is run by {@link TaskManager}
  */
 public abstract class Task implements Runnable{
+    public TaskManager getTaskManager() {
+        return taskManager;
+    }
+
     final public TaskManager taskManager;
+    private Date started, finished;
+
+    public Date getFinished() {
+        return finished;
+    }
+
+    public Date getStarted() {
+        return started;
+    }
+
+    public String getExecutorThreadName() {
+        if(executorThread != null)
+            return executorThread.getName();
+        else
+            return null;
+    }
+
+    private Thread executorThread;
 
     public boolean isSerial() {
         return serial;
@@ -27,7 +50,7 @@ public abstract class Task implements Runnable{
     final private boolean serial;
     
     public enum TaskStatus {
-        NOT_STARTED,RUNNING, BLOCKED, FINISHED
+        NOT_STARTED,SCHEDULED, RUNNING, BLOCKED, FINISHED
     }
 
     private final List<Callback0> Callbacks = new ArrayList<Callback0>();
@@ -48,7 +71,6 @@ public abstract class Task implements Runnable{
     synchronized public void setSuccessful(boolean successful) {
         this.successful = successful;
     }
-
     /**
      * Get current status
      * @return current status
@@ -93,7 +115,7 @@ public abstract class Task implements Runnable{
         return taskManager.addTask(tsk);
     }
     protected boolean addWaitedTask(Task tsk){
-        return taskManager.addWaitedTask(tsk);
+        return taskManager.addWaitedTask(tsk, this);
     }
 
     /**
@@ -116,7 +138,7 @@ public abstract class Task implements Runnable{
             };
             myCallback cb = new myCallback();
             tsk.registerCallback(cb);
-            taskManager.addWaitedTask(tsk);
+            taskManager.addWaitedTask(tsk, this);
             while (getStatus() == TaskStatus.BLOCKED){
                 try{
                     wait();
@@ -161,18 +183,30 @@ public abstract class Task implements Runnable{
     abstract protected void start();
 
     public void run(){
+        executorThread = Thread.currentThread();
         try{
             logger.trace("Task " +this.getClass().getName()+ " was STARTED at thread " + Thread.currentThread().getId());
+            started = new Date();
             setStatus(TaskStatus.RUNNING);
+            taskManager.taskStarted();
             start();
         }catch(Exception e){
             e.printStackTrace();
         }finally {
             setStatus(TaskStatus.FINISHED);
+            finished = new Date();
             taskManager.taskFinished();
             for (int i=0; i< Callbacks.size(); i++){
               Callbacks.get(i).CallMeBack();
             }
+        }
+    }
+    
+    public synchronized String toString(){
+        if(executorThread == null){
+            return this.getClass().getSimpleName() + "[" + this.getStatus() + "]";
+        }else{
+            return this.getClass().getSimpleName() + "[" + executorThread.getName() + ", " + this.getStatus() + "]";
         }
     }
 }

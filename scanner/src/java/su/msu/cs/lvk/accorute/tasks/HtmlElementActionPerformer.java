@@ -49,6 +49,16 @@ public class HtmlElementActionPerformer extends Task {
     private final ArrayList<HttpAction> acts = new ArrayList<HttpAction>();
     private final HttpAction startHttpAct;
 
+    @Override
+    public String toString() {
+        String prefix = super.toString()+ "{" + ctx.getId().toString() + "}: ";
+        if(page != null){
+            return prefix + page.getUrl() + " " + actions;
+        }else{
+            return prefix + startHttpAct.toString();
+        }
+    }
+
     public HtmlElementActionPerformer(
             TaskManager t,
             HttpAction _startHttpAct,
@@ -139,12 +149,10 @@ public class HtmlElementActionPerformer extends Task {
         );
         webClient.setAjaxController(new NicelyResynchronizingAjaxController());
         if(page!=null){
-            page.setEnclosingWindow(w);
-            w.setEnclosedPage(page);
-            page.getWebClient().setWebConnection(falseWebConn);
+            HtmlPage ownPage = HtmlUnitUtils.clonePage(page,webClient.getCurrentWindow(),ctx);
 
             DomAction last = actions.get(actions.size() - 1);
-            HtmlElement el = page.getFirstByXPath(last.getXpathElString());
+            HtmlElement el = ownPage.getFirstByXPath(last.getXpathElString());
             switch (last.getType()){
                 case CLICK:
                     try{

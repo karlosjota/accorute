@@ -30,6 +30,12 @@ import java.util.NoSuchElementException;
 public class FormBasedAuthTask extends Task {
     private final EntityID ctxID;
     private final URL url;
+
+    @Override
+    public String toString() {
+        return super.toString() + "{" + ctxID.getId().toString() + "}: " + url + ", form #" + Integer.toString(formIndex) + ((submitXPath != null)?", submit: " + submitXPath:"");
+    }
+
     private final int formIndex;
     private final String submitXPath;
     private HtmlPage resultPage = null;

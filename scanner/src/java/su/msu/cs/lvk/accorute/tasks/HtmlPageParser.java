@@ -27,9 +27,13 @@ import java.util.*;
  * Time: 14:52:55
  * To change this template use File | Settings | File Templates.
  */
-//TODO: AJAX is not yet supported! The accorute model itself is not ready now for AJAX.
 public class HtmlPageParser extends Task implements DomChangeListener, HtmlAttributeChangeListener{
     public static int numInvokations = 0;
+
+    public HtmlPage getPage() {
+        return page;
+    }
+
     private final HtmlPage page;
     private final HtmlPage _oldp;
     private HtmlPage tmpPage;
@@ -43,6 +47,28 @@ public class HtmlPageParser extends Task implements DomChangeListener, HtmlAttri
     private boolean weMayHaveCausedRequest = false;
     private boolean weMayHaveCausedDomOrAttrChange = false;
     private final ArrayList<DomAction> curActionChain = new ArrayList<DomAction>();
+    public class ResultItem{
+        public ArrayList<DomAction> getDomActionChain() {
+            return domActionChain;
+        }
+
+        public HttpAction getAction() {
+            return action;
+        }
+        final ArrayList<DomAction> domActionChain;
+        final HttpAction action;
+
+        ResultItem(ArrayList<DomAction> domActionChain, HttpAction action) {
+            this.domActionChain = domActionChain;
+            this.action = action;
+        }
+    }
+    final ArrayList<ResultItem> results = new ArrayList<ResultItem>();
+    @Override
+    public String toString() {
+        return super.toString() + "{" + ctxID.getId().toString() + "}: " + page.getUrl();
+
+    }
     public HtmlPageParser(TaskManager t, HtmlPage _page, EntityID ctx, Callback4<HtmlPage,  ArrayList<DomAction>, HttpAction, Boolean> cb) {
         super(t);
         _oldp = _page;
@@ -60,7 +86,10 @@ public class HtmlPageParser extends Task implements DomChangeListener, HtmlAttri
                 if(!weMayHaveCausedRequest){
                     logger.warn("Request not forced by us!!!");
                 }
-                callback.CallMeBack(tmpPage, (ArrayList<DomAction>) curActionChain.clone(),new HttpAction("tmp", param), cancellable);
+                ArrayList<DomAction> acChain= (ArrayList<DomAction>)  curActionChain.clone();
+                HttpAction act =  new HttpAction("tmp", param);
+                callback.CallMeBack(tmpPage, acChain, act, cancellable);
+                results.add(new ResultItem(acChain, act));
                 WebResponseData wrd = new WebResponseData(
                         "<html></html>".getBytes(),
                         200,
@@ -213,7 +242,10 @@ public class HtmlPageParser extends Task implements DomChangeListener, HtmlAttri
 
     @Override
     public Object getResult() {
-        return null;
+        if(getStatus() == TaskStatus.FINISHED)
+            return results;
+        else
+            return null;
     }
 
     public void attributeAdded(HtmlAttributeChangeEvent htmlAttributeChangeEvent) {
@@ -252,5 +284,7 @@ public class HtmlPageParser extends Task implements DomChangeListener, HtmlAttri
         }catch(IOException ex){
             logger.error("IO exception while doing stuff");
         }
+        webClient.waitForBackgroundJavaScript(30000);
+        webClient.closeAllWindows();
     }
 }

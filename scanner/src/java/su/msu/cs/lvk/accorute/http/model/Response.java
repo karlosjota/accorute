@@ -113,6 +113,7 @@ public class Response extends Message {
         HttpEntity ent = resp.getEntity();
         ent.writeTo(os);
         ent.consumeContent();
+        setVersion(resp.getProtocolVersion().toString());
         setContent(os.toByteArray());
         setStatusCode(Integer.toString(resp.getStatusLine().getStatusCode()));
         setStatusMessage(resp.getStatusLine().getReasonPhrase());

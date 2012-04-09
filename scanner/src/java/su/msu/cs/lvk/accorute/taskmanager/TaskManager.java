@@ -1,11 +1,16 @@
 package su.msu.cs.lvk.accorute.taskmanager;
 
+import com.truchsess.util.*;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import su.msu.cs.lvk.accorute.utils.Callback0;
 
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -17,7 +22,23 @@ import java.util.concurrent.*;
  * To change this template use File | Settings | File Templates.
  */
 public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutionHandler {
+    ArrayListTree<Object> taskTree = new ArrayListTree<Object>();
+    ArrayList<Callback0> taskTreeChangeCallbacks = new ArrayList<Callback0>();
     
+    public void addTaskTreeChangeListener(Callback0 cb){
+        taskTreeChangeCallbacks.add(cb);
+    }
+    public void removeTaskTreeChangeListener(Callback0 cb){
+        taskTreeChangeCallbacks.remove(cb);
+    }
+    private void invokeTaskTreeChangeListeners(){
+        for(Callback0 cb : taskTreeChangeCallbacks){
+            cb.CallMeBack();
+        }
+    }
+    public String toString(){
+        return "Task Manager " + getStatus().toString() + ": " + runningTasks.size() + " running, " + pendingTasks.size() + " pending";
+    }
     synchronized public int compare(Task t1, Task t2){
         int p1 = taskPriority.get(t1);
         int p2 = taskPriority.get(t2);
@@ -51,15 +72,21 @@ public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutio
     synchronized private void setStatus(TaskManagerStatus stat){
         status = stat;
     }
-
+    public void walkTree(TreeWalker.Walk<Object> walk)  throws TreeWalker.AbortProcessingException{
+        TreeWalkerBase<Object> walker = new TreeWalkerBase<Object>();
+        walker.doWalk(taskTree, walk);
+    }
     TaskManager() {
         logger.trace("Task manager created");
+        taskTree.getCursor().addChild(this);
     }
     synchronized public void terminate(){
         isTerminating = true;
         logger.trace("Terminating task manager");
+        invokeTaskTreeChangeListeners();
         notifyAll();
     }
+
     synchronized public void waitForEmptyQueue(){
         while (pendingTasks.size() + runningTasks.size() != 0){
             try{
@@ -85,38 +112,79 @@ public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutio
             taskID.put(pending,nextID);
             nextID++;
             pendingTasks.add(pending);
+            MutableListTreeCursor<Object> cur = taskTree.getCursor();
+            cur.down();
+            cur.addChild(pending);
+            invokeTaskTreeChangeListeners();
             notifyAll();//wake up the running cycle
             return true;
         }
         logger.warn("tried to add task to terminating taskManager!");
         return false;
     }
+    synchronized void taskStarted(){
+        invokeTaskTreeChangeListeners();
+    }
     synchronized void taskFinished(){
         logger.trace("Task was finished");
+        invokeTaskTreeChangeListeners();
         notifyAll();//wake up the running cycle
     }
 
-    synchronized public boolean addWaitedTask( Task pending){
+    synchronized public boolean addWaitedTask(final Task pending,final Task whoWaits){
         logger.trace("Waited task added");
         /*if( pending.isSerial() ){
             logger.error("You can only wait from a non-serial task, and only for a non-serial task!!!");
             return false;
         }*/
         taskID.put(pending,nextID);
+        TreeWalkerBase<Object> walker = new TreeWalkerBase<Object>();
+        try{
+            walker.doWalk(taskTree,new TreeWalker.Walk<Object>() {
+                private void checkCursor(TreeCursor<Object> objectTreeCursor) throws TreeWalker.AbortProcessingException {
+                    if(objectTreeCursor.getElement() == whoWaits){
+                        MutableListTreeCursor cur = (MutableListTreeCursor<Object>) objectTreeCursor;
+                        cur.addChild(pending);
+                        throw  new TreeWalker.AbortProcessingException();
+                    }
+                }
+                public void doDown(TreeCursor<Object> objectTreeCursor) throws TreeWalker.AbortProcessingException {
+                    checkCursor(objectTreeCursor);
+                }
+
+                public void doUp(TreeCursor<Object> objectTreeCursor) throws TreeWalker.AbortProcessingException {
+                    checkCursor(objectTreeCursor);
+                }
+
+                public void doNext(TreeCursor<Object> objectTreeCursor) throws TreeWalker.AbortProcessingException {
+                    checkCursor(objectTreeCursor);
+                }
+            });
+        }catch(TreeWalker.AbortProcessingException ex){
+        }
         nextID++;
         taskPriority.put(pending,1); // waited task
         pendingTasks.add(pending);
+        invokeTaskTreeChangeListeners();
         notifyAll();//wake up the running cycle
         return true;
+    }
+    public void toggle(){
+        if(status == TaskManagerStatus.NOT_STARTED || status == TaskManagerStatus.PAUSED)
+            resume();
+        else
+            pause();
     }
     synchronized public void resume(){
         logger.trace("Resumed");
         setStatus(TaskManagerStatus.RUNNING);
+        invokeTaskTreeChangeListeners();
         notifyAll();
     }
     synchronized public void pause(){
         logger.trace("Paused");
         setStatus(TaskManagerStatus.PAUSED);
+        invokeTaskTreeChangeListeners();
         notifyAll();
     }
     synchronized public void run(){
@@ -126,6 +194,7 @@ public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutio
             logger.error("Tried to call run twice!");
             return;//onotole negodue!
         }
+        setStatus(TaskManagerStatus.RUNNING);
         while(true){
             logger.trace("Next run iteration; " + runningTasks.size() + " running, " + pendingTasks.size() + " pending");
             while (getStatus() == TaskManagerStatus.PAUSED){
@@ -171,6 +240,8 @@ public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutio
                         task = pendingTasks.poll();
                         logger.trace("Execute new serial task");
                         runningTasks.add(task);
+                        task.setStatus(Task.TaskStatus.SCHEDULED);
+                        invokeTaskTreeChangeListeners();
                         executor.execute(task);
                     }else{
                         //execute all asynchronous tasks...
@@ -178,6 +249,8 @@ public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutio
                             task = pendingTasks.poll();
                             logger.trace("Execute new task");
                             runningTasks.add(task);
+                            task.setStatus(Task.TaskStatus.SCHEDULED);
+                            invokeTaskTreeChangeListeners();
                             executor.execute(task);
                             task = pendingTasks.peek();
                         }
@@ -198,6 +271,7 @@ public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutio
                         ". Completed: " + executor.getCompletedTaskCount()+
                         ". Overall: " + executor.getTaskCount());
                 setStatus(TaskManagerStatus.NOT_STARTED);
+                invokeTaskTreeChangeListeners();
                 notifyAll();
                 isTerminating = false;
                 return;

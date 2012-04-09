@@ -7,18 +7,17 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import su.msu.cs.lvk.accorute.RBAC.Role;
 import su.msu.cs.lvk.accorute.RBAC.SimpleRBACRole;
+import su.msu.cs.lvk.accorute.gui.*;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 import su.msu.cs.lvk.accorute.tasks.HtmlElementActionPerformer;
 import su.msu.cs.lvk.accorute.tasks.HtmlPageParser;
-import su.msu.cs.lvk.accorute.tasks.ResponseFetcher;
-import su.msu.cs.lvk.accorute.utils.Callback0;
+import su.msu.cs.lvk.accorute.tasks.SitemapCrawler;
 import su.msu.cs.lvk.accorute.utils.Callback3;
 import su.msu.cs.lvk.accorute.utils.Callback4;
-import sun.swing.CachedPainter;
 
-import java.lang.reflect.Array;
+import javax.swing.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -45,6 +44,8 @@ public class PageParserTest {
             System.err.println("Error loading evaluation contexts: " + ex.getMessage());
             return;
         }
+        final LogWatchComponent appender = new LogWatchComponent();
+        Logger.getRootLogger().addAppender(appender);
         URL pageToParse;
         try{
             pageToParse = new URL(args[1]);
@@ -60,7 +61,10 @@ public class PageParserTest {
             username = args[2];
             password = args[3];
         }
+        List<Role> roles = new ArrayList<Role>();
         Role role = SimpleRBACRole.createRootRole("user");
+        roles.add(role);
+        WebAppProperties.getInstance().setRoles(roles);
         WebAppUser u1 = new WebAppUser();
         u1.getStaticCredentials().put("username",username);
         u1.getStaticCredentials().put("password",password);
@@ -70,6 +74,15 @@ public class PageParserTest {
         u1Ctx.setUserID(u1.getUserID());
         WebAppProperties.getInstance().getContextService().addOrUpdateContext(u1Ctx);
         final TaskManager taskman = WebAppProperties.getInstance().getTaskManager();
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                TaskManagerForm form = new TaskManagerForm(taskman);
+                form.addTaskResultViewerFactory(new HtmlPageParserResultViewerFactory());
+                form.addTaskResultViewerFactory(new ResponseFetcherResultViewerFactory());
+                form.addtaskOverviewFactory(new GenericTaskVisualizerFactory());
+                form.addLogAppender(appender);
+            }
+        });
         new Thread(taskman).start();
         HtmlPage parseRoot = null;
         if(needAuth){
@@ -98,6 +111,7 @@ public class PageParserTest {
             parseRoot = pages.get(0);
         }
         final List<CorrespondentActions> outRequests = new ArrayList<CorrespondentActions>();
+        final List<HtmlPage> pages = new ArrayList<HtmlPage>();
         HtmlPageParser pageParser = new HtmlPageParser(
                 taskman,
                 parseRoot,
@@ -111,20 +125,53 @@ public class PageParserTest {
                                 domActions
                         );
                         outRequests.add(actions);
+                        pages.add(page);
                     }
                 }
         );
         taskman.addTask(pageParser);
-        taskman.terminate();
-        taskman.waitForFinish();
+        taskman.waitForEmptyQueue();
         //To change body of implemented methods use File | Settings | File Templates.
-        for(CorrespondentActions corActs: outRequests){
+        int i_google = -1;
+    
+        for(int i = 0 ; i < outRequests.size() ; i++){
+            CorrespondentActions corActs = outRequests.get(i);
             ArrayList<HttpAction> httpActs = corActs.getHttpActions();
             ArrayList<DomAction> domActs = corActs.getDomActions();
             logger.info("=======ACTION======");
             logger.info(httpActs.get(0).toString());
             logger.info(domActs);
+            List<ActionParameter> prms = httpActs.get(0).getActionParameters();
+            for(ActionParameter param : prms){
+                if(param.getName().equals("host")){
+                    if(param.getValue().contains("google-analytics"))
+                        i_google = i; 
+                    break;
+                }
+            }
+            if(i_google != -1)
+                break;
         }
-
+        HtmlElementActionPerformer performer = new HtmlElementActionPerformer(
+                taskman,
+                pages.get(i_google),
+                outRequests.get(i_google).getDomActions(),
+                u1Ctx.getContextID(),
+                new Callback3<ArrayList<Conversation>, ArrayList<HttpAction>, HtmlPage>(){
+                    public void CallMeBack(ArrayList<Conversation> param1, ArrayList<HttpAction> param2, HtmlPage param3) {
+                        logger.info("=========CONVERSATIONS=======");
+                        for(Conversation conv: param1){
+                            logger.info(conv);
+                        }
+                        logger.info("==========HTTP ACTIONS=======");
+                        for(HttpAction action: param2){
+                            logger.info(action);
+                        }
+                    }
+                }
+        );
+        taskman.addTask(performer);
+        taskman.terminate();
+        taskman.waitForFinish();
     }
 }
