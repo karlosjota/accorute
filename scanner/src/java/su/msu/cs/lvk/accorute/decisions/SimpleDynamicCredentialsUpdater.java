@@ -38,13 +38,13 @@ public class SimpleDynamicCredentialsUpdater implements DynamicCredentialsUpdate
             String name = p.getName();
             if(WebAppProperties.getInstance().getDynTokenLoc(name) == p.getLocation()){
                 u.getDynamicCredentials().put(name, p.getValue());
-                logger.trace(userID + "Updated cred: " + name + ": " + p.getValue());
+                logger.trace("userId = " + userID + "} Updated cred: " + name + ": " + p.getValue());
             }
         }
         WebAppProperties.getInstance().getUserService().addOrModifyUser(u);
     }
     public void updateCredentials(EntityID userID, HtmlPage p){
-        logger.trace(userID+"USING THE RESPONSE TO THE FOLLOWING REQUEST \n" + p.getWebResponse().getWebRequest() + "\nWITH RESPONSE:"+p.getWebResponse().getContentAsString());
+        logger.trace("userId = " + userID+"} USING THE RESPONSE TO THE FOLLOWING REQUEST \n" + p.getWebResponse().getWebRequest() + "\nWITH RESPONSE:"+p.getWebResponse().getContentAsString());
         WebClient client = p.getWebClient();
         Set<com.gargoylesoftware.htmlunit.util.Cookie> cooks = client.getCookieManager().getCookies();
         URL u = p.getUrl();
@@ -66,7 +66,7 @@ public class SimpleDynamicCredentialsUpdater implements DynamicCredentialsUpdate
         WebAppUser user = WebAppProperties.getInstance().getUserService().getUserByID(id);
         for(Cookie c: desc.getCookies()){
             user.getDynamicCredentials().put(c.getName(),c.getValue());
-            logger.trace(userID+"Updated cred: " + c.getName() + ":" + c.getValue());
+            logger.trace("userId = " + userID+"} Updated cred: " + c.getName() + ":" + c.getValue());
         }
         WebAppProperties.getInstance().getUserService().addOrModifyUser(user);
 
@@ -103,7 +103,7 @@ public class SimpleDynamicCredentialsUpdater implements DynamicCredentialsUpdate
             for(Cookie c: desc.getCookies()){
                 u.getDynamicCredentials().put(c.getName(),c.getValue());
 
-                logger.trace(userID + "Updated cred: " + c.getName() + ": " + c.getValue());
+                logger.trace("userId = " + userID + "} Updated cred: " + c.getName() + ": " + c.getValue());
             }
             WebAppProperties.getInstance().getCookieService().setCookies(desc);
         }catch (MalformedCookieException ex){

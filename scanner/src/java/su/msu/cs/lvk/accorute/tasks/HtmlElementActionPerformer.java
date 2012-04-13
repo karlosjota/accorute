@@ -7,6 +7,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.util.FalsifyingWebConnection;
 import org.apache.commons.lang.NotImplementedException;
 import su.msu.cs.lvk.accorute.WebAppProperties;
+import su.msu.cs.lvk.accorute.http.constants.ActionParameterLocation;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
@@ -51,11 +52,20 @@ public class HtmlElementActionPerformer extends Task {
 
     @Override
     public String toString() {
-        String prefix = super.toString()+ "{" + ctx.getId().toString() + "}: ";
+        String prefix = "{" + ctx.getId().toString() + "}: ";
         if(page != null){
-            return prefix + page.getUrl() + " " + actions;
+            return prefix + actions + " on " + page.getUrl();
         }else{
-            return prefix + startHttpAct.toString();
+            URL url = WebAppProperties.getInstance().getRcd().getURL(startHttpAct.getActionParameters());
+            boolean isPost = false;
+            for(ActionParameter p : startHttpAct.getActionParameters()){
+                if(p.getLocation() == ActionParameterLocation.BODY){
+                    isPost = true;
+                    break;
+                }
+
+            }
+            return prefix + (isPost?"POST":"GET") + " " + url.toString();
         }
     }
 
@@ -150,9 +160,10 @@ public class HtmlElementActionPerformer extends Task {
         webClient.setAjaxController(new NicelyResynchronizingAjaxController());
         if(page!=null){
             HtmlPage ownPage = HtmlUnitUtils.clonePage(page,webClient.getCurrentWindow(),ctx);
-
             DomAction last = actions.get(actions.size() - 1);
-            HtmlElement el = ownPage.getFirstByXPath(last.getXpathElString());
+            HtmlElement el = ownPage.getFirstByXPath(last.getXpathElString());              
+            logger.trace("My webclient: " + webClient);
+            logger.trace("Page's web client " + ownPage.getWebClient());
             switch (last.getType()){
                 case CLICK:
                     try{
@@ -173,6 +184,7 @@ public class HtmlElementActionPerformer extends Task {
                             return;
                         }
                         webClient.waitForBackgroundJavaScript(10000);
+                        webClient.getJavaScriptEngine().holdPosponedActions();
                         if(newPage instanceof HtmlPage){
                             UserContext contx = WebAppProperties.getInstance().getContextService().getContextByID(ctx);
                             WebAppProperties.getInstance().getDynCredUpd().updateCredentials(contx.getUserID(),(HtmlPage)newPage);
@@ -212,6 +224,7 @@ public class HtmlElementActionPerformer extends Task {
                 //TODO: this creates invalid pages in terms of javascript!
                 Page newPage=webClient.loadWebResponseInto(resp, baseWindow);
                 webClient.waitForBackgroundJavaScript(12000);
+                webClient.getJavaScriptEngine().holdPosponedActions();
                 if(newPage instanceof HtmlPage){
                     UserContext contx = WebAppProperties.getInstance().getContextService().getContextByID(ctx);
                     for(Conversation conv: convs){

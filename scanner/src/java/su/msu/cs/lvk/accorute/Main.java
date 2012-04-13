@@ -7,6 +7,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.w3c.dom.Document;
 import su.msu.cs.lvk.accorute.RBAC.Role;
 import su.msu.cs.lvk.accorute.decisions.MultiStateFormFillFactory;
+import su.msu.cs.lvk.accorute.gui.*;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
@@ -19,6 +20,7 @@ import org.w3c.dom.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.*;
+import javax.swing.*;
 import javax.xml.parsers.*;
 
 import javax.xml.transform.*;
@@ -53,6 +55,20 @@ public class Main{
             System.err.println("Error loading evaluation contexts: " + ex.getMessage());
             return;
         }
+        
+        final TaskManager taskman = WebAppProperties.getInstance().getTaskManager();
+        final LogWatchComponent appender = new LogWatchComponent();
+        Logger.getRootLogger().addAppender(appender);
+        final TaskManagerForm form = new TaskManagerForm(taskman);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                form.addTaskResultViewerFactory(new HtmlPageParserResultViewerFactory());
+                form.addTaskResultViewerFactory(new ResponseFetcherResultViewerFactory());
+                form.addtaskOverviewFactory(new GenericTaskVisualizerFactory());
+                form.addLogAppender(appender);
+            }
+        });
+
         JSONConfigurator configTask = new JSONConfigurator(
                 WebAppProperties.getInstance().getTaskManager(),
                 WebAppProperties.getInstance().getCaptureFileName()
@@ -63,10 +79,13 @@ public class Main{
             if(f.getAbsolutePath().endsWith(".dot")|| f.getAbsolutePath().endsWith(".png")|| f.getAbsolutePath().endsWith(".xml"))
                 f.delete();
         }
-        TaskManager taskman = WebAppProperties.getInstance().getTaskManager();
         taskman.addTask(configTask);
-        new Thread(taskman).start();
         taskman.waitForEmptyQueue();
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                form.refreshRoleTree();
+            }
+        });
         final UseCaseGraph graph = WebAppProperties.getInstance().getUcGraph();
         Iterator<UseCase> it = graph.dependencyRespectingIterator();
         List<Task> tasks = new ArrayList<Task>();

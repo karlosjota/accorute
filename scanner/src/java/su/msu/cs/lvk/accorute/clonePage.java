@@ -6,6 +6,7 @@ import su.msu.cs.lvk.accorute.http.model.EntityID;
 import su.msu.cs.lvk.accorute.utils.HtmlUnitUtils;
 
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * Created by IntelliJ IDEA.
@@ -19,11 +20,17 @@ public class clonePage {
         WebClient w = new WebClient();
         WebClient w1 = new WebClient();
         try{
-            HtmlPage p = w.getPage("http://127.0.0.1/accorute_tests/JS_menu_2/demo1/index.html");
+            HtmlPage p = w.getPage("http://twitter.com");
+            System.out.println(p.getDocumentElement().getScriptObject().hashCode());
+            Date now = new Date();
+            System.out.println(now);
             HtmlPage p3 = HtmlUnitUtils.clonePage(p,w1.getCurrentWindow(), new EntityID());
-            p3.executeJavaScript("menu;");
+            Date later = new Date();
+            System.out.println(later);
+            System.out.println(p.getDocumentElement().getScriptObject().hashCode());
+            System.out.println(p3.getDocumentElement().getScriptObject().hashCode());
         }catch(IOException e){
-            System.out.println("FUCK!");
+            throw new RuntimeException(e);
         }
     }
 }

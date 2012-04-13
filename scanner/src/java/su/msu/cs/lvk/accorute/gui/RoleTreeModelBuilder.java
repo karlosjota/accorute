@@ -44,6 +44,8 @@ public class RoleTreeModelBuilder {
     }
     public static DefaultTreeModel buildModel(){
         List<Role> roles = WebAppProperties.getInstance().getRoles();
+        if(roles == null || roles.isEmpty())
+            return new DefaultTreeModel(new DefaultMutableTreeNode("Empty"));
         Role rootRole = null;
         for(Role r : roles){
             if(r.isRootRole())

@@ -125,9 +125,27 @@ public class TaskManagerForm{
         }
 
     }
-    private void refreshTaskTree(){
-        taskTree.setModel(TaskManagerTreeModelBuilder.buildModel(taskManager_));
-        expandAll(taskTree, new TreePath(taskTree.getModel().getRoot()), true);
+    public void refreshTaskTree(boolean full){
+
+        if(full){
+            DefaultTreeModel m = (DefaultTreeModel) taskTree.getModel();
+            TreeNode[] nodes = m.getPathToRoot((DefaultMutableTreeNode)taskTree.getLastSelectedPathComponent());
+
+            taskTree.setModel(TaskManagerTreeModelBuilder.buildModel(taskManager_));
+            expandAll(taskTree, new TreePath(taskTree.getModel().getRoot()), true);
+            if(nodes != null){
+                ArrayList<TreeNode> treeNodes = new ArrayList<TreeNode>();
+                treeNodes.add((TreeNode)taskTree.getModel().getRoot());
+                for(int i = 0; i< nodes.length-1; i++){
+                    DefaultMutableTreeNode node = (DefaultMutableTreeNode) nodes[i];
+                    treeNodes.add(treeNodes.get(i).getChildAt(node.getIndex(nodes[i+1])));
+                }
+                taskTree.setSelectionPath(new TreePath(treeNodes.toArray()));
+            }
+        }else{
+            TaskManagerTreeModelBuilder.rebuildModel((DefaultTreeModel)  taskTree.getModel(), taskManager_);
+        }
+
         switch (taskManager_.getStatus()) {
             case NOT_STARTED:
                 taskManagerButton.setText("Start");
@@ -141,6 +159,10 @@ public class TaskManagerForm{
         }
 
     }
+    public void refreshRoleTree(){
+        roleTree.setModel(RoleTreeModelBuilder.buildModel());
+        expandAll(roleTree, new TreePath(roleTree.getModel().getRoot()), true);
+    }
     public TaskManagerForm(final TaskManager taskManager) {
         taskManager_ = taskManager;
         frame = new JFrame("TaskManagerForm");
@@ -149,11 +171,11 @@ public class TaskManagerForm{
         frame.pack();
         frame.setVisible(true);
         taskTree.setToggleClickCount(0);
+        taskTree.setCellRenderer(new TaskTreeCellRenderer());
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                refreshTaskTree();
-                roleTree.setModel(RoleTreeModelBuilder.buildModel());
-                expandAll(roleTree, new TreePath(roleTree.getModel().getRoot()), true);
+                refreshTaskTree(true);
+                refreshRoleTree();
                 taskManagerButton.addActionListener(new AbstractAction() {
                     public void actionPerformed(ActionEvent e) {
                         taskManager_.toggle();
@@ -167,7 +189,7 @@ public class TaskManagerForm{
             public void CallMeBack() {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        refreshTaskTree();
+                        refreshTaskTree(false);
                     }
                 });
             }
@@ -198,7 +220,7 @@ public class TaskManagerForm{
         });
         refreshButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                refreshTaskTree();
+                refreshTaskTree(true);
             }
         });
     }

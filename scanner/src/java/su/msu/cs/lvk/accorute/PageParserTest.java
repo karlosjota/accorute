@@ -13,6 +13,7 @@ import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 import su.msu.cs.lvk.accorute.tasks.HtmlElementActionPerformer;
 import su.msu.cs.lvk.accorute.tasks.HtmlPageParser;
+import su.msu.cs.lvk.accorute.tasks.JSONConfigurator;
 import su.msu.cs.lvk.accorute.tasks.SitemapCrawler;
 import su.msu.cs.lvk.accorute.utils.Callback3;
 import su.msu.cs.lvk.accorute.utils.Callback4;
@@ -83,7 +84,6 @@ public class PageParserTest {
                 form.addLogAppender(appender);
             }
         });
-        new Thread(taskman).start();
         HtmlPage parseRoot = null;
         if(needAuth){
             Task authTask = WebAppProperties.getInstance().getAuthTaskFactory().genContextedTask(u1Ctx.getContextID(), taskman);
@@ -132,7 +132,7 @@ public class PageParserTest {
         taskman.addTask(pageParser);
         taskman.waitForEmptyQueue();
         //To change body of implemented methods use File | Settings | File Templates.
-        int i_google = -1;
+        int i_google = 0;
     
         for(int i = 0 ; i < outRequests.size() ; i++){
             CorrespondentActions corActs = outRequests.get(i);
@@ -141,7 +141,7 @@ public class PageParserTest {
             logger.info("=======ACTION======");
             logger.info(httpActs.get(0).toString());
             logger.info(domActs);
-            List<ActionParameter> prms = httpActs.get(0).getActionParameters();
+            /*List<ActionParameter> prms = httpActs.get(0).getActionParameters();
             for(ActionParameter param : prms){
                 if(param.getName().equals("host")){
                     if(param.getValue().contains("google-analytics"))
@@ -151,6 +151,7 @@ public class PageParserTest {
             }
             if(i_google != -1)
                 break;
+            */
         }
         HtmlElementActionPerformer performer = new HtmlElementActionPerformer(
                 taskman,
@@ -171,7 +172,6 @@ public class PageParserTest {
                 }
         );
         taskman.addTask(performer);
-        taskman.terminate();
         taskman.waitForFinish();
     }
 }

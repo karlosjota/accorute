@@ -1,0 +1,70 @@
+{
+  "urlIncludeScope": ".*twitter\\.com.*",
+  "urlExcludeScope": "(?!)",
+  "responceExcludeScope": "(?!)",
+  "idParamNameRegexp": "(?!)",
+  "idParamValRegexp": "(?!)",
+  "roles": [
+    {
+      "name": "public",
+      "parent": "N/A"
+    },
+    {
+      "name": "user",
+      "parent": "public"
+    }
+  ],
+  "users": [
+    {
+      "name": "public1",
+      "role": "public",
+      "credentials": {
+        "login": "public1",
+        "password": ""
+      }
+    },
+    {
+      "name": "public2",
+      "role": "public",
+      "credentials": {
+        "login": "public2",
+        "password": ""
+      }
+    },
+    {
+      "name": "mytwittest3",
+      "role": "user",
+      "credentials": {
+        "login": "mytwittest3",
+        "password": "mytwittest"
+      }
+    },
+    {
+      "name": "mytwittest4",
+      "role": "user",
+      "credentials": {
+        "login": "mytwittest4",
+        "password": "mytwittest"
+      }
+    }
+  ],
+  "dependencies": [],
+  "cancellations": [],
+  "useCases": [],
+  "dynamicTokens": [
+    {
+      "name": "guest_id",
+      "location": "cookie"
+    },
+    {
+      "name": "_twitter_sess",
+      "location": "cookie"
+    },
+    {
+      "name": "k",
+      "location": "cookie"
+    }
+  ],
+  "trace": []
+}
+

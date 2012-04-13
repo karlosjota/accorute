@@ -170,10 +170,12 @@ public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutio
         return true;
     }
     public void toggle(){
-        if(status == TaskManagerStatus.NOT_STARTED || status == TaskManagerStatus.PAUSED)
+        if(status == TaskManagerStatus.PAUSED)
             resume();
-        else
+        else if(status == TaskManagerStatus.RUNNING)
             pause();
+        else if(status == TaskManagerStatus.NOT_STARTED)
+            new Thread(this).start();
     }
     synchronized public void resume(){
         logger.trace("Resumed");

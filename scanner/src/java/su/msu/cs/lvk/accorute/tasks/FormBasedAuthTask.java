@@ -33,7 +33,7 @@ public class FormBasedAuthTask extends Task {
 
     @Override
     public String toString() {
-        return super.toString() + "{" + ctxID.getId().toString() + "}: " + url + ", form #" + Integer.toString(formIndex) + ((submitXPath != null)?", submit: " + submitXPath:"");
+        return "{" + ctxID.getId().toString() + "}: " + url + ", form #" + Integer.toString(formIndex) + ((submitXPath != null)?", submit: " + submitXPath:"");
     }
 
     private final int formIndex;
@@ -163,6 +163,7 @@ public class FormBasedAuthTask extends Task {
             webClient.waitForBackgroundJavaScript(12000);
             HtmlPage newPage = (HtmlPage) p;
             resultPage = newPage;
+            resultPage.getWebClient().getJavaScriptEngine().holdPosponedActions();
             logger.trace("Login task finished successfully");
             setSuccessful(true);
 

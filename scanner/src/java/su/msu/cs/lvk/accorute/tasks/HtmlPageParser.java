@@ -19,6 +19,7 @@ import su.msu.cs.lvk.accorute.utils.HtmlUnitUtils;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.Collections;
 
 /**
  * Created by IntelliJ IDEA.
@@ -35,7 +36,6 @@ public class HtmlPageParser extends Task implements DomChangeListener, HtmlAttri
     }
 
     private final HtmlPage page;
-    private final HtmlPage _oldp;
     private HtmlPage tmpPage;
     private final Callback4<HtmlPage,  ArrayList<DomAction>, HttpAction, Boolean> callback;
     private final WebClient webClient;
@@ -43,7 +43,7 @@ public class HtmlPageParser extends Task implements DomChangeListener, HtmlAttri
     private Collection<String> userControllableFormFields = new ArrayList<String>();
     private WebConnection falseWebConn;
     private final EntityID ctxID;
-    private ArrayList<DomNode> affectedNodes = new ArrayList<DomNode>();
+    private final List<DomNode> affectedNodes = Collections.synchronizedList(new ArrayList<DomNode>());
     private boolean weMayHaveCausedRequest = false;
     private boolean weMayHaveCausedDomOrAttrChange = false;
     private final ArrayList<DomAction> curActionChain = new ArrayList<DomAction>();
@@ -66,12 +66,11 @@ public class HtmlPageParser extends Task implements DomChangeListener, HtmlAttri
     final ArrayList<ResultItem> results = new ArrayList<ResultItem>();
     @Override
     public String toString() {
-        return super.toString() + "{" + ctxID.getId().toString() + "}: " + page.getUrl();
+        return "{" + ctxID.getId().toString() + "}: " + page.getUrl();
 
     }
     public HtmlPageParser(TaskManager t, HtmlPage _page, EntityID ctx, Callback4<HtmlPage,  ArrayList<DomAction>, HttpAction, Boolean> cb) {
         super(t);
-        _oldp = _page;
         callback = cb;
         ctxID = ctx;
         logger.trace("HtmlPageParser created");
@@ -124,6 +123,7 @@ public class HtmlPageParser extends Task implements DomChangeListener, HtmlAttri
         //TODO: requests here may follow, need to intercept and add cookies.
         //TODO: Still, content loaded on load (usually js and css, is almost always not protected by cookies.
         page = HtmlUnitUtils.clonePage(_page,webClient.getCurrentWindow(),ctxID);
+        _page.cleanUp();
         webClient.setWebConnection(falseWebConn);
     }
     private void tryClick(HtmlElement htmlElement) throws IOException{
@@ -139,6 +139,7 @@ public class HtmlPageParser extends Task implements DomChangeListener, HtmlAttri
             WebWindow cur_window = webClient.getCurrentWindow();
 
             WebWindow w = webClient.openWindow(null,"tmpWindow");
+            webClient.setCurrentWindow(w);
             tmpPage =  HtmlUnitUtils.clonePage(page,w,ctxID);
             //get corresponding element...
             HtmlElement el = tmpPage.getFirstByXPath(path);
@@ -160,9 +161,17 @@ public class HtmlPageParser extends Task implements DomChangeListener, HtmlAttri
                 logger.trace("click didn't produce a request");
                 affectedNodes.clear();
                 weMayHaveCausedDomOrAttrChange = true;
+                page.addDomChangeListener(this);
+                page.addHtmlAttributeChangeListener(this);
                 htmlElement.click();
                 weMayHaveCausedDomOrAttrChange = false;
-                for(DomNode node: affectedNodes){
+                page.removeHtmlAttributeChangeListener(this);
+                page.removeDomChangeListener(this);
+                List<DomNode> afNodes;
+                synchronized (affectedNodes){
+                    afNodes = new ArrayList<DomNode>(affectedNodes);
+                }
+                for(DomNode node: afNodes){
                     if(node instanceof HtmlElement)
                         emulateUserActions((HtmlElement)node);
                 }
@@ -251,8 +260,11 @@ public class HtmlPageParser extends Task implements DomChangeListener, HtmlAttri
     public void attributeAdded(HtmlAttributeChangeEvent htmlAttributeChangeEvent) {
         if(weMayHaveCausedDomOrAttrChange){
             logger.trace("attributeAdded: " + htmlAttributeChangeEvent);
-            if(htmlAttributeChangeEvent.getName().startsWith("on"))
-                affectedNodes.add(htmlAttributeChangeEvent.getHtmlElement());
+            if(htmlAttributeChangeEvent.getName().startsWith("on"))  {
+                synchronized (affectedNodes){
+                    affectedNodes.add(htmlAttributeChangeEvent.getHtmlElement());
+                }
+            }
         }else{
             logger.trace("attribute changed but we didn't cause this, " + htmlAttributeChangeEvent);
         }
@@ -265,8 +277,11 @@ public class HtmlPageParser extends Task implements DomChangeListener, HtmlAttri
     public void attributeReplaced(HtmlAttributeChangeEvent htmlAttributeChangeEvent) {
         if(weMayHaveCausedDomOrAttrChange){
             logger.trace("attributeReplaced: " + htmlAttributeChangeEvent);
-            if(htmlAttributeChangeEvent.getName().startsWith("on"))
-                affectedNodes.add(htmlAttributeChangeEvent.getHtmlElement());
+            if(htmlAttributeChangeEvent.getName().startsWith("on")){
+                synchronized (affectedNodes){
+                    affectedNodes.add(htmlAttributeChangeEvent.getHtmlElement());
+                }
+            }
         }else{
             logger.trace("attribute changed but we didn't cause this, " + htmlAttributeChangeEvent);
         }
@@ -275,16 +290,17 @@ public class HtmlPageParser extends Task implements DomChangeListener, HtmlAttri
     @Override
     protected void start() {
         numInvokations++;
-        page.addDomChangeListener(this);
-        page.addHtmlAttributeChangeListener(this);
         webClient.setThrowExceptionOnFailingStatusCode(false);
         webClient.setThrowExceptionOnScriptError(false);
         try{
             emulateUserActions(page.getDocumentElement());
         }catch(IOException ex){
+            setSuccessful(false);
             logger.error("IO exception while doing stuff");
+            return;
         }
         webClient.waitForBackgroundJavaScript(30000);
         webClient.closeAllWindows();
+        setSuccessful(true);
     }
 }

@@ -10,11 +10,13 @@ import org.apache.http.cookie.MalformedCookieException;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.SyncBasicHttpContext;
 import su.msu.cs.lvk.accorute.WebAppProperties;
+import su.msu.cs.lvk.accorute.http.constants.ActionParameterLocation;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.MalformedInputException;
 import java.util.concurrent.Semaphore;
 
@@ -51,8 +53,17 @@ public class ResponseFetcher extends Task {
             return null;
     }
     public String toString(){
-        String prefix = super.toString() + "{" + contextID.getId().toString() + "}: ";
-        return prefix + action.toString();
+        String prefix = "{" + contextID.getId().toString() + "}: ";
+        URL url = WebAppProperties.getInstance().getRcd().getURL(action.getActionParameters());
+        boolean isPost = false;
+        for(ActionParameter p : action.getActionParameters()){
+            if(p.getLocation() == ActionParameterLocation.BODY){
+                isPost = true;
+                break;
+            }
+            
+        }
+        return prefix + (isPost?"POST":"GET") + " " + url.toString();
     }
 
     protected void start() {

@@ -203,10 +203,6 @@ public abstract class Task implements Runnable{
     }
     
     public synchronized String toString(){
-        if(executorThread == null){
-            return this.getClass().getSimpleName() + "[" + this.getStatus() + "]";
-        }else{
-            return this.getClass().getSimpleName() + "[" + executorThread.getName() + ", " + this.getStatus() + "]";
-        }
+        return "";
     }
 }
