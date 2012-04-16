@@ -1,0 +1,19 @@
+<html>
+<head>
+<script language="javascript">
+    function attachStuff(){
+        function listener(){
+            var request = new XMLHttpRequest();  
+            request.open('GET', 'http://www.ya.ru/', false);   
+            request.send(null);  
+            alert("loaded");
+        }
+        document.getElementsByTagName("a")[0].addEventListener("click", listener, true);
+        alert("attached");
+    }
+</script>
+</head>
+<body onload="javascript:attachStuff();">
+<a href="#">Click here</a>
+</body>
+</html>

@@ -163,7 +163,9 @@ public abstract class Task implements Runnable{
             return;
         }
         synchronized (this){
-            if(getStatus() != TaskStatus.NOT_STARTED){
+            if(getStatus() != TaskStatus.BLOCKED){
+                logger.error("Task was resumed when it's not blocked!");
+            }else{
                 logger.trace("Task was RESUMED at thread " + Thread.currentThread().getId());
                 setStatus(TaskStatus.RUNNING);
                 notify();

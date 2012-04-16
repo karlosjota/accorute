@@ -160,10 +160,13 @@ public class FormBasedAuthTask extends Task {
                 setSuccessful(false);
                 return;
             }
-            webClient.waitForBackgroundJavaScript(12000);
+            webClient.waitForBackgroundJavaScript(1000);
             HtmlPage newPage = (HtmlPage) p;
             resultPage = newPage;
-            resultPage.getWebClient().getJavaScriptEngine().holdPosponedActions();
+            loginPage.getEnclosingWindow().getJobManager().removeAllJobs();
+            loginPage.getEnclosingWindow().getJobManager().shutdown();
+            resultPage.getEnclosingWindow().getJobManager().removeAllJobs();
+            resultPage.getEnclosingWindow().getJobManager().shutdown();
             logger.trace("Login task finished successfully");
             setSuccessful(true);
 

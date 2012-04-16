@@ -123,7 +123,6 @@ public class HtmlPageParser extends Task implements DomChangeListener, HtmlAttri
         //TODO: requests here may follow, need to intercept and add cookies.
         //TODO: Still, content loaded on load (usually js and css, is almost always not protected by cookies.
         page = HtmlUnitUtils.clonePage(_page,webClient.getCurrentWindow(),ctxID);
-        _page.cleanUp();
         webClient.setWebConnection(falseWebConn);
     }
     private void tryClick(HtmlElement htmlElement) throws IOException{
@@ -153,6 +152,7 @@ public class HtmlPageParser extends Task implements DomChangeListener, HtmlAttri
             weMayHaveCausedRequest = true;
             logger.trace("Trying to click "+ path);
             el.click();
+            webClient.waitForBackgroundJavaScript(1000);
             weMayHaveCausedRequest = false;
             userControllableFormFields.clear();
             webClient.setCurrentWindow(cur_window);

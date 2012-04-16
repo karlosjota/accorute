@@ -1,12 +1,18 @@
 package su.msu.cs.lvk.accorute;
 
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.CollectingAlertHandler;
+import com.gargoylesoftware.htmlunit.ProxyConfig;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.javascript.SimpleScriptable;
 import su.msu.cs.lvk.accorute.http.model.EntityID;
 import su.msu.cs.lvk.accorute.utils.HtmlUnitUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,18 +23,33 @@ import java.util.Date;
  */
 public class clonePage {
     public static void main(String [] args){
-        WebClient w = new WebClient();
-        WebClient w1 = new WebClient();
+        WebClient w = new WebClient(BrowserVersion.FIREFOX_3_6);
+        WebClient w1 = new WebClient(BrowserVersion.FIREFOX_3_6);
+        final List collectedAlerts = new ArrayList();
+        w1.setAlertHandler(new CollectingAlertHandler(collectedAlerts));
+        w.setProxyConfig(new ProxyConfig("localhost", 8008));
+        w1.setProxyConfig(new ProxyConfig("localhost", 8008));
         try{
-            HtmlPage p = w.getPage("http://twitter.com");
+            HtmlPage p = w.getPage("file:///home/ngo/dev/AcCoRuTe/accorute_tests/3.html");
+            SimpleScriptable window = (SimpleScriptable) p.getEnclosingWindow().getScriptObject();
+            SimpleScriptable w2 = window.clone();
             System.out.println(p.getDocumentElement().getScriptObject().hashCode());
-            Date now = new Date();
-            System.out.println(now);
             HtmlPage p3 = HtmlUnitUtils.clonePage(p,w1.getCurrentWindow(), new EntityID());
-            Date later = new Date();
-            System.out.println(later);
             System.out.println(p.getDocumentElement().getScriptObject().hashCode());
             System.out.println(p3.getDocumentElement().getScriptObject().hashCode());
+            //p.getAnchors().get(0).click();
+            System.out.println(p3.getElementsByTagName("div").size());
+            System.out.println(p.getElementsByTagName("div").size());
+            p3.getAnchors().get(0).click();
+            System.out.println(p3.getElementsByTagName("div").size());
+            System.out.println(p.getElementsByTagName("div").size());
+            p.getAnchors().get(0).click();
+            System.out.println(p3.getElementsByTagName("div").size());
+            System.out.println(p.getElementsByTagName("div").size());
+            p3.getAnchors().get(0).click();
+            System.out.println(p3.getElementsByTagName("div").size());
+            System.out.println(p.getElementsByTagName("div").size());
+            System.out.println(collectedAlerts);
         }catch(IOException e){
             throw new RuntimeException(e);
         }

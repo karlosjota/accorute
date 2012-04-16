@@ -1,0 +1,17 @@
+<html>
+<head>
+<script language="javascript">
+    function attachStuff(){
+        function listener(){
+            var div = document.createElement("div");
+            document.getElementsByTagName("body")[0].appendChild(div);
+        }
+        document.getElementsByTagName("a")[0].addEventListener("click", listener, true);
+        alert("attached");
+    }
+</script>
+</head>
+<body onload="javascript:attachStuff();">
+<a href="#">Click here</a>
+</body>
+</html>

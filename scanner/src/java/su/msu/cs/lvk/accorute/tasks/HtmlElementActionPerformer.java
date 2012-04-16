@@ -184,7 +184,7 @@ public class HtmlElementActionPerformer extends Task {
                             return;
                         }
                         webClient.waitForBackgroundJavaScript(10000);
-                        webClient.getJavaScriptEngine().holdPosponedActions();
+                        newPage.getEnclosingWindow().getJobManager().shutdown();
                         if(newPage instanceof HtmlPage){
                             UserContext contx = WebAppProperties.getInstance().getContextService().getContextByID(ctx);
                             WebAppProperties.getInstance().getDynCredUpd().updateCredentials(contx.getUserID(),(HtmlPage)newPage);
@@ -224,7 +224,7 @@ public class HtmlElementActionPerformer extends Task {
                 //TODO: this creates invalid pages in terms of javascript!
                 Page newPage=webClient.loadWebResponseInto(resp, baseWindow);
                 webClient.waitForBackgroundJavaScript(12000);
-                webClient.getJavaScriptEngine().holdPosponedActions();
+                newPage.getEnclosingWindow().getJobManager().shutdown();
                 if(newPage instanceof HtmlPage){
                     UserContext contx = WebAppProperties.getInstance().getContextService().getContextByID(ctx);
                     for(Conversation conv: convs){

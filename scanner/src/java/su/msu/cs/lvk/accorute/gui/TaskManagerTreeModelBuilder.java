@@ -58,7 +58,8 @@ public class TaskManagerTreeModelBuilder {
             }else{
                 DefaultMutableTreeNode child = null;
                 if(update_){
-                    child = searchChild(current_, userObject);    
+                    child = searchChild(current_, userObject);
+                    model_.nodeChanged(current_);
                 }
                 if(child == null){
                     child = new DefaultMutableTreeNode(userObject);
@@ -67,13 +68,12 @@ public class TaskManagerTreeModelBuilder {
                         int cindex [] = {current_.getChildCount() -1};
                         if(current_.getChildCount() == 1){
                             model_.reload(current_);
-                        }else{
-                            model_.nodeChanged(current_);
                         }
                         model_.nodesWereInserted(current_, cindex);
                     }
                 }
                 current_ = child;
+                model_.nodeChanged(child);
             }
         }
 
@@ -87,6 +87,7 @@ public class TaskManagerTreeModelBuilder {
             DefaultMutableTreeNode parent = (DefaultMutableTreeNode) current_.getParent();
             if(update_){
                 n = searchChild(parent, userObject);
+                model_.nodeChanged(n);
             }
             if(n == null){
                 n = new DefaultMutableTreeNode(userObject);
