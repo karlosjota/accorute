@@ -29,20 +29,15 @@
                 <artifact pattern="http://spring-rich-c.sourceforge.net/maven2repository/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
             </url>
 
-            <url name="Apache snapshot repository" m2compatible="true">
-                <artifact pattern="http://people.apache.org/maven-snapshot-repository/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
-            </url>
-
-            <url name="Codehaus repository" m2compatible="true">
-                <artifact pattern="http://repository.codehaus.org/maven-snapshot-repository/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
-            </url>
+            <ibiblio name="Apache snapshot repository" m2compatible="true" root="http://repository.apache.org/content/groups/snapshots/"/>
+            <ibiblio name="Littleproxy repository" m2compatible="true" root="https://oss.sonatype.org/content/repositories/snapshots/" />
 
             <chain name="accorute" returnFirst="true">
                 <resolver ref="local"/>
-
                 <resolver ref="com.springsource.repository.bundles.release"/>
                 <resolver ref="com.springsource.repository.bundles.external"/>
                 <resolver ref="Apache snapshot repository"/>
+                <resolver ref="Littleproxy repository"/>
                 <resolver ref="public"/>
                 <resolver ref="caret.cam.ac.uk"/>
                 <resolver ref="Spring rich client repository"/>

@@ -21,13 +21,13 @@
        <dependency org="net.sourceforge.htmlunit" name="htmlunit" rev="2.9" conf="*->default"/>
        <dependency org="net.sourceforge.htmlunit" name="htmlunit-core-js" rev="2.9" conf="*->default"/>
 
-       <!--<dependency org="org.apache.httpcomponents" name="httpclient" rev="4.0.3" conf="compile->default"/>  
-       <dependency org="org.apache.httpcomponents" name="httpcore" rev="4.0.1" conf="compile->default"/>  -->
-       <dependency org="commons-lang" name="commons-lang" rev="2.5" conf="*->default"/>
-       <dependency org="commons-collections" name="commons-collections" rev="3.2.1" conf="*->default"/>
+       <!--<dependency org="commons-lang" name="commons-lang" rev="2.7-SNAPSHOT" conf="*->default"/>
+       <dependency org="commons-collections" name="commons-collections" rev="4.0-SNAPSHOT" conf="*->default"/>-->
 
        <dependency org="html-cleaner" name="html-cleaner" rev="2.1" conf="*->default"/>
        <dependency org="net.sourceforge.jchardet" name="jchardet" rev="1.0" conf="*->default"/>
+
+       <dependency org="org.littleshoot" name="littleproxy" rev="0.5-SNAPSHOT" conf="*->default"/>
 
        <dependency org="org.json" name="json" rev="20090211" conf="*->default"/>
   </dependencies>
