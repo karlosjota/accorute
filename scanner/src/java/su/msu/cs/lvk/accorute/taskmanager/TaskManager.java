@@ -6,11 +6,9 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import su.msu.cs.lvk.accorute.tasks.TaskDeletedForGC;
 import su.msu.cs.lvk.accorute.utils.Callback0;
 
-import javax.swing.event.TreeModelListener;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -36,6 +34,40 @@ public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutio
             cb.CallMeBack();
         }
     }
+    public void cleanTree(){
+        synchronized (taskTree){
+            final TaskManager theTaskManager = this;
+            final Map<TreeCursor, List<Object>> nodesToDeleteByParent = new HashMap<TreeCursor, List<Object>>();
+            try {
+                walkTree(new TreeWalker.Walk<Object>() {
+                    private void process(TreeCursor<Object> objectTreeCursor) throws TreeWalker.AbortProcessingException {
+                        if(objectTreeCursor.getElement() instanceof Task){
+                            MutableTreeCursor<Object> theCursor = (MutableTreeCursor<Object>) objectTreeCursor;
+                            if(((Task)theCursor.getElement()).getStatus() == Task.TaskStatus.FINISHED){
+                                String s = theCursor.getElement().getClass().getSimpleName() + " " +theCursor.getElement().toString();
+                                theCursor.setElement(new TaskDeletedForGC(theTaskManager, s));
+                            }
+                        }
+                    }
+                    public void doDown(TreeCursor<Object> objectTreeCursor) throws TreeWalker.AbortProcessingException {
+                        process(objectTreeCursor);
+                    }
+
+                    public void doUp(TreeCursor<Object> objectTreeCursor) throws TreeWalker.AbortProcessingException {
+                        //process(objectTreeCursor);
+                    }
+
+                    public void doNext(TreeCursor<Object> objectTreeCursor) throws TreeWalker.AbortProcessingException {
+                        process(objectTreeCursor);
+                    }
+                });
+            } catch (TreeWalker.AbortProcessingException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
+        invokeTaskTreeChangeListeners();
+
+    }
     public String toString(){
         return "Task Manager " + getStatus().toString() + ": " + runningTasks.size() + " running, " + pendingTasks.size() + " pending";
     }
@@ -49,7 +81,7 @@ public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutio
     final int maxThreads = 5000;
     final private Queue<Task> pendingTasks = new PriorityQueue<Task>(100,this);
     final private HashSet<Task> runningTasks = new HashSet<Task>();
-    final private ThreadPoolExecutor executor = new  ThreadPoolExecutor(maxThreads/2,maxThreads,2,
+    final private ThreadPoolExecutor executor = new  ThreadPoolExecutor(20, maxThreads,2,
                 TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
     final private HashMap<Task, Integer> taskPriority = new HashMap<Task, Integer>();
     private int nextID = 0;
@@ -215,6 +247,8 @@ public class TaskManager implements Comparator<Task>, Runnable, RejectedExecutio
             //...and remove them from running 
             for(Task t : finishedTasks){
                 runningTasks.remove(t);
+                taskPriority.remove(t);
+                taskID.remove(t);
                 logger.trace("removed task from running");
             }
             boolean serialRunning = false;

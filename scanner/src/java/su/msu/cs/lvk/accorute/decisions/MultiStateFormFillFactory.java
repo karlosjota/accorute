@@ -7,6 +7,7 @@ import su.msu.cs.lvk.accorute.http.model.WebAppUser;
 
 import java.util.*;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Created by IntelliJ IDEA.
@@ -19,9 +20,9 @@ public class MultiStateFormFillFactory implements FormFillerFactory {
     public static int numInvokations = 0;
     public String defaultInputText = null;
     public String defaultTextAreaText = null;
-    public boolean cycleSelects = false;
-    public boolean cycleRadioButtons = false;
-    public boolean cycleCheckboxes = false;
+    public boolean cycleSelects = true;
+    public boolean cycleRadioButtons = true;
+    public boolean cycleCheckboxes = true;
 
     public MultiStateFormFillFactory(
             String defaultInputText,
@@ -193,6 +194,8 @@ public class MultiStateFormFillFactory implements FormFillerFactory {
         private Iterator<HtmlElement> submitIter;
         private HtmlElement currentSubmit;
 
+        private Pattern EMAIL_PATTERN =  Pattern.compile("^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+
         public SimpleFormFill(EntityID ctx,
                               HtmlForm form,
                               boolean cycleCheckboxes,
@@ -232,7 +235,16 @@ public class MultiStateFormFillFactory implements FormFillerFactory {
                         }
                         if(!gotPartial){
                             if(name.toLowerCase().contains("mail")){
-                                input.setValueAttribute("test@example.org");//TODO: terrible cludge!
+                                String val = "";
+                                for(Map.Entry<String,String> e :user.getStaticCredentials().entrySet()){
+                                    if(EMAIL_PATTERN.matcher(e.getValue()).matches()){
+                                        val = e.getValue();
+                                        break;
+                                    }
+                                }
+                                if(val.length() == 0)
+                                    val = "test@example.org";
+                                input.setValueAttribute(val);//TODO: terrible cludge!
                             }else if(defaultInputText!=null){
                                 input.setValueAttribute(defaultInputText);
                             }

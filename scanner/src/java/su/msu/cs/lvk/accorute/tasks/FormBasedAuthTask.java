@@ -97,7 +97,8 @@ public class FormBasedAuthTask extends Task {
     @Override
     protected void start() {
         setSuccessful(false);
-        webClient.setJavaScriptEnabled(true);
+        if(!WebAppProperties.getInstance().isENABLE_JAVASCRIPT_ANALYSIS())
+            webClient.setJavaScriptEnabled(false);
         webClient.setThrowExceptionOnFailingStatusCode(false);
         webClient.setThrowExceptionOnScriptError(false);
         webClient.setAjaxController(new NicelyResynchronizingAjaxController());
@@ -163,11 +164,16 @@ public class FormBasedAuthTask extends Task {
                 setSuccessful(false);
                 return;
             }
-            webClient.waitForBackgroundJavaScript(1000);
+
+            if(WebAppProperties.getInstance().isENABLE_JAVASCRIPT_ANALYSIS()){
+                webClient.waitForBackgroundJavaScript(1000);
+            }
             HtmlPage newPage = (HtmlPage) p;
             resultPage = newPage;
             loginPage.getEnclosingWindow().getJobManager().removeAllJobs();
             loginPage.getEnclosingWindow().getJobManager().shutdown();
+            newPage.getEnclosingWindow().getJobManager().removeAllJobs();
+            newPage.getEnclosingWindow().getJobManager().shutdown();
             logger.trace("Login task finished successfully");
             setSuccessful(true);
         } catch (IOException e) {

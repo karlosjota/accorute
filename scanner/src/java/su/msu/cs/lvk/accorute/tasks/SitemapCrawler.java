@@ -279,22 +279,29 @@ public class SitemapCrawler extends Task implements Callback0{
                 }
                 if(pendingTasks.size() == 0)
                     break;
-                ListIterator<Task> iter = pendingTasks.listIterator();
-                while(iter.hasNext()){
-                    if(addWaitedTask(iter.next()))
+                //ListIterator<Task> iter = pendingTasks.listIterator();
+                int size = pendingTasks.size();
+                //while(iter.hasNext()){
+                for(int i = 0 ; i < size ; i ++){
+                    /*if(addWaitedTask(iter.next()))
                         spawnedTasks++;
                     else{
                         logger.error(contextID + ":Could not add task!");
                         wasErr = true;
-                    }
-                    iter.remove();
+                    } */
+                    spawnedTasks++;
+                    waitForTask(pendingTasks.get(i));
+                    //iter.remove();
+                //}
                 }
+                for(int i = 0 ; i < size ; i ++)
+                    pendingTasks.remove(0);
             }
         }
         WebAppProperties.getInstance().getSitemapService().setSitemapForContext(contextID,siteMap);
-        setSuccessful(wasErr);
+        setSuccessful(!wasErr);
     }
     public Object getResult(){
-        return null;
+        return siteMap;
     }
 }

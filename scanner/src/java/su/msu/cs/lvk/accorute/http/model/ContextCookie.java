@@ -35,6 +35,11 @@ public class ContextCookie extends BasicClientCookie {
      */
     public ContextCookie(Cookie other){
         super(other.getName(), other.getValue());
+        setPath(other.getPath());
+        setSecure(other.isSecure());
+        setExpiryDate(other.getExpiryDate());
+        setDomain(other.getDomain());
+        setVersion(other.getVersion());
 
     }
 }

@@ -30,6 +30,15 @@ public class SimpleDetectSpikes extends Task{
     }
 
     @Override
+    public String toString() {
+        UserContext uc1 = WebAppProperties.getInstance().getContextService().getContextByID(ctxID1);
+        WebAppUser u1 = WebAppProperties.getInstance().getUserService().getUserByID(uc1.getUserID());
+        UserContext uc2 = WebAppProperties.getInstance().getContextService().getContextByID(ctxID2);
+        WebAppUser u2 = WebAppProperties.getInstance().getUserService().getUserByID(uc2.getUserID());
+        return u1 + "->" + u2;
+    }
+
+    @Override
     public Object getResult() {
         return res;
     }

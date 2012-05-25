@@ -1,14 +1,11 @@
 package su.msu.cs.lvk.accorute.tasks;
 
-import com.sun.xml.internal.stream.buffer.MutableXMLStreamBuffer;
-import com.sun.xml.internal.stream.buffer.XMLStreamBuffer;
-import com.sun.xml.internal.stream.buffer.XMLStreamBufferSource;
-import com.sun.xml.internal.ws.api.streaming.XMLStreamReaderFactory;
-import org.springframework.scheduling.quartz.SimpleTriggerBean;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 import su.msu.cs.lvk.accorute.RBAC.Role;
 import su.msu.cs.lvk.accorute.RBAC.SimpleRBACRole;
 import su.msu.cs.lvk.accorute.WebAppProperties;
@@ -20,11 +17,19 @@ import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+/*
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMResult;
+import com.sun.xml.internal.stream.buffer.MutableXMLStreamBuffer;
+import com.sun.xml.internal.stream.buffer.XMLStreamBuffer;
+import com.sun.xml.internal.stream.buffer.XMLStreamBufferSource;
+*/
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -83,15 +88,18 @@ public class ConfigurationLoader extends Task {
     protected void start() {
         try {
             setSuccessful(false);
-            InputStream inputStream = new FileInputStream(file);
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document doc = db.parse(file);
+            /*InputStream inputStream = new FileInputStream(file);
             XMLStreamReader inputReader = XMLInputFactory.newFactory().createXMLStreamReader(inputStream);
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             XMLStreamBuffer buf = MutableXMLStreamBuffer.createNewBufferFromXMLStreamReader(inputReader);
             Source source = new XMLStreamBufferSource(buf);
             DOMResult result = new DOMResult();
-            transformer.transform(source,result);
-            Node node = result.getNode();
+            transformer.transform(source,result);*/
+            Node node = doc;
             if(node.getChildNodes().getLength() != 1)
                 throw new RuntimeException("More than one root element!");
             Element rootElement = (Element) node.getChildNodes().item(0);
@@ -288,13 +296,19 @@ public class ConfigurationLoader extends Task {
             setSuccessful(true);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
-        } catch (XMLStreamException e) {
+        }/* catch (XMLStreamException e) {
             throw new RuntimeException(e);
         } catch (TransformerConfigurationException e) {
             throw new RuntimeException(e);
         } catch (TransformerException e) {
             throw new RuntimeException(e);
-        } catch (MalformedURLException e) {
+        }*/ catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        } catch (SAXException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 

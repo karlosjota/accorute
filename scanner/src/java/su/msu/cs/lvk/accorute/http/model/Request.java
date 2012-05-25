@@ -226,7 +226,11 @@ public class Request extends Message {
             List<Header> headers = cookies.getSpec().formatCookies(cookies.getCookies());
             String val = "";
             for(Header h: headers){
-                val = val + h.getValue() + ";";
+                String newVal = h.getValue();
+                if(newVal.contains("$Version=0;")){
+                    newVal = newVal.substring(newVal.indexOf("$Version=0;") + 11);
+                }
+                val = val + newVal + ";";
             }
             val = val.substring(0,val.length() - 1);
             setHeader("Cookie",val);

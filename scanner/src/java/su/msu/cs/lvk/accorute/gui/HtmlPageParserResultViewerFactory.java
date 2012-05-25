@@ -61,13 +61,14 @@ public class HtmlPageParserResultViewerFactory implements TaskVisualiserFactory 
             for (HtmlPageParser.TraversalStep traversalStep : parser.getTraversalSteps()) {
                 DefaultMutableTreeNode theNode = new DefaultMutableTreeNode(
                         traversalStep.getPrerequisiteActions().toString()
-                        + " " +Integer.toString(traversalStep.getNodeProcessed().size()) +"/" + Integer.toString(traversalStep.getNodes().size())
+                        + " " +Integer.toString(traversalStep.getNodeAdditionalData().keySet().size()) +"/" + Integer.toString(traversalStep.getNodes().size())
                         + (traversalStep.isDone()?" DONE":"")
                 );
                 for(DomNode n: traversalStep.getNodes()){
                     try {
                         theNode.add(new DefaultMutableTreeNode(
-                                n.getCanonicalXPath() +  (traversalStep.getNodeProcessed().contains(n)?" DONE":"")
+                                n.getCanonicalXPath() +
+                                (traversalStep.getNodeAdditionalData().containsKey(n)?traversalStep.getNodeAdditionalData().get(n):"")
                         ));
                     } catch (NullPointerException e) {
                     }

@@ -113,7 +113,6 @@ public class FullAnalysisTask extends Task {
             }
         }
         waitForTask(loginGroup);
-
         boolean started = false;
         Document rootDocument;
         Element rootElement;
@@ -161,11 +160,12 @@ public class FullAnalysisTask extends Task {
                 EntityID ctxID2 = users2.get(r.getRoleName());
                 WebAppProperties.getInstance().getConversationService().clearContextConversations(ctxID1);
                 WebAppProperties.getInstance().getConversationService().clearContextConversations(ctxID2);
-                waitForTask(new SitemapCrawler(taskman, currentPages.get(ctxID1), ctxID1));
-                waitForTask(new SitemapCrawler(taskman, currentPages.get(ctxID2), ctxID2));
-                //sitemapGroup.addTsk(new SitemapCrawler(taskman, currentPages.get(ctxID1), ctxID1));
-                //sitemapGroup.addTsk(new SitemapCrawler(taskman, currentPages.get(ctxID2), ctxID2));
+                //waitForTask(new SitemapCrawler(taskman, currentPages.get(ctxID1), ctxID1));
+                //waitForTask(new SitemapCrawler(taskman, currentPages.get(ctxID2), ctxID2));
+                sitemapGroup.addTsk(new SitemapCrawler(taskman, currentPages.get(ctxID1), ctxID1));
+                sitemapGroup.addTsk(new SitemapCrawler(taskman, currentPages.get(ctxID2), ctxID2));
             }
+            sitemapGroup.setConcurrent(false);
             waitForTask(sitemapGroup);
             for(final Role role: WebAppProperties.getInstance().getRoles()){
                 String rName = role.getRoleName();
@@ -177,8 +177,8 @@ public class FullAnalysisTask extends Task {
                 WebAppProperties.getInstance().getSitemapService().getSitemapForContext(u2).writeToFile(
                         "report/"+ucNum+ucName+"_"+rName + "_2.dot",rName + "_2"
                 );
-
             }
+            taskManager.cleanTree();
             TaskGroup spikeGroup = new TaskGroup(taskman, "Perform spike detection");
             //3. Perform spike detection
             for(final Role attackRole: WebAppProperties.getInstance().getRoles()){
@@ -239,7 +239,9 @@ public class FullAnalysisTask extends Task {
                     }
                 }
             }
+            spikeGroup.setConcurrent(false);
             waitForTask(spikeGroup);
+            taskManager.cleanTree();
             ucNum++;
             try{
                 //Output the XML
@@ -273,7 +275,7 @@ public class FullAnalysisTask extends Task {
                 return;
             }
 
-        }while(it.hasNext() && stateChangingSpikes.size() == 0);
+        }while(it.hasNext() /*&& stateChangingSpikes.size() == 0*/);
         waitForSpawnedTasks();
         System.out.print(WebAppProperties.getInstance().getUcGraph());
         if( stateChangingSpikes.size() != 0)

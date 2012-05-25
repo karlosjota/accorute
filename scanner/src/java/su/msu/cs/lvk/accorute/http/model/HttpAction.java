@@ -41,6 +41,16 @@ public class HttpAction implements Serializable {
         }
         return wr.toString();
     }
+    public String toStringRealNl() {
+        StringWriter wr = new StringWriter();
+        for(ActionParameter p: actionParameters){
+            wr.write(p.getName());
+            wr.write(":");
+            wr.write(p.getValue());
+            wr.write("\n");
+        }
+        return wr.toString();
+    }
 
     public void appendToElement(Element el) {
         Document doc = el.getOwnerDocument();

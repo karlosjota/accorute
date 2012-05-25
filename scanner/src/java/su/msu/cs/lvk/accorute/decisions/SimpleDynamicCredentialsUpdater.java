@@ -53,11 +53,15 @@ public class SimpleDynamicCredentialsUpdater implements DynamicCredentialsUpdate
                 u.getHost(),
                 (u.getPort()==-1)?u.getDefaultPort():u.getPort(),
                 u.getPath(),
-                false
+                u.getProtocol().equalsIgnoreCase("https")
         ); // TODO: false here
         List<Cookie> cookies = new ArrayList<Cookie>();
         for(com.gargoylesoftware.htmlunit.util.Cookie cook: cooks){
-            cookies.add(new BasicClientCookie(cook.getName(), cook.getValue()));
+            BasicClientCookie c = new BasicClientCookie(cook.getName(), cook.getValue());
+            c.setDomain(cook.getDomain());
+            c.setExpiryDate(cook.getExpires());
+            c.setPath(cook.getPath());
+            cookies.add(c);
         }
         EntityID ctxID = WebAppProperties.getInstance().getContextService().getContextsByUserID(userID).get(0).getContextID();
         CookieDescriptor desc = new CookieDescriptor(cookies,origin,ctxID);
@@ -108,7 +112,7 @@ public class SimpleDynamicCredentialsUpdater implements DynamicCredentialsUpdate
             }
             WebAppProperties.getInstance().getCookieService().setCookies(desc);
         }catch (MalformedCookieException ex){
-            logger.warn("Malforming cookie, will skip");
+            logger.warn("Malformed cookie, will skip");
         }
         WebAppProperties.getInstance().getUserService().addOrModifyUser(u);
     }

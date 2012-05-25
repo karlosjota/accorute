@@ -21,6 +21,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -83,9 +84,21 @@ public class SimpleRCD extends RequestComposerDecomposer{
         }else if(m!=HttpMethod.GET){
             throw new NotImplementedException("Methods other than get and post are not supported");
         }
-        String cookies = r.getAdditionalHeaders().get("Cookie");
-        if(cookies != null)
-            params.addAll(decomposeCookies(cookies));
+        for(Map.Entry<String, String> entry : r.getAdditionalHeaders().entrySet()){
+            if(entry.getKey().equalsIgnoreCase("Cookie")){
+                String cookies = entry.getValue();
+                if(cookies != null)
+                    params.addAll(decomposeCookies(cookies));
+            }else{
+                params.add(new ActionParameter(
+                        entry.getKey(),
+                        entry.getValue(),
+                        ActionParameterLocation.HEADER,
+                        decideActionMeaning(entry.getKey(),entry.getValue(),ActionParameterLocation.HEADER,userControllable),
+                        ActionParameterDatatype.STRING
+                ));
+            }
+        }
         if(isPost){
             String body = r.getRequestBody();
             if(body != null){    
@@ -173,7 +186,19 @@ public class SimpleRCD extends RequestComposerDecomposer{
             } else if(param.getLocation() == ActionParameterLocation.HEADER){
                 req.addHeader(new NamedValue(param.getName(), param.getValue()));
             } else if (param.getLocation() == ActionParameterLocation.COOKIE){
-                cookies.add (new BasicClientCookie(param.getName(), param.getValue()));
+                BasicClientCookie cookie;
+                if(param.getAdditionalData() != null){
+                    BasicClientCookie additionalData = (BasicClientCookie) param.getAdditionalData();
+                    try {
+                        cookie = (BasicClientCookie) additionalData.clone();
+                        cookie.setValue(param.getValue());
+                    } catch (CloneNotSupportedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }else{
+                    cookie = new BasicClientCookie(param.getName(), param.getValue());
+                }
+                cookies.add (cookie);
             }
         }
         if(url.getPort() != -1){
@@ -279,7 +304,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
             case COOKIE:
                 return ActionParameterMeaning.SESSIONTOKEN;
             case HEADER:
-                return ActionParameterMeaning.SESSIONTOKEN;
+                return ActionParameterMeaning.USERCONTROLLABLE;
             case QUERY:{
                 if(uControllable.contains(name))
                     return ActionParameterMeaning.USERCONTROLLABLE;
@@ -296,7 +321,9 @@ public class SimpleRCD extends RequestComposerDecomposer{
         ArrayList<ActionParameter> params = new ArrayList<ActionParameter>();
         String [] cooks = cookies.split("[,;]");
         for(String cook: cooks){
-            String [] namevalue = cook.split("=");
+            String [] namevalue = cook.split("=",2);
+            if(namevalue[0].trim().startsWith("$"))
+                continue;
             params.add(new ActionParameter(
                     namevalue[0].trim(),
                     namevalue[1].trim(),

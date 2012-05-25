@@ -37,26 +37,30 @@ public class HtmlElementActionPerformer extends Task {
         NOTHTML,
         NOREQUEST
     };
-    final private HtmlPage originalPage;
-    private HtmlPage ownPage;
+    private HtmlPage originalPage;
+    private HtmlPage ownPage = null;
     final private URL startingUrl;
     final private ArrayList<DomAction> actions;
     final private EntityID ctx;
     final private Callback3<ArrayList<Conversation>, ArrayList<HttpAction>, HtmlPage> callback;
     final private WebClient webClient = new WebClient(BrowserVersion.FIREFOX_3_6);
     private final WebConnection falseWebConn;
-    private Result result = Result.NOTFINISHED;
+    private HtmlPage result = null;
     private boolean wasReq = false;
     private Collection<String> userControllableFormFields = new ArrayList<String>();
     private final ArrayList<Conversation> convs = new ArrayList<Conversation>();
     private final ArrayList<HttpAction> acts = new ArrayList<HttpAction>();
     private final HttpAction startHttpAct;
 
+    public EntityID getCtx() {
+        return ctx;
+    }
+
     @Override
     public String toString() {
         String prefix = "{" + ctx.getId().toString() + "}: ";
-        if(originalPage != null){
-            return prefix + actions + " on " + originalPage.getUrl();
+        if(ownPage != null){
+            return prefix + actions + " on " + ownPage.getUrl();
         }else if(startingUrl != null){
             return prefix + " load " + startingUrl;
         }else{
@@ -102,6 +106,7 @@ public class HtmlElementActionPerformer extends Task {
         falseWebConn = initConn();
         startHttpAct = null;
         startingUrl = _startingUrl;
+
     }
     public HtmlElementActionPerformer(
             TaskManager t,
@@ -123,6 +128,7 @@ public class HtmlElementActionPerformer extends Task {
         if(!theCloner.isSuccessful())
             throw  new RuntimeException("Clone unsuccessful");
         ownPage =  (HtmlPage) theCloner.getResult();
+        originalPage = null;
     }
     private WebConnection initConn(){
         WebConnection falseWebC= new FalsifyingWebConnection(webClient){
@@ -159,6 +165,8 @@ public class HtmlElementActionPerformer extends Task {
 
     @Override
     protected void start() {
+        if(!WebAppProperties.getInstance().isENABLE_JAVASCRIPT_ANALYSIS())
+            webClient.setJavaScriptEnabled(false);
         webClient.setThrowExceptionOnFailingStatusCode(false);
         webClient.setThrowExceptionOnScriptError(false);
         webClient.setConfirmHandler(
@@ -183,7 +191,7 @@ public class HtmlElementActionPerformer extends Task {
                 }
         );
         webClient.setAjaxController(new NicelyResynchronizingAjaxController());
-        if(originalPage !=null){
+        if(ownPage !=null){
             DomAction last = actions.get(actions.size() - 1);
             HtmlElement el = ownPage.getFirstByXPath(last.getXpathElString());
             logger.trace("My webclient: " + webClient);
@@ -203,24 +211,28 @@ public class HtmlElementActionPerformer extends Task {
                         if(!wasReq){
                             //This should never happen!
                             logger.error("No request intercepted!!!");
-                            result = Result.NOREQUEST;
                             setSuccessful(false);
                             return;
                         }
-                        webClient.waitForBackgroundJavaScript(10000);
-                        newPage.getEnclosingWindow().getJobManager().shutdown();
+                        if(WebAppProperties.getInstance().isENABLE_JAVASCRIPT_ANALYSIS()){
+                            webClient.waitForBackgroundJavaScript(12000);
+                            newPage.getEnclosingWindow().getJobManager().shutdown();
+                        }
                         if(newPage instanceof HtmlPage){
+                            if(newPage.getEnclosingWindow().getTopWindow().getEnclosedPage() != newPage){
+                                logger.warn("Click returned not a top-level page!!!");
+                                newPage = newPage.getEnclosingWindow().getTopWindow().getEnclosedPage();
+                            }
                             UserContext contx = WebAppProperties.getInstance().getContextService().getContextByID(ctx);
                             WebAppProperties.getInstance().getDynCredUpd().updateCredentials(contx.getUserID(),(HtmlPage)newPage);
                             callback.CallMeBack(convs,acts,(HtmlPage)newPage);
+                            result = (HtmlPage) newPage;
                         }else{
                             logger.warn("Not a html page?!");
-                            result = Result.NOTHTML;
                             setSuccessful(false);
                             return;
                         }
                     }catch ( IOException ex){
-                        result = Result.FETCHERROR;
                         setSuccessful(false);
                         return;
                     }
@@ -235,16 +247,19 @@ public class HtmlElementActionPerformer extends Task {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            newPage.getEnclosingWindow().getJobManager().shutdown();
+            if(WebAppProperties.getInstance().isENABLE_JAVASCRIPT_ANALYSIS()){
+                webClient.waitForBackgroundJavaScript(12000);
+                newPage.getEnclosingWindow().getJobManager().shutdown();
+            }
             UserContext contx = WebAppProperties.getInstance().getContextService().getContextByID(ctx);
             WebAppProperties.getInstance().getDynCredUpd().updateCredentials(contx.getUserID(),(HtmlPage)newPage);
             callback.CallMeBack(convs,acts,newPage);
+            result = (HtmlPage) newPage;
 
         }else if(startHttpAct != null){
             ResponseFetcher tsk = new ResponseFetcher(super.taskManager, startHttpAct, ctx);
             waitForTask(tsk);
             if(!tsk.isSuccessful()){
-                result = Result.FETCHERROR;
                 logger.error("Could not fetch responce!!!");
                 return; //no success
             }
@@ -259,8 +274,10 @@ public class HtmlElementActionPerformer extends Task {
             try{
                 //TODO: this creates invalid pages in terms of javascript!
                 Page newPage=webClient.loadWebResponseInto(resp, baseWindow);
-                webClient.waitForBackgroundJavaScript(12000);
-                newPage.getEnclosingWindow().getJobManager().shutdown();
+                if(WebAppProperties.getInstance().isENABLE_JAVASCRIPT_ANALYSIS()){
+                    webClient.waitForBackgroundJavaScript(12000);
+                    newPage.getEnclosingWindow().getJobManager().shutdown();
+                }
                 if(newPage instanceof HtmlPage){
                     UserContext contx = WebAppProperties.getInstance().getContextService().getContextByID(ctx);
                     for(Conversation conv: convs){
@@ -268,9 +285,9 @@ public class HtmlElementActionPerformer extends Task {
                     }
                     WebAppProperties.getInstance().getDynCredUpd().updateCredentials(contx.getUserID(),(HtmlPage)newPage);
                     callback.CallMeBack(convs,acts,(HtmlPage)newPage);
+                    result = (HtmlPage) newPage;
                 }else{
                     logger.warn("Not a html page?!");
-                    result = Result.NOTHTML;
                     setSuccessful(false);
                     return;
                 }
@@ -283,6 +300,5 @@ public class HtmlElementActionPerformer extends Task {
 
         }
         setSuccessful(true);
-        result = Result.SUCCESSFUL;
     }
 }

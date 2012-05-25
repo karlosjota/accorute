@@ -37,7 +37,7 @@ public class UseCaseGraph extends CallbackContainer implements Comparator<UseCas
                 ucDepGraph.addEdge(dep, uc);
             }
             for(UseCase canc: other.getCancelledBy(uc)){
-                ucCancelGraph.addEdge(canc, uc);
+                ucCancelGraph.addEdge(uc, canc);
             }
         }
         notifyCallbacks();
@@ -203,6 +203,8 @@ public class UseCaseGraph extends CallbackContainer implements Comparator<UseCas
             throw new IllegalArgumentException("Null template UC!!!");
         }
         UseCase res = null;
+        if(ucDepGraph.vertexSet().contains(template))
+            return template;
         Iterator it = ucDepGraph.vertexSet().iterator();
         while(it.hasNext()){
             UseCase uc = (UseCase)it.next();

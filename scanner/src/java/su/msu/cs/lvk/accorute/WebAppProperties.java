@@ -25,6 +25,12 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class WebAppProperties{
+    private static boolean ENABLE_JAVASCRIPT_ANALYSIS = false;
+
+    public boolean isENABLE_JAVASCRIPT_ANALYSIS() {
+        return ENABLE_JAVASCRIPT_ANALYSIS;
+    }
+
     private static WebAppProperties ourInstance = new WebAppProperties();
     private DynamicCredentialsUpdater dynCredUpd;
 

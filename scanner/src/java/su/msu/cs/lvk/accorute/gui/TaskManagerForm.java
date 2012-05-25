@@ -1,5 +1,6 @@
 package su.msu.cs.lvk.accorute.gui;
 
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxConstants;
@@ -16,6 +17,8 @@ import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 import su.msu.cs.lvk.accorute.tasks.*;
 import su.msu.cs.lvk.accorute.utils.Callback0;
+import su.msu.cs.lvk.accorute.utils.Callback3;
+import su.msu.cs.lvk.accorute.utils.Callback4;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -29,6 +32,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -182,6 +186,49 @@ public class TaskManagerForm{
                 }
             });
             popup.add(results);
+            if(node.getUserObject() instanceof HtmlElementActionPerformer){
+                JMenuItem parser = new JMenuItem("queue HtmlPageParser run on resulting page");
+                final HtmlElementActionPerformer theTask = ((HtmlElementActionPerformer) node.getUserObject());
+                parser.addActionListener(new AbstractAction() {
+                    public void actionPerformed(ActionEvent e) {
+                        taskManager_.addTask(new HtmlPageParser(
+                                taskManager_,
+                               (HtmlPage)theTask.getResult(),
+                                theTask.getCtx(),
+                                new Callback4<HtmlPage, ArrayList<DomAction>, HttpAction, Boolean>() {
+                                    public void CallMeBack(HtmlPage param1, ArrayList<DomAction> param2, HttpAction param3, Boolean param4) {
+                                        //do nothing
+                                    }
+                                }
+                        ));
+                        showTaskResults(node);
+                    }
+                });
+                popup.add(parser);
+            }else if(node.getUserObject() instanceof SitemapCrawler){
+                JMenuItem export = new JMenuItem("export sitemap to an image");
+                export.addActionListener(new AbstractAction() {
+                    public void actionPerformed(ActionEvent e) {
+                        new Thread(new Runnable() {
+                            public void run() {
+                                try {
+                                    Sitemap sitemap  = (Sitemap) ((SitemapCrawler)node.getUserObject()).getResult();
+                                    File temp = File.createTempFile("graph", ".dot");
+                                    sitemap.writeToFile(temp.getAbsolutePath(),"");
+                                    //File temp2 = File.createTempFile("graph", ".png");
+                                    //Runtime.getRuntime().exec("dot " + temp.getAbsolutePath() + " -Tpng -o " + temp2.getAbsolutePath()).waitFor();
+                                    JOptionPane.showMessageDialog(frame, "Dot-file saved to " + temp.getAbsolutePath());
+                                } catch (IOException e) {
+                                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                                }/* catch (InterruptedException e) {
+                                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                                } */
+                            }
+                        }).start();
+                    }
+                });
+                popup.add(export);
+            }
             popup.show(tree, x, y);
         }
         @Override
@@ -1052,6 +1099,94 @@ public class TaskManagerForm{
             }
         });
         analysisMenu.add(run);
+        JMenuItem loadPage = new JMenuItem("Load a page");
+        loadPage.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                List<UserContext> contexts = new ArrayList<UserContext>();
+                for(Role r: WebAppProperties.getInstance().getRoles()){
+                    for(WebAppUser u:WebAppProperties.getInstance().getUserService().getUsersByRole(r.getRoleName())){
+                        contexts.addAll(WebAppProperties.getInstance().getContextService().getContextsByUserID(u.getUserID()));
+                    }
+                }
+                if(contexts.size() == 0){
+                    displayError("You must create at least one context!");
+                    return;
+                }
+                Object choice = JOptionPane.showInputDialog(
+                        frame,
+                        "Choose the context",
+                        "Choose the context",
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        contexts.toArray(),
+                        contexts.get(0)
+                );
+                if(choice == null){
+                    return;
+                }
+                UserContext ctx = (UserContext) choice;
+                choice = JOptionPane.showInputDialog(
+                        frame,
+                        "Enter the page URL",
+                        "Enter the page URL",
+                        JOptionPane.PLAIN_MESSAGE
+                );
+                if(choice == null){
+                    return;
+                }
+                String url = (String) choice;
+                URL theUrl;
+                try{
+                    theUrl = new URL(url);
+                } catch (MalformedURLException e1) {
+                    displayError("Invalid URL!");
+                    return;
+                }
+                taskManager.addTask(new HtmlElementActionPerformer(
+                        taskManager,
+                        theUrl,
+                        ctx.getContextID(),
+                        new Callback3<ArrayList<Conversation>, ArrayList<HttpAction>, HtmlPage>() {
+                            public void CallMeBack(ArrayList<Conversation> param1, ArrayList<HttpAction> param2, HtmlPage param3) {
+                                //nothing
+                            }
+                }));
+            }
+        });
+        analysisMenu.add(loadPage);
+        JMenuItem createCtx = new JMenuItem("Create a fresh context and log in");
+        createCtx.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                List<WebAppUser> users = new ArrayList<WebAppUser>();
+                for(Role r: WebAppProperties.getInstance().getRoles()){
+                    users.addAll(WebAppProperties.getInstance().getUserService().getUsersByRole(r.getRoleName()));
+                }    
+                if(users.size() == 0){
+                    displayError("You must create at least one user!");
+                }
+                Object choice = JOptionPane.showInputDialog(
+                        frame,
+                        "Choose user",
+                        "Choose user",
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        users.toArray(),
+                        users.get(0)
+                );
+                if(choice == null)
+                    return;
+                WebAppUser theUser = (WebAppUser) choice;
+                UserContext context = new UserContext();
+                context.setUserID(theUser.getUserID());
+                WebAppProperties.getInstance().getContextService().addOrUpdateContext(context);
+                JOptionPane.showMessageDialog(frame, "You created context {"+context.getContextID()+"}");
+                if(!theUser.getUserRole().getRoleName().equals("public")){
+                    final Task loginTask = WebAppProperties.getInstance().getAuthTaskFactory().genContextedTask(context.getContextID(), taskManager);
+                    taskManager.addTask(loginTask);
+                }
+            }
+        });
+        analysisMenu.add(createCtx);
         menuBar.add(analysisMenu);
         frame.setJMenuBar(menuBar);
         WebAppProperties.getInstance().getStateChangingHttpActions().addCallback(new Callback0() {

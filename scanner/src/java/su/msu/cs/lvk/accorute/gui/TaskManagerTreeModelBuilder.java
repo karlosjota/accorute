@@ -7,6 +7,8 @@ import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,6 +23,7 @@ public class TaskManagerTreeModelBuilder {
         DefaultMutableTreeNode current_;
         private final boolean update_;
         private final DefaultTreeModel model_;
+        private Set<DefaultMutableTreeNode> currentApprovedChildren = new HashSet<DefaultMutableTreeNode>();
 
         public DefaultMutableTreeNode getRoot() {
             return root_;
@@ -72,6 +75,7 @@ public class TaskManagerTreeModelBuilder {
                         model_.nodesWereInserted(current_, cindex);
                     }
                 }
+                currentApprovedChildren.add(child);
                 current_ = child;
                 if(model_ != null)
                     model_.nodeChanged(child);
@@ -80,6 +84,21 @@ public class TaskManagerTreeModelBuilder {
 
         public void doUp(TreeCursor treeCursor) throws TreeWalker.AbortProcessingException {
             current_ = (DefaultMutableTreeNode) current_.getParent();
+            for(int i = 0; i < current_.getChildCount(); i++){
+                DefaultMutableTreeNode n = (DefaultMutableTreeNode)current_.getChildAt(i);
+                if(!currentApprovedChildren.contains(n)){
+                    current_.remove(i);
+                    int cindex [] = {i};
+                    Object childrenRemoved [] = {n};
+                    model_.nodesWereRemoved(current_,cindex,childrenRemoved);
+                    i--;
+                }else{
+                    currentApprovedChildren.remove(n);
+                }
+            }
+            if(current_.getChildCount() == 1){
+                model_.reload(current_);
+            }
         }
 
         public void doNext(TreeCursor treeCursor) throws TreeWalker.AbortProcessingException {
@@ -99,6 +118,7 @@ public class TaskManagerTreeModelBuilder {
                     model_.nodeChanged(parent);
                 }
             }
+            currentApprovedChildren.add(n);
             current_ = n;
         }
     }

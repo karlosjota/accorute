@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.lang.reflect.*;
 import java.util.*;
 import org.apache.log4j.Logger;
+import su.msu.cs.lvk.accorute.WebAppProperties;
 
 /**
  * Created by IntelliJ IDEA.
@@ -641,11 +642,12 @@ public class HtmlUnitUtils {
             setField(newHandlers,newHandlers.getClass(),"bubblingHandlers_",newBubblingHandlers);
             //a.2.3  handler_
             Object origHandler =  getField(origHandlers, origHandlers.getClass(),"handler_");
-            Scriptable newHandler = null;
+            Object newHandler = null;
             if(origHandler != null){
-                if(! (origHandler instanceof Scriptable))
-                    throw new RuntimeException("Handler not a scriptable??? WTF???");
-                newHandler = deepCopyScriptable((Scriptable) origHandler, originalsToClonesMap, contextFactory);
+                if(origHandler instanceof Scriptable)
+                    newHandler = deepCopyScriptable((Scriptable) origHandler, originalsToClonesMap, contextFactory);
+                else
+                    newHandler = origHandler;
             }
             setField(newHandlers,newHandlers.getClass(),"handler_",newHandler);
             newEventHandlers.put(key, newHandlers);
@@ -1866,6 +1868,8 @@ public class HtmlUnitUtils {
         originalsToClonesMap.put(null, null);
         GregorianCalendar start = new GregorianCalendar();
         HtmlPage newPage = (HtmlPage) deepCopyDom(originalPage, null, window, originalsToClonesMap);
+        if(!WebAppProperties.getInstance().isENABLE_JAVASCRIPT_ANALYSIS())
+            return newPage;
         if(window.getScriptObject() == null){
             window.getWebClient().getJavaScriptEngine().initialize(window);
         }

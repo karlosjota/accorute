@@ -60,6 +60,7 @@ public class GuiMain {
                 TaskManagerForm form = new TaskManagerForm(taskman);
                 form.addTaskResultViewerFactory(new HtmlPageParserResultViewerFactory());
                 form.addTaskResultViewerFactory(new ResponseFetcherResultViewerFactory());
+                form.addTaskResultViewerFactory(new SitemapCrawlerResultViewerFactory());
                 form.addtaskOverviewFactory(new GenericTaskVisualizerFactory());
                 form.addLogAppender(appender);
             }

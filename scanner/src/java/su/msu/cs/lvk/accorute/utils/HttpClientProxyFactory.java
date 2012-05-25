@@ -2,6 +2,7 @@ package su.msu.cs.lvk.accorute.utils;
 
 import org.apache.http.HttpHost;
 import org.apache.http.HttpVersion;
+import org.apache.http.client.params.ClientPNames;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnPerRoute;
 import org.apache.http.conn.params.ConnRoutePNames;
@@ -14,6 +15,7 @@ import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.log4j.Logger;
@@ -68,6 +70,9 @@ public class HttpClientProxyFactory {
         cm.setMaxTotal(1);
         HttpParams params = new BasicHttpParams();
         params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
+        params.setParameter(ClientPNames.ALLOW_CIRCULAR_REDIRECTS, true);
+        HttpConnectionParams.setConnectionTimeout(params, 10000);
+        HttpConnectionParams.setSoTimeout(params, 10000);
         AbstractHttpClient httpClient = new DefaultHttpClient(cm, params);
         if(proxy != null){
             httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);

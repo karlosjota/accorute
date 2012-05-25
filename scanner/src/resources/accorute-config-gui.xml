@@ -35,11 +35,11 @@
         <constructor-arg type="int" value="40"/> <!-- MuLTILINE and DOTALL-->
     </bean>
     <bean id="prohibRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
-        <constructor-arg value=".*403.*" />
+        <constructor-arg value=".*(403)|(Cheatin.* uh?)|(You are not allowed to).*" />
         <constructor-arg type="int" value="40"/>
     </bean>
     <bean id="expireRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
-        <constructor-arg value=".*You're not logged in.*" />
+        <constructor-arg value=".*wordpress/wp-login.php?redirect_to=.*" />
         <constructor-arg type="int" value="40"/>
     </bean>
     <bean id="errorRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
@@ -57,9 +57,9 @@
     <bean id="formFillerFactory" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.MultiStateFormFillFactory">
         <constructor-arg value="test" />
         <constructor-arg value="test" />
-        <constructor-arg value="true" />
-        <constructor-arg value="true" />
-        <constructor-arg value="true" />
+        <constructor-arg value="false" />
+        <constructor-arg value="false" />
+        <constructor-arg value="false" />
     </bean>
     <bean id="simpleAGD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.LevensteinAGD" />
     <bean id="proxy" scope="prototype" class="org.apache.http.HttpHost">
@@ -71,6 +71,9 @@
     </bean>
     <bean id="dynCredUp" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimpleDynamicCredentialsUpdater" />
 
+    <bean id="mainPage" class="java.net.URL">
+        <constructor-arg value="http://www.example.net" />
+    </bean>
     <bean id="Properties" class="su.msu.cs.lvk.accorute.WebAppProperties" factory-method="getInstance">
         <property name="actionService" ref="actionService"/>
         <property name="contextService" ref="contextService"/>
@@ -91,9 +94,6 @@
         <property name="dynCredUpd" ref="dynCredUp"/>
         <property name="captureFileName" value="" />
         <property name="mainPage" ref="mainPage" />
-    </bean>
-    <bean id="mainPage" class="java.net.URL">
-        <constructor-arg value="http://www.example.net" />
     </bean>
 
 </beans>

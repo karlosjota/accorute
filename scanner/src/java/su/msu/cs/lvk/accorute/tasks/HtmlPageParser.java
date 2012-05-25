@@ -8,19 +8,23 @@ import com.gargoylesoftware.htmlunit.javascript.host.Node;
 import com.gargoylesoftware.htmlunit.util.FalsifyingWebConnection;
 import com.gargoylesoftware.htmlunit.util.NameValuePair;
 import net.sourceforge.htmlunit.corejs.javascript.*;
-import org.apache.commons.collections.list.UnmodifiableList;
+import net.sourceforge.htmlunit.corejs.javascript.ast.AstRoot;
 import org.w3c.dom.NodeList;
 import su.msu.cs.lvk.accorute.WebAppProperties;
 import su.msu.cs.lvk.accorute.decisions.FormFiller;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
+import su.msu.cs.lvk.accorute.utils.AstCompare;
 import su.msu.cs.lvk.accorute.utils.Callback4;
 import su.msu.cs.lvk.accorute.utils.HtmlUnitUtils;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 import java.util.Collections;
@@ -33,13 +37,38 @@ import java.util.Collections;
  * To change this template use File | Settings | File Templates.
  */
 public class HtmlPageParser extends Task{
+    //Analysis adjustments
+    static boolean SHOULD_PROCESS_DOM_CHANGES = false;
+    static boolean SPAWN_CLONER_TASK = false;
+
     public static int numInvokations = 0;
+    static String[] jqueryHandlers ={
+            "function( e ) {" +
+                "return typeof jQuery !== \"undefined\" && (!e || jQuery.event.triggered !== e.type) ?" +
+                    "jQuery.event.dispatch.apply( eventHandle.elem, arguments ) :" +
+                    "undefined;" +
+            "};",
+            "function (a) {\n" +
+                "return typeof jQuery == \"undefined\" || !!a && jQuery.event.triggered === a.type ? b : jQuery.event.dispatch.apply(i.elem, arguments);\n" +
+            "};" ,
+            "function () {\n" +
+                "return typeof jQuery !== \"undefined\" && !jQuery.event.triggered ? jQuery.event.handle.apply(eventHandle.elem, arguments) : undefined;\n" +
+            "}"
+    };
+    static AstRoot[] jqueryHandlerAstRoots =new AstRoot[jqueryHandlers.length];
+
+    {
+        for(int i = 0 ; i < jqueryHandlers.length ; i++){
+            jqueryHandlerAstRoots[i] = new Parser().parse(jqueryHandlers[i], "", 0);
+        }
+    }
+
     public HtmlPage getPage() {
         return page;
     }
     private HtmlPage page;
     private int count = 0;
-    private final HtmlPage origPage;
+    private HtmlPage origPage;
     private HtmlPage clonedPage;
     private final Callback4<HtmlPage,  ArrayList<DomAction>, HttpAction, Boolean> callback;
     private final WebClient webClient;
@@ -57,7 +86,7 @@ public class HtmlPageParser extends Task{
     private boolean weMayHaveCausedRequest = false;
     private ArrayList<DomAction> curActionChain = null;
     
-    private Map<String,Set<DomNode>> nodesWithHandlerAttachedByEvent = new HashMap<String, Set<DomNode>>();
+    private Map<String,Set<DomNode>> nodesWithNoJqHandlerAttachedByEvent = new HashMap<String, Set<DomNode>>();
     private Map<String,Map<DomNode, List<String>>> selectorsByNodeByEvent = new HashMap<String, Map<DomNode, List<String>>>();
     
     public class TraversalStep{
@@ -65,8 +94,8 @@ public class HtmlPageParser extends Task{
             return Collections.unmodifiableCollection(nodes);
         }
 
-        public Collection<DomNode> getNodeProcessed() {
-            return Collections.unmodifiableSet(nodeProcessed);
+        public Map<DomNode, String> getNodeAdditionalData() {
+            return Collections.unmodifiableMap(nodeAdditionalData);
         }
 
         public Collection<DomAction> getPrerequisiteActions() {
@@ -74,7 +103,7 @@ public class HtmlPageParser extends Task{
         }
 
         final Collection<DomNode> nodes;
-        final HashSet<DomNode> nodeProcessed = new HashSet<DomNode>();
+        final Map<DomNode, String> nodeAdditionalData = new HashMap<DomNode, String>();
         final ArrayList<DomAction> prerequisiteActions;
         final HtmlPage page;
 
@@ -105,23 +134,22 @@ public class HtmlPageParser extends Task{
         }
     }
     final ArrayList<ResultItem> results = new ArrayList<ResultItem>();
+
     private class CallBackArgs{
-        private final HtmlPage page;
         private final ArrayList<DomAction> acts;
         private final HttpAction act;
         private final boolean cancellable;
 
-        private CallBackArgs(HtmlPage page,  ArrayList<DomAction> acts, HttpAction act, boolean cancellable) {
+        private CallBackArgs( ArrayList<DomAction> acts, HttpAction act, boolean cancellable) {
             this.act = act;
             this.acts = acts;
             this.cancellable = cancellable;
-            this.page = page;
         }
     }
     private final List<CallBackArgs> cbArgs = Collections.synchronizedList(new LinkedList<CallBackArgs>());
     @Override
     public String toString() {
-        return "{" + ctxID.getId().toString() + "}: " + origPage.getUrl();
+        return "{" + ctxID.getId().toString() + "}: " + ((page != null)?page.getUrl():"");
     }
     public HtmlPageParser(TaskManager t, HtmlPage page_, EntityID ctx, Callback4<HtmlPage,  ArrayList<DomAction>, HttpAction, Boolean> cb) {
         super(t);
@@ -141,8 +169,8 @@ public class HtmlPageParser extends Task{
                 }
                 ArrayList<DomAction> acChain= (ArrayList<DomAction>)  curActionChain.clone();
                 HttpAction act =  new HttpAction("tmp", param);
-                //cbArgs.add(new CallBackArgs(clonedPage, acChain, act, cancellable));
-                callback.CallMeBack(clonedPage, acChain, act, cancellable);
+                cbArgs.add(new CallBackArgs( acChain, act, cancellable));
+                //callback.CallMeBack(clonedPage, acChain, act, cancellable);
                 results.add(new ResultItem(acChain, act));
                 WebResponseData wrd = new WebResponseData(
                         "<html></html>".getBytes(),
@@ -194,12 +222,7 @@ public class HtmlPageParser extends Task{
             webClient.setCurrentWindow(webClient.getWebWindows().get(0));
             TopLevelWindow tmpWindow = (TopLevelWindow) webClient.openWindow(null,"tempWindow#"+Integer.toString(count++));
             webClient.setCurrentWindow(tmpWindow);
-            PageCloner theCloner = new PageCloner(taskManager,page,tmpWindow);
-            waitForTask(theCloner);
-            if(!theCloner.isSuccessful()){
-                throw new RuntimeException("Clonning the page was unsuccessful!");
-            }
-            clonedPage = (HtmlPage) theCloner.getResult();
+            clonedPage = clonePage(page,tmpWindow);
         }else{
             webClient.setCurrentWindow(clonedPage.getEnclosingWindow());
         }
@@ -208,36 +231,49 @@ public class HtmlPageParser extends Task{
         if(clonedElement == null)
             throw  new RuntimeException("Error after cloning a page: element not found by xpath " + path);
         wasRequest = false;
-        //cbArgs.clear();
+        cbArgs.clear();
         //dry-run the action
         weMayHaveCausedRequest = true;
         logger.trace("Trying to click " + path);
+
         DomAndAttrListener listener = new DomAndAttrListener(new HashSet<DomNode>());
-        clonedPage.addDomChangeListener(listener);
+        if(WebAppProperties.getInstance().isENABLE_JAVASCRIPT_ANALYSIS() && SHOULD_PROCESS_DOM_CHANGES)
+            clonedPage.addDomChangeListener(listener);
         curActionChain.add(new DomAction(path, DomActionType.CLICK));
-        clonedElement.click();
-        webClient.waitForBackgroundJavaScript(100);
-        clonedPage.removeDomChangeListener(listener);
-        weMayHaveCausedRequest = false;
-        userControllableFormFields.clear();
-        webClient.setCurrentWindow(cur_window);
-        webClient.getCache().clear();
+        try{
+            clonedElement.click();
+            if(WebAppProperties.getInstance().isENABLE_JAVASCRIPT_ANALYSIS()){
+                webClient.waitForBackgroundJavaScript(2000);
+            }
+            clonedPage.removeDomChangeListener(listener);
+            weMayHaveCausedRequest = false;
+            userControllableFormFields.clear();
+            webClient.setCurrentWindow(cur_window);
+            webClient.getCache().clear();
+        }catch (Exception ex){
+            logger.error("Exception inside HtmlUnit while clicking!!!");
+            canReusePage = false;
+            curActionChain.remove(curActionChain.size() - 1);
+            return;
+        }
         if(wasRequest){
             logger.trace("click produced a request");
-            /*
-            canReusePage = false;
             synchronized (cbArgs){
                 for(CallBackArgs args : cbArgs){
-                    callback.CallMeBack(args.page, args.acts, args.act, args.cancellable);
+                    callback.CallMeBack(page, args.acts, args.act, args.cancellable);
                 }
             }
             cbArgs.clear();
-            */
-            ((TopLevelWindow)clonedPage.getEnclosingWindow()).close();
-            webClient.deregisterWebWindow(clonedPage.getEnclosingWindow());
+            if(WebAppProperties.getInstance().isENABLE_JAVASCRIPT_ANALYSIS()){
+                canReusePage = false;
+                ((TopLevelWindow)clonedPage.getEnclosingWindow()).close();
+                webClient.deregisterWebWindow(clonedPage.getEnclosingWindow());
+            }
         }else if(listener.wasChanged()&& listener.getAffectedNodes().size() != 0){
             logger.trace("click produced a DOM change");
-            canReusePage = false;
+            if(WebAppProperties.getInstance().isENABLE_JAVASCRIPT_ANALYSIS()){
+                canReusePage = false;
+            }
             ArrayList<DomAction> theActionChain = new ArrayList<DomAction>(curActionChain);
             Set<DomNode> nodesToProcess = new HashSet<DomNode>();
             for(DomNode n: listener.getAffectedNodes()){
@@ -248,7 +284,9 @@ public class HtmlPageParser extends Task{
             }
             traversalSteps.add(new TraversalStep(nodesToProcess, theActionChain, clonedPage));
         }else{
-            canReusePage = !listener.wasChanged();
+            if(WebAppProperties.getInstance().isENABLE_JAVASCRIPT_ANALYSIS()){
+                canReusePage = !listener.wasChanged();
+            }
         }
         curActionChain.remove(curActionChain.size() - 1);
     }
@@ -279,7 +317,7 @@ public class HtmlPageParser extends Task{
                 nodes.add(node);
             }
             String [] events = {"click", "mousedown", "mouseup"};
-            nodesWithHandlerAttachedByEvent.clear();
+            nodesWithNoJqHandlerAttachedByEvent.clear();
             selectorsByNodeByEvent.clear();
             for(String eventName : events){
                 HashSet<DomNode> nodesWithHandlerAttached = new HashSet<DomNode>();
@@ -302,10 +340,22 @@ public class HtmlPageParser extends Task{
                         if (handlerProp != null && (handlerProp instanceof Function)) {
                             allHandlers.add((Function) handlerProp);
                         }
-                        if(allHandlers.size() != 0){
-                            nodesWithHandlerAttached.add(node);
+                        Class InterpretedFunctionClass = Class.forName("net.sourceforge.htmlunit.corejs.javascript.InterpretedFunction");
+                        boolean hasJQ = false;
+                        boolean hasNoJQ = false;
+                        for(Function handler : allHandlers){
+                            if(InterpretedFunctionClass.isInstance(handler)){
+                                String src = handler.toString();
+                                Parser parser = new Parser();
+                                AstRoot astRoot = parser.parse(src, "", 0);
+                                astRoot.toString();
+                                for(int i = 0; i < jqueryHandlerAstRoots.length ; i++){
+                                    if(AstCompare.equalsIgnoringNames(astRoot, jqueryHandlerAstRoots[i])){
+                                        hasJQ = true;
+                                    }
+                                }
+                            }
                         }
-                        boolean hasJQ = true; // TODO: static analysis!!!
                         if(hasJQ){
                             Object h = thePage.getWebClient().getJavaScriptEngine().execute(thePage, "jQuery(" + js + ").data(\"events\")" ,"",0);
                             if(h instanceof Undefined)
@@ -318,19 +368,30 @@ public class HtmlPageParser extends Task{
                             for(int i = 0 ; i < handlers.getLength(); i++){
                                 NativeObject handler = (NativeObject) handlers.get(i);
                                 Object selector = handler.get("selector", handler);
-                                if(selector == null || selector instanceof Undefined){
-                                    nodesWithHandlerAttached.add(node);
-                                }else{
+                                if(selector != null && !(selector instanceof Undefined)){
                                     if(!selectorsByNode.containsKey(node)){
                                         selectorsByNode.put(node,new ArrayList<String>());
                                     }
-                                    selectorsByNode.get(node).add(selector.toString());
+                                    if(selector instanceof UniqueTag){
+                                        nodesWithHandlerAttached.add(node);
+                                    }else{
+                                        selectorsByNode.get(node).add(selector.toString());
+                                    }
+                                }else{
+                                    Object handlerFunc = handler.get("handler", handler);
+                                    if(handlerFunc != null && !(handlerFunc instanceof Undefined)){
+                                        nodesWithHandlerAttached.add(node);
+                                    }
                                 }
                             }
+                        }else{
+                            if(allHandlers.size() != 0)
+                                nodesWithHandlerAttached.add(node);
                         }
+
                     }
                 }
-                nodesWithHandlerAttachedByEvent.put(eventName, nodesWithHandlerAttached);
+                nodesWithNoJqHandlerAttachedByEvent.put(eventName, nodesWithHandlerAttached);
                 selectorsByNodeByEvent.put(eventName,selectorsByNode);
             }
         } catch (Exception e) {
@@ -351,21 +412,8 @@ public class HtmlPageParser extends Task{
                     continue;
                 }
                 HtmlElement subjectElement = (HtmlElement) theNode;
-                if(!doJsActions(subjectElement) && (subjectElement instanceof  HtmlAnchor) && (!((HtmlAnchor)subjectElement).getHrefAttribute().equals(DomElement.ATTRIBUTE_NOT_DEFINED))){
-                    tryClick(subjectElement);
-                }
-                if(subjectElement instanceof  HtmlForm){
-                    HtmlForm form = (HtmlForm) subjectElement;
-                    FormFiller filler;
-                    filler = WebAppProperties.getInstance().getFormFillerFactory().generate(form,ctxID);
-                    if(! filler.hasNext()){
-                        logger.warn("Form which cannot be submitted!!!");
-                    }
-                    while(filler.hasNext()){
-                        tryClick(filler.next());
-                    }
-                }
-                step.nodeProcessed.add(theNode);
+                String comment = doActions(subjectElement);
+                step.nodeAdditionalData.put(theNode, comment);
             }
             step.done = true;
         }
@@ -373,28 +421,34 @@ public class HtmlPageParser extends Task{
     private boolean shouldPerformEvent(DomNode domNode, String event){
         ScriptableObject scriptableObject = domNode.getScriptObject();
         if (scriptableObject != null && scriptableObject instanceof Node){
-            Node jsNode = (Node) scriptableObject;
-            if(nodesWithHandlerAttachedByEvent.get(event).contains(domNode)){
+            if(nodesWithNoJqHandlerAttachedByEvent.get(event).contains(domNode)){
                 return true;
             }
-            DomNode curNode = domNode.getParentNode();
-            String js = getJsByNode(domNode);
-            while(curNode != null){
-                if(selectorsByNodeByEvent.get(event).containsKey(curNode)){
-                    List<String> selectors = selectorsByNodeByEvent.get(event).get(curNode);
-                    for(String selector : selectors){
-                        String jsQuery = "jQuery(\"" + selector + "\").filter("+js+")";
-                        Object rez = domNode.getPage().getWebClient().getJavaScriptEngine().execute((HtmlPage) domNode.getPage(), jsQuery,"",0);
-                        if(!(rez instanceof NativeObject)){
-                            continue;
-                        }
-                        Double len = (Double) ((NativeObject) rez).get("length", (Scriptable) rez);
-                        if(len != 0){
-                            return true;
+            DomNode curUpperNode = domNode.getParentNode();
+            while(curUpperNode != null){
+                if(!(curUpperNode instanceof  HtmlPage) && !(curUpperNode instanceof  HtmlBody) && ( nodesWithNoJqHandlerAttachedByEvent.get(event).contains(curUpperNode))){
+                    return true;
+                }
+                DomNode curMiddleNode = domNode;
+                while(curMiddleNode != curUpperNode){
+                    String js = getJsByNode(curMiddleNode);
+                    if(selectorsByNodeByEvent.get(event).containsKey(curUpperNode)){
+                        List<String> selectors = selectorsByNodeByEvent.get(event).get(curUpperNode);
+                        for(String selector : selectors){
+                            String jsQuery = "jQuery(\"" + selector + "\").filter("+js+")";
+                            Object rez = domNode.getPage().getWebClient().getJavaScriptEngine().execute((HtmlPage) domNode.getPage(), jsQuery,"",0);
+                            if(!(rez instanceof NativeObject)){
+                                continue;
+                            }
+                            Double len = (Double) ((NativeObject) rez).get("length", (Scriptable) rez);
+                            if(len != 0){
+                                return true;
+                            }
                         }
                     }
+                    curMiddleNode = curMiddleNode.getParentNode();
                 }
-                curNode = curNode.getParentNode();
+                curUpperNode = curUpperNode.getParentNode();
             }
         }
         return false;
@@ -406,12 +460,73 @@ public class HtmlPageParser extends Task{
      * @return true, iff we clicked on this element, false otherwise
      * @throws IOException
      */
-    private boolean doJsActions(HtmlElement htmlElement) throws IOException{
-        if(shouldPerformEvent(htmlElement, "click") || shouldPerformEvent(htmlElement, "mousedown") || shouldPerformEvent(htmlElement, "mouseup")){
+    private String doActions(HtmlElement htmlElement) throws IOException{
+        wasRequest = false;
+        String ret  = "";
+        boolean didSomeAction = false;
+        if(WebAppProperties.getInstance().isENABLE_JAVASCRIPT_ANALYSIS() &&(shouldPerformEvent(htmlElement, "click") || shouldPerformEvent(htmlElement, "mousedown") || shouldPerformEvent(htmlElement, "mouseup"))){
             tryClick(htmlElement);
-            return true;
+            didSomeAction = true;
+            ret += " javascript action: click";
+        }else{
+            if( (htmlElement instanceof  HtmlAnchor)){
+                String href = ((HtmlAnchor)htmlElement).getHrefAttribute();
+                if(!href.equals(DomElement.ATTRIBUTE_NOT_DEFINED)){
+                    try{
+                        URI hrefUri = new URI(href);
+                        URI pageUri = new URI(page.getUrl().toString());
+                        if(!hrefUri.isAbsolute()){
+                            hrefUri = pageUri.resolve(hrefUri);
+                        }
+                        //remove fragments...
+                        hrefUri = new URI(
+                                hrefUri.getScheme(), hrefUri.getUserInfo(),
+                                hrefUri.getHost(), hrefUri.getPort(),
+                                hrefUri.getPath(), hrefUri.getQuery(), null
+                        );
+                        pageUri = new URI(
+                                pageUri.getScheme(), pageUri.getUserInfo(),
+                                pageUri.getHost(), pageUri.getPort(),
+                                pageUri.getPath(), pageUri.getQuery(), null
+                        );
+                        if(pageUri.compareTo(hrefUri) != 0){
+                            didSomeAction = true;
+                            tryClick(htmlElement);
+                            ret += " anchor: click";
+                        }
+                    }catch (URISyntaxException uriEx){
+                    }
+
+                }
+            }
         }
-        return false;
+        if(htmlElement instanceof  HtmlForm){
+            HtmlForm form = (HtmlForm) htmlElement;
+            FormFiller filler;
+            filler = WebAppProperties.getInstance().getFormFillerFactory().generate(form,ctxID);
+            if(! filler.hasNext()){
+                logger.warn("Form which cannot be submitted!!!");
+            }
+            boolean wasSubmitted = false;
+            while(filler.hasNext()){
+                wasSubmitted = true;
+                tryClick(filler.next());
+                didSomeAction = true;
+            }
+            if(wasSubmitted){
+                ret += " form: submit";
+            }
+
+        }
+        if(wasRequest){
+            return "[+]" + ret;
+        }else{
+            if(didSomeAction){
+                return "[-] " + ret;
+            }else{
+                return "[X]";
+            }
+        }
     }
     @Override
     public Object getResult() {
@@ -459,10 +574,27 @@ public class HtmlPageParser extends Task{
                 recordChangedNode(changedNode);
             }
         }
-    }     
+    }
+    private HtmlPage clonePage(HtmlPage original, WebWindow win){
+        if(SPAWN_CLONER_TASK){
+            PageCloner theCloner = new PageCloner(taskManager,original,win);
+            waitForTask(theCloner);
+            if(!theCloner.isSuccessful())
+                throw  new RuntimeException("Clone unsuccessful");
+            return (HtmlPage) theCloner.getResult();
+        }else{
+            try {
+                return HtmlUnitUtils.clonePage(original,win);
+            } catch (Exception e) {
+                throw  new RuntimeException(e);
+            }
+        }
+    }
     @Override
     protected void start() {
         numInvokations++;
+        if(!WebAppProperties.getInstance().isENABLE_JAVASCRIPT_ANALYSIS())
+            webClient.setJavaScriptEnabled(false);
         webClient.setThrowExceptionOnFailingStatusCode(false);
         webClient.setThrowExceptionOnScriptError(false);
         webClient.setJavaScriptErrorListener(new JavaScriptErrorListener() {
@@ -481,11 +613,8 @@ public class HtmlPageParser extends Task{
             }
         });
         try{
-            PageCloner theCloner = new PageCloner(taskManager,origPage,webClient.openWindow(null,"tempWindow#"+Integer.toString(count++)));
-            waitForTask(theCloner);
-            if(!theCloner.isSuccessful())
-                throw  new RuntimeException("Clone unsuccessful");
-            page = (HtmlPage) theCloner.getResult();
+            page = clonePage(origPage,webClient.openWindow(null,"tempWindow#"+Integer.toString(count++)));
+            origPage = null;
             ArrayList<DomNode> nodes = new ArrayList<DomNode>();
             for(HtmlElement el : page.getDocumentElement().getHtmlElementDescendants()){
                 nodes.add(el);

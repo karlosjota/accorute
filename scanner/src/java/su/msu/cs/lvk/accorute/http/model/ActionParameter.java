@@ -24,9 +24,19 @@ public class ActionParameter implements Serializable {
     private final String name;
     private final String value;
 
+    public Object getAdditionalData() {
+        return additionalData;
+    }
+
+    public void setAdditionalData(Object additionalData) {
+        this.additionalData = additionalData;
+    }
+
+    private Object additionalData;
+
     @Override
     public String toString() {
-        return super.toString();
+        return name + ":" + value;
     }
 
     public boolean isDefined() {

@@ -310,6 +310,10 @@ public class Sitemap {
     private final DirectedMultigraph<SitemapNode, SitemapEdge> actionDepGraph =
             new DirectedMultigraph<SitemapNode, SitemapEdge>(SitemapEdge.class);
 
+    public DirectedMultigraph<SitemapNode, SitemapEdge> getActionDepGraph() {
+        return actionDepGraph;
+    }
+
     private final EntityID ctxID;
 
     public Sitemap(EntityID ctxID) {

@@ -79,4 +79,12 @@ public class CorrespondentActions {
         output.write("}");
         return output.toString();
     }
+    public String getAsJGraphLabel(){
+        StringWriter output = new StringWriter();
+        for(HttpAction a: httpActions){
+            output.write(a.toStringRealNl()+"\n");
+        }
+        output.getBuffer().deleteCharAt(output.getBuffer().length()-1);
+        return output.toString();
+    }
 }

@@ -23,32 +23,37 @@ public class SimplePVD implements ParameterValueDecision{
     public void resolve(List<ActionParameter> params, UserContext ctx, URL url){
         WebAppUser user = WebAppProperties.getInstance().getUserService().getUserByID(ctx.getUserID());
         Collection<ContextCookie> coll = WebAppProperties.getInstance().getCookieService().getCookiesForUrlInContext(ctx.getContextID(),url);
-        Map<String,String> cookieMap = new HashMap<String,String>();
+        Map<String,ContextCookie> cookieMap = new HashMap<String,ContextCookie>();
         if(coll!=null){
             for(ContextCookie c : coll){
-                cookieMap.put(c.getName(),c.getValue());
+                cookieMap.put(c.getName(),c);
             }
         }
         for(int i = 0; i< params.size(); i++){
             ActionParameter param = params.get(i);
             if(param.getLocation() == ActionParameterLocation.COOKIE){
-                cookieMap.remove(param.getName());
+                if(cookieMap.containsKey(param.getName())){
+                    param.setAdditionalData(cookieMap.get(param.getName()));
+                    cookieMap.remove(param.getName());
+                }
             }
         }
         for(String additionalCookie:cookieMap.keySet()){
-            params.add(new ActionParameter(
+            ActionParameter cook = new ActionParameter(
                     additionalCookie,
                     "",
                     ActionParameterLocation.COOKIE,
                     ActionParameterMeaning.SESSIONTOKEN,//TODO: add a decision for this
                     ActionParameterDatatype.STRING
-            ));
+            );
+            cook.setAdditionalData(cookieMap.get(additionalCookie));
+            params.add(cook);
         }
         ListIterator<ActionParameter> iterator = params.listIterator();
         while(iterator.hasNext()){
             ActionParameter param = iterator.next();
             if(user.getDynamicCredentials().containsKey(param.getName())){ //TODO: name clashes in param names!
-                iterator.set(new ActionParameter(
+                ActionParameter newParam = new ActionParameter(
                         param.getName(),
                         user.getDynamicCredentials().get(param.getName()),
                         param.getLocation(),
@@ -56,7 +61,9 @@ public class SimplePVD implements ParameterValueDecision{
                         param.getDatatype(),
                         param.getRole()
 
-                ));
+                );
+                newParam.setAdditionalData(param.getAdditionalData());
+                iterator.set(newParam);
             }
         }
     }

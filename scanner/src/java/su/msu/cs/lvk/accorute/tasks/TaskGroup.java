@@ -15,6 +15,11 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class TaskGroup extends Task {
+    public void setConcurrent(boolean concurrent) {
+        this.concurrent = concurrent;
+    }
+
+    private boolean concurrent = true;
     final private List<Task> tasks = new LinkedList<Task>();
     private final String name;
     @Override
@@ -38,13 +43,22 @@ public class TaskGroup extends Task {
 
     @Override
     protected void start() {
-        setSuccessful(true);
-        for(Task t : tasks)
-            addWaitedTask(t);
-        waitForSpawnedTasks();
-        for(Task t : tasks){
-            if(!t.isSuccessful())
-                return;
+        if(concurrent){
+            setSuccessful(false);
+            for(Task t : tasks)
+                addWaitedTask(t);
+            waitForSpawnedTasks();
+            for(Task t : tasks){
+                if(!t.isSuccessful())
+                    return;
+            }
+        }else{
+            for(Task t : tasks)
+                waitForTask(t);
+            for(Task t : tasks){
+                if(!t.isSuccessful())
+                    return;
+            }
         }
         setSuccessful(true);
     }

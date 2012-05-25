@@ -50,21 +50,23 @@ public class ActionEqualsIfNameValueEquals implements ActionEqualityDecision{
         }
         for(ActionParameter aParam:aParams){
             if(aParam.getMeaning() == ActionParameterMeaning.SESSIONTOKEN
-                    || aParam.getMeaning() == ActionParameterMeaning.ONETIMETOKEN)
+                    || aParam.getMeaning() == ActionParameterMeaning.ONETIMETOKEN
+                    || aParam.getMeaning() == ActionParameterMeaning.USERCONTROLLABLE)
             {
                 names.remove(aParam.getName());
-            }else if(aParam.getMeaning() == ActionParameterMeaning.USERCONTROLLABLE){
+            }/*else if(aParam.getMeaning() == ActionParameterMeaning.USERCONTROLLABLE){
                 noValueCheck.add(aParam.getName());
-            }
+            }*/
         }
         for(ActionParameter bParam:bParams){
             if(bParam.getMeaning() == ActionParameterMeaning.SESSIONTOKEN
-                    || bParam.getMeaning() == ActionParameterMeaning.ONETIMETOKEN)
+                    || bParam.getMeaning() == ActionParameterMeaning.ONETIMETOKEN
+                    || bParam.getMeaning() == ActionParameterMeaning.USERCONTROLLABLE)
             {
                 names.remove(bParam.getName());
-            }else if(bParam.getMeaning() == ActionParameterMeaning.USERCONTROLLABLE){
+            }/*else if(bParam.getMeaning() == ActionParameterMeaning.USERCONTROLLABLE){
                 noValueCheck.add(bParam.getName());
-            }
+            }*/
         }
         for(String name : names){
             ActionParameter aParam = getParamByName(aParams,name);

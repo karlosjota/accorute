@@ -130,7 +130,7 @@
 
     <jar destfile="${basedir}/scanner.jar" basedir="${out.dir}">
         <manifest>
-            <attribute name="Main-Class" value="su.msu.cs.lvk.accorute.Main"/>
+            <attribute name="Main-Class" value="su.msu.cs.lvk.accorute.GuiMain"/>
             <attribute name="Class-Path" value="${lib.list}"/>
         </manifest>
     </jar>
