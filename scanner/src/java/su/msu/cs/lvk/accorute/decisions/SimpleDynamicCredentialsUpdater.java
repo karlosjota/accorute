@@ -36,7 +36,8 @@ public class SimpleDynamicCredentialsUpdater implements DynamicCredentialsUpdate
         WebAppUser u = WebAppProperties.getInstance().getUserService().getUserByID(userID);
         for(ActionParameter p : params){
             String name = p.getName();
-            if(WebAppProperties.getInstance().getDynTokenLoc(name) == p.getLocation()){
+            String value = p.getValue();
+            if(WebAppProperties.getInstance().isDynToken(name,value,p.getLocation())){
                 u.getDynamicCredentials().put(name, p.getValue());
                 logger.trace("userId = " + userID + "} Updated cred: " + name + ": " + p.getValue());
             }

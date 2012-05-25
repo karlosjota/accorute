@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by IntelliJ IDEA.
@@ -82,19 +83,42 @@ public class SimpleRCD extends RequestComposerDecomposer{
         }else if(m!=HttpMethod.GET){
             throw new NotImplementedException("Methods other than get and post are not supported");
         }
+        String cookies = r.getAdditionalHeaders().get("Cookie");
+        if(cookies != null)
+            params.addAll(decomposeCookies(cookies));
         if(isPost){
             String body = r.getRequestBody();
-            if(body != null){
-                String [] parameters = body.split("&");
-                for(String par: parameters){
-                    String nameval[] = par.split("=",2);
-                    nameval[0] = URLDecoder.decode(nameval[0]);
-                    nameval[1] = URLDecoder.decode((nameval.length > 1)?nameval[1]:"");
+            if(body != null){    
+                List<NamedValue> paramList = new ArrayList<NamedValue>();
+                if(r.getAdditionalHeaders().containsKey("Content-Type") && r.getAdditionalHeaders().get("Content-Type").contains("application/x-www-form-urlencoded") || !r.getAdditionalHeaders().containsKey("Content-Type")){
+                    String []parameters = body.split("&");
+                    for(String par: parameters){
+                        String nameval[] = par.split("=",2);
+                        paramList.add(new NamedValue(nameval[0], (nameval.length > 1)?nameval[1]:""));
+                    }
+                }else if(r.getAdditionalHeaders().containsKey("Content-Type") && r.getAdditionalHeaders().get("Content-Type").contains("multipart/form-data") ){
+                    int index = r.getAdditionalHeaders().get("Content-Type").lastIndexOf("boundary=");
+                    String boundary = "--" + r.getAdditionalHeaders().get("Content-Type").substring(index+9).trim();
+                    int state = 0; //0 = header, 1: collecting body
+                    Pattern p = Pattern.compile(boundary + "\r\nContent-Disposition: form-data; name=\"([^\"]+)\".*?\r\n\r\n(.*?)\r\n"+boundary, Pattern.MULTILINE | Pattern.DOTALL);
+                    Matcher matcher = p.matcher(r.getRequestBody());
+                    int idx = 0;
+                    while(matcher.find(idx)){
+                        String name =  matcher.group(1);
+                        String value = matcher.group(2);
+                        idx = matcher.start(2) + 1;
+                        matcher.reset();
+                        paramList.add(new NamedValue(name, value));
+                    }
+                }
+                for(NamedValue p: paramList){
+                    String name = URLDecoder.decode(p.getName());
+                    String val = URLDecoder.decode(p.getValue());
                     params.add(new ActionParameter(
-                            nameval[0],
-                            nameval[1],
+                            name,
+                            val,
                             ActionParameterLocation.BODY,
-                            decideActionMeaning(nameval[0],ActionParameterLocation.BODY,userControllable),
+                            decideActionMeaning(name,val,ActionParameterLocation.BODY,userControllable),
                             ActionParameterDatatype.STRING
                     ));
                 }
@@ -105,7 +129,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
                             URLDecoder.decode(nvp.getName()),
                             URLDecoder.decode(nvp.getValue()),
                             ActionParameterLocation.BODY,
-                            decideActionMeaning(URLDecoder.decode(nvp.getName()),ActionParameterLocation.BODY,userControllable),
+                            decideActionMeaning(URLDecoder.decode(nvp.getName()),URLDecoder.decode(nvp.getValue()), ActionParameterLocation.BODY,userControllable),
                             ActionParameterDatatype.STRING
                     ));
                 }
@@ -147,7 +171,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
                         + "&"
                 );
             } else if(param.getLocation() == ActionParameterLocation.HEADER){
-                req.addHeader(param);
+                req.addHeader(new NamedValue(param.getName(), param.getValue()));
             } else if (param.getLocation() == ActionParameterLocation.COOKIE){
                 cookies.add (new BasicClientCookie(param.getName(), param.getValue()));
             }
@@ -184,14 +208,14 @@ public class SimpleRCD extends RequestComposerDecomposer{
                 "host",
                 url.getHost(),
                 ActionParameterLocation.URL,
-                decideActionMeaning("host",ActionParameterLocation.URL,userControllable),
+                decideActionMeaning("host",url.getHost(), ActionParameterLocation.URL,userControllable),
                 ActionParameterDatatype.STRING)
         );
         params.add(new ActionParameter(
                 "protocol",
                 url.getProtocol(),
                 ActionParameterLocation.URL,
-                decideActionMeaning("protocol",ActionParameterLocation.URL,userControllable),
+                decideActionMeaning("protocol",url.getProtocol(), ActionParameterLocation.URL,userControllable),
                 ActionParameterDatatype.STRING)
         );
         int port = url.getPort();
@@ -202,7 +226,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
                 "port",
                 Integer.toString(port),
                 ActionParameterLocation.URL,
-                decideActionMeaning("port",ActionParameterLocation.URL,userControllable),
+                decideActionMeaning("port",Integer.toString(port), ActionParameterLocation.URL,userControllable),
                 ActionParameterDatatype.NUMBER)
         );
         String query = url.getQuery();
@@ -210,11 +234,13 @@ public class SimpleRCD extends RequestComposerDecomposer{
             String [] ar = query.split("&");
             for(String pair : ar){
                 String [] nameValue = pair.split("=",2);
+                String name =URLDecoder.decode(nameValue[0]);
+                String value = URLDecoder.decode((nameValue.length > 1) ? nameValue[1] : "");
                 params.add(new ActionParameter(
-                        URLDecoder.decode(nameValue[0]),
-                        URLDecoder.decode( (nameValue.length>1)?nameValue[1]:""),
+                        name,
+                        value,
                         ActionParameterLocation.QUERY,
-                        decideActionMeaning(URLDecoder.decode(nameValue[0]),ActionParameterLocation.QUERY,userControllable),
+                        decideActionMeaning(name, value,ActionParameterLocation.QUERY,userControllable),
                         ActionParameterDatatype.STRING)
                 );
             }
@@ -224,25 +250,26 @@ public class SimpleRCD extends RequestComposerDecomposer{
                 "path",
                 path,
                 ActionParameterLocation.URL,
-                decideActionMeaning("path",ActionParameterLocation.URL,userControllable),
+                decideActionMeaning("path",path, ActionParameterLocation.URL,userControllable),
                 ActionParameterDatatype.STRING)
         );
 
         return params;
     }
-    protected ActionParameterMeaning decideActionMeaning(String name, ActionParameterLocation loc){
-        return decideActionMeaning(name, loc, new ArrayList<String>());
+    protected ActionParameterMeaning decideActionMeaning(String name,String value, ActionParameterLocation loc){
+        return decideActionMeaning(name, value, loc, new ArrayList<String>());
     }
-    protected ActionParameterMeaning decideActionMeaning(String name, ActionParameterLocation loc, Collection<String> uControllable){
+    protected ActionParameterMeaning decideActionMeaning(String name,String value, ActionParameterLocation loc, Collection<String> uControllable){
         if(loc == null)
             throw new RuntimeException("decideActionMeaning: location cannot be null");
-        if(loc == WebAppProperties.getInstance().getDynTokenLoc(name))
-            return WebAppProperties.getInstance().getDynTokenMeaning(name);
-        Matcher idNameMatcher = WebAppProperties.getInstance().getIdParamNameRegex().matcher(name);
-        if(idNameMatcher.matches()){
-            return ActionParameterMeaning.IDENTIFIER;
+        if(WebAppProperties.getInstance().isDynToken(name, value,loc))
+            return WebAppProperties.getInstance().getDynTokenMeaning(name, value, loc);
+        List<Pattern> regexList = WebAppProperties.getInstance().getIdParamNameRegexList();
+        for(Pattern p : regexList){
+            Matcher idNameMatcher = p.matcher(name);
+            if(idNameMatcher.matches())
+                return ActionParameterMeaning.IDENTIFIER;
         }
-
         switch(loc){
             case BODY:{
                 if(uControllable.contains(name))
@@ -274,7 +301,7 @@ public class SimpleRCD extends RequestComposerDecomposer{
                     namevalue[0].trim(),
                     namevalue[1].trim(),
                     ActionParameterLocation.COOKIE,
-                    decideActionMeaning(namevalue[0].trim(),ActionParameterLocation.COOKIE),
+                    decideActionMeaning(namevalue[0].trim(),namevalue[1].trim(), ActionParameterLocation.COOKIE),
                     ActionParameterDatatype.STRING)
             );
         }

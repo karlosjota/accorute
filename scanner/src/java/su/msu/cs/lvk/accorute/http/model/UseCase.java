@@ -2,6 +2,8 @@ package su.msu.cs.lvk.accorute.http.model;
 
 import su.msu.cs.lvk.accorute.RBAC.Role;
 
+import java.io.Serializable;
+
 /**
  * Created by IntelliJ IDEA.
  * User: george
@@ -9,7 +11,7 @@ import su.msu.cs.lvk.accorute.RBAC.Role;
  * Time: 0:59:55
  * To change this template use File | Settings | File Templates.
  */
-public class UseCase {
+public class UseCase implements Serializable {
     private final Role userRole;
     private final HttpAction httpAct;
     public UseCase(Role role, HttpAction act){

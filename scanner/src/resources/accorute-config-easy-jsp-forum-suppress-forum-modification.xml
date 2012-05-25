@@ -110,10 +110,6 @@
         <property name="sitemapService" ref="mapService"/>
         <property name="conversationService" ref="convService"/>
         <property name="taskManager" ref="taskman" />
-        <property name="roles">
-            <list>
-            </list>
-        </property>
         <property name="rcd" ref="simpleRCD"/>
         <property name="pvd" ref="simplePVD"/>
         <property name="chStateDec" ref="dummyChState" />

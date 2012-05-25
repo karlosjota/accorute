@@ -61,9 +61,12 @@ public class FormBasedAuthTask extends Task {
         initConn();
     }
     private WebConnection initConn(){
+        final Task theTask = this;
         WebConnection falseWebC= new FalsifyingWebConnection(webClient){
             final EntityID uid = WebAppProperties.getInstance().getContextService().getContextByID(ctxID).getUserID();
             public WebResponse getResponse(WebRequest request) throws IOException {
+                if(theTask.getStatus() != TaskStatus.BLOCKED && theTask.getStatus() != TaskStatus.RUNNING)
+                    throw new RuntimeException("Spurious request, will not proceed");
                 //TODO:not so easy!!!
                 List<ActionParameter> param = WebAppProperties.getInstance().getRcd().decompose(
                         request,
@@ -165,12 +168,8 @@ public class FormBasedAuthTask extends Task {
             resultPage = newPage;
             loginPage.getEnclosingWindow().getJobManager().removeAllJobs();
             loginPage.getEnclosingWindow().getJobManager().shutdown();
-            resultPage.getEnclosingWindow().getJobManager().removeAllJobs();
-            resultPage.getEnclosingWindow().getJobManager().shutdown();
             logger.trace("Login task finished successfully");
             setSuccessful(true);
-
-
         } catch (IOException e) {
             logger.error("Fatal transport error: " + e.getMessage());
             e.printStackTrace();

@@ -1,7 +1,6 @@
 package su.msu.cs.lvk.accorute.tasks;
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.truchsess.util.ArrayListTree;
 import su.msu.cs.lvk.accorute.WebAppProperties;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
@@ -12,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -46,9 +46,18 @@ public class HttpActionPerformerWithPrecedingActions extends Task{
             while(it.hasNext()){
                 ActionParameter param = it.next();
                 String pName = param.getName();
-                Pattern nameRegex = WebAppProperties.getInstance().getIdParamNameRegex();
-                Pattern valRegex = WebAppProperties.getInstance().getIdParamValueRegex();
-                if(!nameRegex.matcher(pName).matches() || !valRegex.matcher(param.getValue()).matches())
+                List<Pattern> idNamePatterns = WebAppProperties.getInstance().getIdParamNameRegexList();
+                List<Pattern> idValuePatterns = WebAppProperties.getInstance().getIdParamValueRegexList();
+                boolean foundMatch = false;
+                for(int i = 0; i < idNamePatterns.size(); i++){
+                    Matcher nameMatcher = idNamePatterns.get(i).matcher(pName);
+                    Matcher valMatcher = idValuePatterns.get(i).matcher(param.getValue());
+                    if(nameMatcher.matches()&&valMatcher.matches() ){
+                        foundMatch = true;
+                        break;
+                    }
+                }
+                if(!foundMatch)
                     continue;
                 boolean found = false;
                 boolean matched = false;
@@ -77,13 +86,24 @@ public class HttpActionPerformerWithPrecedingActions extends Task{
         while(it.hasNext()){
             ActionParameter param = it.next();
             String pName = param.getName();
-            Pattern nameRegex = WebAppProperties.getInstance().getIdParamNameRegex();
-            Pattern valRegex = WebAppProperties.getInstance().getIdParamValueRegex();
-            if(!nameRegex.matcher(pName).matches() || !valRegex.matcher(param.getValue()).matches())
+            List<Pattern> idNamePatterns = WebAppProperties.getInstance().getIdParamNameRegexList();
+            List<Pattern> idValuePatterns = WebAppProperties.getInstance().getIdParamValueRegexList();
+            boolean foundMatch = false;
+            int matchIndex = 0;
+            for(int i = 0; i < idNamePatterns.size(); i++){
+                Matcher nameMatcher = idNamePatterns.get(i).matcher(pName);
+                Matcher valMatcher = idValuePatterns.get(i).matcher(param.getValue());
+                if(nameMatcher.matches()&&valMatcher.matches() ){
+                    foundMatch = true;
+                    matchIndex = i;
+                    break;
+                }
+            }
+            if(!foundMatch)
                 continue;
             ActionParameter template = null;
             for(ActionParameter p: bParam){
-                if(p.getName().equals(pName) && valRegex.matcher(p.getValue()).matches()){
+                if(p.getName().equals(pName) && idValuePatterns.get(matchIndex).matcher(p.getValue()).matches()){
                     template = p;
                 }
             }

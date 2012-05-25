@@ -1,94 +1,56 @@
-package su.msu.cs.lvk.accorute;
+package su.msu.cs.lvk.accorute.tasks;
 
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.BeanDefinitionStoreException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import su.msu.cs.lvk.accorute.RBAC.Role;
+import su.msu.cs.lvk.accorute.WebAppProperties;
 import su.msu.cs.lvk.accorute.decisions.MultiStateFormFillFactory;
-import su.msu.cs.lvk.accorute.gui.*;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
-import su.msu.cs.lvk.accorute.tasks.*;
 import su.msu.cs.lvk.accorute.utils.Callback0;
+import su.msu.cs.lvk.accorute.utils.Callback3;
 import su.msu.cs.lvk.accorute.utils.RoleCompare;
 
-import org.w3c.dom.*;
-
+import javax.swing.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.*;
-import javax.swing.*;
-import javax.xml.parsers.*;
-
-import javax.xml.transform.*;
-import javax.xml.transform.dom.*;
-import javax.xml.transform.stream.*;
-
 
 /**
  * Created by IntelliJ IDEA.
- * User: george
- * Date: 20.04.2010
- * Time: 19:03:11
+ * User: ngo
+ * Date: 09.05.12
+ * Time: 15:56
  * To change this template use File | Settings | File Templates.
  */
-public class Main{
-    private static Logger logger = Logger.getLogger(Main.class.getName());
-    public static void main(String[] args){
-        long tstart =    System.nanoTime();
-        if(args.length < 1){
-            System.err.println(
-                    "Usage: <program-name> <your_config.xml>, \n" +
-                    "where <your_config.xml> is the filename relative to the \n" +
-                    "VM working directory. \n" +
-                    "If you wish to use absoulute paths, prefix them with 'file:'\n" +
-                    "(C) Noseevich George, 2011\n"
-            );
-            return;
-        }
-        try {
-            ApplicationContext ctx = new FileSystemXmlApplicationContext(args[0]);
-        } catch (BeanDefinitionStoreException ex) {
-            System.err.println("Error loading evaluation contexts: " + ex.getMessage());
-            return;
-        }
-        
-        final TaskManager taskman = WebAppProperties.getInstance().getTaskManager();
-        final LogWatchComponent appender = new LogWatchComponent();
-        Logger.getRootLogger().addAppender(appender);
-        final TaskManagerForm form = new TaskManagerForm(taskman);
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                form.addTaskResultViewerFactory(new HtmlPageParserResultViewerFactory());
-                form.addTaskResultViewerFactory(new ResponseFetcherResultViewerFactory());
-                form.addtaskOverviewFactory(new GenericTaskVisualizerFactory());
-                form.addLogAppender(appender);
-            }
-        });
+public class FullAnalysisTask extends Task {
+    @Override
+    public Object getResult() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 
-        JSONConfigurator configTask = new JSONConfigurator(
-                WebAppProperties.getInstance().getTaskManager(),
-                WebAppProperties.getInstance().getCaptureFileName()
-        );
-        //clear dir of temp files...
+    @Override
+    protected void start() {
+        long tstart =    System.nanoTime();
+        TaskManager taskman = getTaskManager();
         File reportDir = new File("report");
         for(File f : reportDir.listFiles()){
             if(f.getAbsolutePath().endsWith(".dot")|| f.getAbsolutePath().endsWith(".png")|| f.getAbsolutePath().endsWith(".xml"))
                 f.delete();
         }
-        taskman.addTask(configTask);
-        taskman.waitForEmptyQueue();
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                form.refreshRolesAndUsers();
-            }
-        });
+        final Map<EntityID, HtmlPage> currentPages = new HashMap<EntityID, HtmlPage>();
         final UseCaseGraph graph = WebAppProperties.getInstance().getUcGraph();
         Iterator<UseCase> it = graph.dependencyRespectingIterator();
-        List<Task> tasks = new ArrayList<Task>();
+        TaskGroup loginGroup = new TaskGroup(taskman, "Initial login");
         HttpAction startAct;
         startAct = new HttpAction("initial",WebAppProperties.getInstance().getRcd().decomposeURL(
                 WebAppProperties.getInstance().getMainPage()
@@ -107,17 +69,51 @@ public class Main{
         Map<String, EntityID> users2 = new HashMap<String, EntityID>();
         for(Role r: WebAppProperties.getInstance().getRoles()){
             WebAppUser u1 = WebAppProperties.getInstance().getUserService().getUsersByRole(r.getRoleName()).get(0);
-            EntityID ctxID1 = WebAppProperties.getInstance().getContextService().getContextsByUserID(u1.getUserID()).get(0).getContextID();
+            final EntityID ctxID1 = WebAppProperties.getInstance().getContextService().getContextsByUserID(u1.getUserID()).get(0).getContextID();
             WebAppUser u2 = WebAppProperties.getInstance().getUserService().getUsersByRole(r.getRoleName()).get(1);
-            EntityID ctxID2 = WebAppProperties.getInstance().getContextService().getContextsByUserID(u2.getUserID()).get(0).getContextID();
+            final EntityID ctxID2 = WebAppProperties.getInstance().getContextService().getContextsByUserID(u2.getUserID()).get(0).getContextID();
             users1.put(r.getRoleName(),ctxID1);
             users2.put(r.getRoleName(),ctxID2);
             if(!r.getRoleName().equalsIgnoreCase("public")){
-                taskman.addTask(WebAppProperties.getInstance().getAuthTaskFactory().genContextedTask(ctxID1,taskman));
-                taskman.addTask(WebAppProperties.getInstance().getAuthTaskFactory().genContextedTask(ctxID2,taskman));
+                final Task t1 = WebAppProperties.getInstance().getAuthTaskFactory().genContextedTask(ctxID1, taskman);
+                t1.registerCallback(new Callback0() {
+                    public void CallMeBack() {
+                        synchronized (currentPages) {
+                            currentPages.put(ctxID1, (HtmlPage) t1.getResult());
+                        }
+                    }
+                });
+                final Task t2 = WebAppProperties.getInstance().getAuthTaskFactory().genContextedTask(ctxID2, taskman);
+                t2.registerCallback(new Callback0() {
+                    public void CallMeBack() {
+                        synchronized (currentPages) {
+                            currentPages.put(ctxID2, (HtmlPage) t2.getResult());
+                        }
+                    }
+                });
+                loginGroup.addTsk(t1);
+                loginGroup.addTsk(t2);
+            }else{
+                final Task t1 = new HtmlElementActionPerformer(taskman,WebAppProperties.getInstance().getMainPage(), ctxID1, new Callback3<ArrayList<Conversation>, ArrayList<HttpAction>, HtmlPage>() {
+                    public void CallMeBack(ArrayList<Conversation> param1, ArrayList<HttpAction> param2, HtmlPage param3) {
+                        synchronized (currentPages) {
+                            currentPages.put(ctxID1,param3);
+                        }
+                    }
+                });
+                final Task t2 = new HtmlElementActionPerformer(taskman,WebAppProperties.getInstance().getMainPage(), ctxID2, new Callback3<ArrayList<Conversation>, ArrayList<HttpAction>, HtmlPage>() {
+                    public void CallMeBack(ArrayList<Conversation> param1, ArrayList<HttpAction> param2, HtmlPage param3) {
+                        synchronized (currentPages) {
+                            currentPages.put(ctxID2,param3);
+                        }
+                    }
+                });
+                loginGroup.addTsk(t1);
+                loginGroup.addTsk(t2);
             }
         }
-        taskman.waitForEmptyQueue();
+        waitForTask(loginGroup);
+
         boolean started = false;
         Document rootDocument;
         Element rootElement;
@@ -150,8 +146,8 @@ public class Main{
                 HttpAction action = uc.getHttpAct();
                 EntityID ctxID = users1.get(uc.getUserRole().getRoleName());
                 Task t = new HttpActionPerformerWithPrecedingActions(taskman,ctxID,action);
-                taskman.addTask(t);
-                taskman.waitForEmptyQueue();
+                addWaitedTask(t);
+                waitForSpawnedTasks();
                 curState.setAttribute("name",uc.getHttpAct().getName());
                 ucName = uc.getHttpAct().getName();
                 curState.setAttribute("role",uc.getUserRole().getRoleName());
@@ -159,15 +155,18 @@ public class Main{
             }
             started = true;
             //2. Build sitemaps
+            TaskGroup sitemapGroup = new TaskGroup(taskman, "Build sitemaps");
             for(Role r: WebAppProperties.getInstance().getRoles()){
                 EntityID ctxID1 = users1.get(r.getRoleName());
                 EntityID ctxID2 = users2.get(r.getRoleName());
                 WebAppProperties.getInstance().getConversationService().clearContextConversations(ctxID1);
                 WebAppProperties.getInstance().getConversationService().clearContextConversations(ctxID2);
-                taskman.addTask(new SitemapCrawler(taskman,startAct,ctxID1));
-                taskman.addTask(new SitemapCrawler(taskman,startAct,ctxID2));
+                waitForTask(new SitemapCrawler(taskman, currentPages.get(ctxID1), ctxID1));
+                waitForTask(new SitemapCrawler(taskman, currentPages.get(ctxID2), ctxID2));
+                //sitemapGroup.addTsk(new SitemapCrawler(taskman, currentPages.get(ctxID1), ctxID1));
+                //sitemapGroup.addTsk(new SitemapCrawler(taskman, currentPages.get(ctxID2), ctxID2));
             }
-            taskman.waitForEmptyQueue();
+            waitForTask(sitemapGroup);
             for(final Role role: WebAppProperties.getInstance().getRoles()){
                 String rName = role.getRoleName();
                 EntityID u1 = users1.get(rName);
@@ -180,12 +179,13 @@ public class Main{
                 );
 
             }
+            TaskGroup spikeGroup = new TaskGroup(taskman, "Perform spike detection");
             //3. Perform spike detection
             for(final Role attackRole: WebAppProperties.getInstance().getRoles()){
                 for(final Role victimRole: WebAppProperties.getInstance().getRoles()){
                     EntityID attacker = users2.get(attackRole.getRoleName());
                     EntityID victim = users1.get(victimRole.getRoleName());
-                    if(RoleCompare.less(victimRole,attackRole) >= 0){
+                    if(RoleCompare.less(victimRole, attackRole) >= 0){
                         //if(attackRole.getRoleName().equalsIgnoreCase("user") && victimRole.getRoleName().equalsIgnoreCase("admin") ){
                         final Task t = new SimpleDetectSpikes(taskman,attacker,victim);
                         final Element summry = summary;
@@ -234,12 +234,12 @@ public class Main{
                                     }
                                 }
                         );
-                        taskman.addTask(t);
+                        spikeGroup.addTsk(t);
                         //}
                     }
-                }                                                                                                                           
+                }
             }
-            taskman.waitForEmptyQueue();
+            waitForTask(spikeGroup);
             ucNum++;
             try{
                 //Output the XML
@@ -254,7 +254,7 @@ public class Main{
                 // get the supporting classes for the transformer
                 FileWriter writer = new FileWriter("report/report"+ucNum+".xml");
                 StreamResult result = new StreamResult(writer);
-                DOMSource    source = new DOMSource(curState);
+                DOMSource source = new DOMSource(curState);
                 // transform the xml document into a string
                 trans.transform(source, result);
                 writer.append("Spike finding invokations: " + SimpleDetectSpikes.numInvokations);
@@ -274,8 +274,7 @@ public class Main{
             }
 
         }while(it.hasNext() && stateChangingSpikes.size() == 0);
-        WebAppProperties.getInstance().getTaskManager().terminate();
-        WebAppProperties.getInstance().getTaskManager().waitForFinish();
+        waitForSpawnedTasks();
         System.out.print(WebAppProperties.getInstance().getUcGraph());
         if( stateChangingSpikes.size() != 0)
             logger.fatal("State-changing spikes were found!");
@@ -291,7 +290,7 @@ public class Main{
             trans.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 
             //create string from xml tree
-              // get the supporting classes for the transformer
+            // get the supporting classes for the transformer
             FileWriter writer = new FileWriter("report/report.xml");
             StreamResult result = new StreamResult(writer);
             DOMSource    source = new DOMSource(rootDocument);
@@ -303,7 +302,11 @@ public class Main{
             writer.close();
         }catch(Exception ex){
             logger.fatal(ex);
-            return;
         }
+        setSuccessful(true);
+    }
+
+    public FullAnalysisTask(TaskManager t) {
+        super(t);
     }
 }

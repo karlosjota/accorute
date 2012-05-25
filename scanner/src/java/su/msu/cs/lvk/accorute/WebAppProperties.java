@@ -7,26 +7,24 @@
  */
 package su.msu.cs.lvk.accorute;
 
-import org.apache.http.HttpHost;
 import org.apache.http.impl.client.AbstractHttpClient;
 import su.msu.cs.lvk.accorute.RBAC.Role;
 import su.msu.cs.lvk.accorute.decisions.*;
+import su.msu.cs.lvk.accorute.http.constants.ActionParameterDatatype;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterLocation;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterMeaning;
-import su.msu.cs.lvk.accorute.http.model.HttpAction;
-import su.msu.cs.lvk.accorute.http.model.TestChain;
-import su.msu.cs.lvk.accorute.http.model.UseCaseGraph;
+import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.storage.*;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 import su.msu.cs.lvk.accorute.tasks.ContextedTaskFactory;
+import su.msu.cs.lvk.accorute.utils.NotifyingListDecorator;
+import su.msu.cs.lvk.accorute.utils.NotifyingObjectDecorator;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
-public class WebAppProperties {
+public class WebAppProperties{
     private static WebAppProperties ourInstance = new WebAppProperties();
     private DynamicCredentialsUpdater dynCredUpd;
 
@@ -37,100 +35,145 @@ public class WebAppProperties {
     public void setDynCredUpd(DynamicCredentialsUpdater dynCredUpd) {
         this.dynCredUpd = dynCredUpd;
     }
-
-    public HttpHost getProxy() {
-        return proxy;
-    }
-
-    public void setProxy(HttpHost proxy) {
-        this.proxy = proxy;
-    }
-
-    private HttpHost proxy;
     public AbstractHttpClient getHttpClient() {
         return httpClient;
     }
-
     public void setHttpClient(AbstractHttpClient httpClient) {
         this.httpClient = httpClient;
     }
 
     private AbstractHttpClient httpClient;
 
-
-    public Pattern getUrlIncludeScope() {
-        return urlIncludeScope;
-    }
-
-    public void setUrlIncludeScope(Pattern urlIncludeScope) {
-        this.urlIncludeScope = urlIncludeScope;
-    }
-
     private SuppressDetectionDecision suppressDecision = new NoTestSuppression();
 
     public SuppressDetectionDecision getSuppressDecision() {
         return suppressDecision;
     }
-
     public void setSuppressDecision(SuppressDetectionDecision suppressDecision) {
         this.suppressDecision = suppressDecision;
     }
-
     public Pattern getUrlExcludeScope() {
+        return urlExcludeScope.getObject();
+    }
+    public NotifyingObjectDecorator getUrlExcludeScopeNotifier() {
         return urlExcludeScope;
     }
-
     public void setUrlExcludeScope(Pattern urlExcludeScope) {
-        this.urlExcludeScope = urlExcludeScope;
+        this.urlExcludeScope.setObject(urlExcludeScope);
     }
-
     public Pattern getResponceExcludeScope() {
+        return responceExcludeScope.getObject();
+    }
+    public NotifyingObjectDecorator getResponceExcludeScopeNotifier() {
         return responceExcludeScope;
     }
-
     public void setResponceExcludeScope(Pattern responceExcludeScope) {
-        this.responceExcludeScope = responceExcludeScope;
+        this.responceExcludeScope.setObject(responceExcludeScope);
+    }
+    public Pattern getUrlIncludeScope() {
+        return urlIncludeScope.getObject();
+    }
+    public NotifyingObjectDecorator getUrlIncludeScopeNotifier() {
+        return urlIncludeScope;
+    }
+    public void setUrlIncludeScope(Pattern urlIncludeScope) {
+        this.urlIncludeScope.setObject(urlIncludeScope);
     }
 
-    private Pattern urlExcludeScope = Pattern.compile("(?!)");
-    private Pattern responceExcludeScope = Pattern.compile("(?!)");
-    private Pattern urlIncludeScope = Pattern.compile(".*");
+    private NotifyingObjectDecorator<Pattern> urlExcludeScope = new NotifyingObjectDecorator<Pattern>(Pattern.compile("(?!)"));
+    private NotifyingObjectDecorator<Pattern> responceExcludeScope = new NotifyingObjectDecorator<Pattern>(Pattern.compile("(?!)"));
+    private NotifyingObjectDecorator<Pattern> urlIncludeScope = new NotifyingObjectDecorator<Pattern>(Pattern.compile("(?!)"));
 
-    private Pattern idParamNameRegex = Pattern.compile("(?!)");
-    private Pattern idParamValueRegex = Pattern.compile("(?!)");
-
-    private List<String> dynamicTokenNames = new ArrayList<String>();
-    private List<ActionParameterLocation> dynamicTokenLocations = new ArrayList<ActionParameterLocation>();
-
-    public Pattern getIdParamNameRegex() {
-        return idParamNameRegex;
+    public void setDynamicTokens(List<ActionParameter> dynamicTokens){
+        if(dynamicTokens == null)
+            throw new IllegalArgumentException("dynamicTokens must be non-null");
+        this.dynamicTokens = new NotifyingListDecorator<ActionParameter>(Collections.synchronizedList(dynamicTokens));
+    }
+    public NotifyingListDecorator<ActionParameter> getDynamicTokens() {
+        return dynamicTokens;
     }
 
-    public void setIdParamNameRegex(Pattern idParamNameRegex) {
-        this.idParamNameRegex = idParamNameRegex;
-    }
+    private NotifyingListDecorator<ActionParameter>dynamicTokens = new NotifyingListDecorator<ActionParameter>(new LinkedList<ActionParameter>());
 
-    public Pattern getIdParamValueRegex() {
-        return idParamValueRegex;
+    public void addDynamicToken(String name, ActionParameterLocation location) {
+        addDynamicToken(name, location, ActionParameterMeaning.ONETIMETOKEN);    
     }
-
-    public void setIdParamValueRegex(Pattern idParamValueRegex) {
-        this.idParamValueRegex = idParamValueRegex;
+    public void addDynamicToken(String name, ActionParameterLocation location, ActionParameterMeaning meaning) {
+        addDynamicToken(name, location, meaning, ActionParameterDatatype.STRING);    
+    }
+    public void addDynamicToken(String name, ActionParameterLocation location, ActionParameterMeaning meaning, ActionParameterDatatype type) {
+        addDynamicToken(name,".*",location, meaning, type);
+    }
+    public void addDynamicToken(String name,String value, ActionParameterLocation location){
+        addDynamicToken(name,value,location,  ActionParameterMeaning.ONETIMETOKEN, ActionParameterDatatype.STRING);
+    }
+    public void addDynamicToken(String name,String value, ActionParameterLocation location, ActionParameterMeaning meaning, ActionParameterDatatype type) {
+            dynamicTokens.add(new ActionParameter(name,value,location, meaning, type));
+        }
+    public ActionParameterMeaning getDynTokenMeaning(String name, String value, ActionParameterLocation location){
+       for(ActionParameter param: dynamicTokens){
+           Pattern nameRegex = Pattern.compile(param.getName());
+           Pattern valueRegex = Pattern.compile(param.getValue());
+           if(nameRegex.matcher(name).matches() && valueRegex.matcher(value).matches() && param.getLocation().equals(location)){
+               return param.getMeaning();
+           }
+       }
+       return null;
+    }
+    public boolean isDynToken(String name, String value, ActionParameterLocation location){
+           for(ActionParameter param: dynamicTokens){
+               Pattern nameRegex = Pattern.compile(param.getName());
+               Pattern valueRegex = Pattern.compile(param.getValue());
+               if(nameRegex.matcher(name).matches() && valueRegex.matcher(value).matches() && param.getLocation().equals(location)){
+                   return true;
+               }
+           }
+           return false;
+        }
+    public int getDynTokenNum(){
+        return dynamicTokens.size();
+    }
+    public ActionParameter getDynTokenAt(int index){
+        return dynamicTokens.get(index);
+    }
+    public void deleteDynToken(int i){
+        if(i>=0 && i<dynamicTokens.size()){
+            dynamicTokens.remove(i);
+        }
+    }
+    private NotifyingListDecorator<Pattern> idParamNameRegexList = new NotifyingListDecorator<Pattern>(Collections.synchronizedList(new LinkedList<Pattern>()));
+    private NotifyingListDecorator<Pattern> idParamValueRegexList = new NotifyingListDecorator<Pattern>(Collections.synchronizedList(new LinkedList<Pattern>()));
+    public NotifyingListDecorator<Pattern> getIdParamNameRegexList() {
+        return idParamNameRegexList;
+    }
+    public void setIdParamNameRegexList(List<Pattern> idParamNameRegexList) {
+        if(idParamNameRegexList == null)
+            throw new IllegalArgumentException("idParamNameRegexList must be non-null");
+        this.idParamNameRegexList = new NotifyingListDecorator<Pattern>(Collections.synchronizedList(idParamNameRegexList));
+    }
+    public NotifyingListDecorator<Pattern> getIdParamValueRegexList() {
+        return idParamValueRegexList;
+    }
+    public void setIdParamValueRegexList(List<Pattern> idParamValueRegexList) {
+        if(idParamValueRegexList == null)
+            throw new IllegalArgumentException("idParamValueRegexList must be non-null");
+        this.idParamValueRegexList = new NotifyingListDecorator<Pattern>(Collections.synchronizedList(idParamValueRegexList));
     }
 
     public ContextedTaskFactory getAuthTaskFactory() {
-        return authTaskFactory;
+        return authTaskFactory.getObject();
     }
 
     public void setAuthTaskFactory(ContextedTaskFactory authTaskFactory) {
-        this.authTaskFactory = authTaskFactory;
+        this.authTaskFactory.setObject(authTaskFactory);
+    }
+    public NotifyingObjectDecorator<ContextedTaskFactory> getAuthTaskFactoryNotifier(){
+        return authTaskFactory;
     }
 
-    private ContextedTaskFactory authTaskFactory;
+    private NotifyingObjectDecorator<ContextedTaskFactory> authTaskFactory = new NotifyingObjectDecorator<ContextedTaskFactory>(null);
 
-    private URL startPage = null;
-    private TestChain testChain;
-    private final Collection<HttpAction> stateChangingHttpActions = new ArrayList<HttpAction>();
+    private final NotifyingListDecorator<HttpAction> stateChangingHttpActions = new NotifyingListDecorator<HttpAction>(Collections.synchronizedList(new ArrayList<HttpAction>()));
     private ParameterValueDecision pvd;
     private RequestComposerDecomposer rcd;
 
@@ -193,16 +236,6 @@ public class WebAppProperties {
     }
 
     private HtmlPageEqualityDecision pageEqDec;
-
-    public MessageEqualityDecision getrEqD() {
-        return rEqD;
-    }
-
-    public void setrEqD(MessageEqualityDecision rEqD) {
-        this.rEqD = rEqD;
-    }
-
-    private MessageEqualityDecision rEqD;
     private CookieService cookieService;
     private ActionService actionService;
     private ConversationService conversationService;
@@ -213,14 +246,17 @@ public class WebAppProperties {
     private final UseCaseGraph ucGraph = new UseCaseGraph();
 
     public URL getMainPage() {
-        return mainPage;
+        return mainPage.getObject();
     }
+    public NotifyingObjectDecorator<URL> getMainPageNotifier() {
+            return mainPage;
+        }
 
     public void setMainPage(URL mainPage) {
-        this.mainPage = mainPage;
+        this.mainPage.setObject(mainPage);
     }
 
-    private URL mainPage;
+    private final NotifyingObjectDecorator<URL> mainPage = new NotifyingObjectDecorator<URL>(null);
 
     public String getCaptureFileName() {
         return captureFileName;
@@ -234,39 +270,6 @@ public class WebAppProperties {
 
     public UseCaseGraph getUcGraph() {
         return ucGraph;
-    }
-
-    public void addDynamicToken(String name, ActionParameterLocation loc) {
-        dynamicTokenNames.add(name);
-        dynamicTokenLocations.add(loc);
-    }
-
-    public ActionParameterMeaning getDynTokenMeaning(String name){
-       if(dynamicTokenNames.indexOf(name)<0)
-           return null;
-       return ActionParameterMeaning.ONETIMETOKEN;
-    }
-    public ActionParameterLocation getDynTokenLoc(String name){
-        int p = dynamicTokenNames.indexOf(name);
-        if(p<0)
-            return null;
-        return dynamicTokenLocations.get(p);
-    }
-
-    public URL getStartPage() {
-        return startPage;
-    }
-
-    public void setStartPage(URL startPage) {
-        this.startPage = startPage;
-    }
-
-    public TestChain getTestChain() {
-        return testChain;
-    }
-
-    public void setTestChain(TestChain testChain) {
-        this.testChain = testChain;
     }
 
     public ParameterValueDecision getPvd() {
@@ -324,6 +327,16 @@ public class WebAppProperties {
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
+    private EntityID proxyContext = EntityID.NOT_INITIALIZED;
+
+    public EntityID getProxyContext() {
+        if(proxyContext == EntityID.NOT_INITIALIZED){
+            UserContext ctx = new UserContext();
+            getContextService().addOrUpdateContext(ctx);
+            proxyContext = ctx.getContextID();
+        }
+        return proxyContext;
+    }
 
     public ContextService getContextService() {
         return contextService;
@@ -333,7 +346,7 @@ public class WebAppProperties {
         this.contextService = contextService;
     }
 
-    public Collection<HttpAction> getStateChangingHttpActions() {
+    public NotifyingListDecorator<HttpAction> getStateChangingHttpActions() {
         return stateChangingHttpActions;
     }
 
@@ -350,15 +363,15 @@ public class WebAppProperties {
     }
 
 
-    public List<Role> getRoles() {
+    public NotifyingListDecorator<Role> getRoles() {
         return roles;
     }
 
     public void setRoles(List<Role> roles) {
-        this.roles = roles;
+        this.roles = new NotifyingListDecorator<Role>(roles);
     }
 
-    private List<Role> roles;//TODO: make a dao service for that or handle it in some other neat way....
+    private NotifyingListDecorator<Role> roles = new NotifyingListDecorator<Role>(new ArrayList<Role>());
 
     
     public static WebAppProperties getInstance() {
@@ -367,4 +380,32 @@ public class WebAppProperties {
 
     private WebAppProperties() {
     }
+    public boolean checkSettings() throws IllegalStateException{
+        if(
+                acEqDec == null || agd == null || chStateDec == null || dynCredUpd ==null ||
+                formFillerFactory == null || pageEqDec == null ||
+                pvd == null || rcd == null || respClassificator == null || suppressDecision == null
+        )
+            throw new IllegalStateException("check decisions");
+        if(
+                actionService == null || contextService == null || conversationService == null ||
+                cookieService == null || sitemapService == null || userService == null
+        )
+            throw new IllegalStateException("check dao services");
+        if(authTaskFactory.getObject() == null)
+            throw new IllegalStateException("check auth settings");
+        if(httpClient == null)
+            throw new IllegalStateException("check httpClient");
+        if(mainPage.getObject() == null)
+            throw new IllegalStateException("check mainPage");
+        if(urlExcludeScope.getObject() == null || urlIncludeScope.getObject() == null)
+            throw new IllegalStateException("check url scopes");
+        if(responceExcludeScope.getObject() == null)
+            throw new IllegalStateException("check responceExcludeScope");
+        if(taskManager == null)
+            throw new IllegalStateException("check taskManager");
+        if(ucGraph == null)
+            throw new IllegalStateException("check UseCase graph");
+        return true;
+    } 
 }

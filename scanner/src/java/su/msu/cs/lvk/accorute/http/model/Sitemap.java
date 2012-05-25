@@ -72,12 +72,6 @@ public class Sitemap {
         public boolean addPage(HtmlPage p){
             return pages.add(p);
         }
-        public boolean responseEqual(Conversation c){
-            if(inConversation.size() == 0)
-                return false;
-            return WebAppProperties.getInstance().getrEqD().ResponseEquals(inConversation.get(0).getResponse() ,c.getResponse());
-        }
-
         public boolean pageEqual(HtmlPage p){
             if(inConversation.size() == 0 || pages.size() == 0)
                 return false;
@@ -267,19 +261,6 @@ public class Sitemap {
         }
         if(n != null){
             n.addPage(p);
-        }
-        return n;
-    }
-    synchronized public SitemapNode getNode(Conversation conv){
-        SitemapNode n = null;
-        for(Map.Entry<EntityID, SitemapNode> entry : nodeById.entrySet()){
-            if(entry.getValue().responseEqual(conv)){
-                n = entry.getValue();
-                break;
-            }
-        }
-        if(n != null){
-            n.addInbound(conv);
         }
         return n;
     }

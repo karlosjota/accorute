@@ -41,6 +41,7 @@ public interface UserService {
     public List<WebAppUser> getUsersByCredential(String name, String Value);
 
     public List<WebAppUser> getUsersByRole(String roleName);
+    public void clear();
 
 
 

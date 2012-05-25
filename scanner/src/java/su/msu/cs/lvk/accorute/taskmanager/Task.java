@@ -114,8 +114,33 @@ public abstract class Task implements Runnable{
     protected boolean addTask(Task tsk){
         return taskManager.addTask(tsk);
     }
+    private int spawnedTasks = 0;
+    protected void waitForSpawnedTasks(){
+        synchronized (this){
+            setStatus(TaskStatus.BLOCKED);
+            while(spawnedTasks != 0 && getStatus() == TaskStatus.BLOCKED){
+                try{
+                    wait();
+                }catch (InterruptedException e){}
+            }
+        }
+    }
     protected boolean addWaitedTask(Task tsk){
-        return taskManager.addWaitedTask(tsk, this);
+        tsk.registerCallback(new Callback0() {
+            public void CallMeBack() {
+                synchronized (this){
+                    spawnedTasks --;
+                    if(spawnedTasks == 0 && getStatus() == TaskStatus.BLOCKED){
+                        resume();
+                    }
+                }
+            }
+        });
+        if(taskManager.addWaitedTask(tsk, this)){
+            spawnedTasks ++;
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -129,27 +154,21 @@ public abstract class Task implements Runnable{
             logger.error("Will not wait for a serial task!");
         }
         logger.trace("Task  WILL WAIT for other task at thread " + Thread.currentThread().getId());
-        while(true){
-            setStatus(TaskStatus.BLOCKED);
-            class myCallback implements Callback0 {
-                public void CallMeBack(){
-                    resume();
-                }
-            };
-            myCallback cb = new myCallback();
-            tsk.registerCallback(cb);
-            taskManager.addWaitedTask(tsk, this);
-            while (getStatus() == TaskStatus.BLOCKED){
-                try{
-                    wait();
-                }catch (InterruptedException e){}
+        setStatus(TaskStatus.BLOCKED);
+        class myCallback implements Callback0 {
+            public void CallMeBack(){
+                resume();
             }
-            if(tsk.getStatus() == TaskStatus.FINISHED){
-                return;//return only if task was actually finished
-            }else{
-                logger.warn("Task WAS RESUMED FROM WAITING THAT DIDN'T FINISH YET, at thread " + Thread.currentThread().getId());
-            }
+        };
+        myCallback cb = new myCallback();
+        tsk.registerCallback(cb);
+        taskManager.addWaitedTask(tsk, this);
+        while (tsk.getStatus() != TaskStatus.FINISHED || getStatus() != TaskStatus.RUNNING){
+            try{
+                wait();
+            }catch (InterruptedException e){}
         }
+        return;//return only if task was actually finished
     }
 
     /**
@@ -168,7 +187,7 @@ public abstract class Task implements Runnable{
             }else{
                 logger.trace("Task was RESUMED at thread " + Thread.currentThread().getId());
                 setStatus(TaskStatus.RUNNING);
-                notify();
+                notifyAll();
             }
         }
     }
@@ -193,7 +212,7 @@ public abstract class Task implements Runnable{
             taskManager.taskStarted();
             start();
         }catch(Exception e){
-            e.printStackTrace();
+            logger.error(e);
         }finally {
             setStatus(TaskStatus.FINISHED);
             finished = new Date();
@@ -204,7 +223,7 @@ public abstract class Task implements Runnable{
         }
     }
     
-    public synchronized String toString(){
+    public String toString(){
         return "";
     }
 }

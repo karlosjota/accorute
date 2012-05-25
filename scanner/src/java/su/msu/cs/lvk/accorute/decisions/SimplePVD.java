@@ -10,10 +10,7 @@ import su.msu.cs.lvk.accorute.http.model.UserContext;
 import su.msu.cs.lvk.accorute.http.model.WebAppUser;
 
 import java.net.URL;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -47,9 +44,19 @@ public class SimplePVD implements ParameterValueDecision{
                     ActionParameterDatatype.STRING
             ));
         }
-        for(ActionParameter param:params){
+        ListIterator<ActionParameter> iterator = params.listIterator();
+        while(iterator.hasNext()){
+            ActionParameter param = iterator.next();
             if(user.getDynamicCredentials().containsKey(param.getName())){ //TODO: name clashes in param names!
-                param.setValue(user.getDynamicCredentials().get(param.getName()));
+                iterator.set(new ActionParameter(
+                        param.getName(),
+                        user.getDynamicCredentials().get(param.getName()),
+                        param.getLocation(),
+                        param.getMeaning(),
+                        param.getDatatype(),
+                        param.getRole()
+
+                ));
             }
         }
     }

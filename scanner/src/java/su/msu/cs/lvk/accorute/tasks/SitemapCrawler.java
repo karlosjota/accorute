@@ -11,11 +11,9 @@ import su.msu.cs.lvk.accorute.utils.Callback0;
 import su.msu.cs.lvk.accorute.utils.Callback3;
 import su.msu.cs.lvk.accorute.utils.Callback4;
 
+import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 
 /**
@@ -37,6 +35,8 @@ public class SitemapCrawler extends Task implements Callback0{
     private final Map<HttpAction,EntityID> actionNodeMap = new HashMap<HttpAction,EntityID> ();
     private final Map<HttpAction,List<EntityID> > unresolvedActions = new HashMap<HttpAction,List<EntityID> >();
     private boolean wasErr;
+    private final HtmlPage startPage;
+    private final List<Task> pendingTasks = Collections.synchronizedList(new LinkedList<Task>());
     synchronized public void CallMeBack(){
         spawnedTasks--;
         logger.trace(contextID + ":task finished; "+spawnedTasks+" left");
@@ -46,11 +46,20 @@ public class SitemapCrawler extends Task implements Callback0{
         super(t);
         siteMap = new Sitemap(ctxID);
         startingAct = startReq;
+        startPage = null;
         contextID = ctxID;
         spawnedTasks = 0;
         wasErr = false;
     }
-
+    public SitemapCrawler(TaskManager t, HtmlPage startPage, EntityID ctxID){
+            super(t);
+            siteMap = new Sitemap(ctxID);
+            this.startPage = startPage;
+            startingAct = null;
+            contextID = ctxID;
+            spawnedTasks = 0;
+            wasErr = false;
+        }
     synchronized private void addNewAction(
             final EntityID fromNodeID,
             final HtmlPage p,
@@ -124,12 +133,7 @@ public class SitemapCrawler extends Task implements Callback0{
                 }
         );
         tsk.registerCallback(this);
-        if(addWaitedTask(tsk))
-            spawnedTasks++;
-        else{
-            logger.error(contextID + ":Could not add task!");
-            wasErr = true;
-        }
+        pendingTasks.add(tsk);
     }
 
     synchronized private void addConversationsForActionFromNode(
@@ -179,12 +183,7 @@ public class SitemapCrawler extends Task implements Callback0{
                         }
                 );
                 tsk.registerCallback(this);
-                if(addWaitedTask(tsk))
-                    spawnedTasks++;
-                else{
-                    logger.error(contextID + ":Could not add task!");
-                    wasErr = true;
-                }
+                pendingTasks.add(tsk);
             }else{
                 logger.trace(contextID + ":Node already exists.");
             }
@@ -228,40 +227,69 @@ public class SitemapCrawler extends Task implements Callback0{
     }
 
     public void start(){
-        performedHttpActions.add(startingAct);
-        HtmlElementActionPerformer tsk = new HtmlElementActionPerformer(
-                taskManager,
-                startingAct,
-                contextID,
-                new Callback3<ArrayList<Conversation>, ArrayList<HttpAction>, HtmlPage>(){
-                    public void CallMeBack(ArrayList<Conversation> c , ArrayList<HttpAction> a, HtmlPage p){
-                        ArrayList<DomAction > lst = new ArrayList<DomAction>();
-                        lst.add(new DomAction("", DomActionType.REFRESH));
-                        addConversationsForActionFromNode(
-                                siteMap.getEntryNode().getNodeID(),
-                                c,
-                                p,
-                                new CorrespondentActions(a,lst),
-                                false
-                        );
+        Task firstTask;
+        if(startingAct != null){
+            performedHttpActions.add(startingAct);
+            firstTask = new HtmlElementActionPerformer(
+                    taskManager,
+                    startingAct,
+                    contextID,
+                    new Callback3<ArrayList<Conversation>, ArrayList<HttpAction>, HtmlPage>(){
+                        public void CallMeBack(ArrayList<Conversation> c , ArrayList<HttpAction> a, HtmlPage p){
+                            ArrayList<DomAction > lst = new ArrayList<DomAction>();
+                            lst.add(new DomAction("", DomActionType.REFRESH));
+                            addConversationsForActionFromNode(
+                                    siteMap.getEntryNode().getNodeID(),
+                                    c,
+                                    p,
+                                    new CorrespondentActions(a,lst),
+                                    false
+                            );
+                        }
                     }
-                }
-        );
-        tsk.registerCallback(this);
-        if(addWaitedTask(tsk))
+            );
+        }else{
+            firstTask = new HtmlPageParser(
+                    super.taskManager,
+                    startPage,
+                    contextID,
+                    new Callback4<HtmlPage,  ArrayList<DomAction>, HttpAction, Boolean>(){
+                        public void CallMeBack(HtmlPage p, ArrayList<DomAction> domActs, HttpAction httpAction, Boolean isAjax){
+                            ArrayList<HttpAction> acts = new  ArrayList<HttpAction>();
+                            acts.add(httpAction);
+                            addNewAction(siteMap.getEntryNode().getNodeID(),p,new CorrespondentActions(acts,domActs), isAjax);
+                        }
+                    }
+            );
+        }
+        firstTask.registerCallback(this);
+        if(addWaitedTask(firstTask))
             spawnedTasks++;
         else{
             logger.error(contextID + ":Could not add task!");
-            setSuccessful(false);
-            return;
+            wasErr = true;
         }
         synchronized(this){
-            while(spawnedTasks!=0){
-                try{
-                    wait();
-                }catch(InterruptedException ex){
+            while(true){
+                while(spawnedTasks!=0){
+                    try{
+                        wait();
+                    }catch(InterruptedException ex){
+                    }
                 }
-           }
+                if(pendingTasks.size() == 0)
+                    break;
+                ListIterator<Task> iter = pendingTasks.listIterator();
+                while(iter.hasNext()){
+                    if(addWaitedTask(iter.next()))
+                        spawnedTasks++;
+                    else{
+                        logger.error(contextID + ":Could not add task!");
+                        wasErr = true;
+                    }
+                    iter.remove();
+                }
+            }
         }
         WebAppProperties.getInstance().getSitemapService().setSitemapForContext(contextID,siteMap);
         setSuccessful(wasErr);

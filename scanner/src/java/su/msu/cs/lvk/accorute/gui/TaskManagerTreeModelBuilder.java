@@ -73,7 +73,8 @@ public class TaskManagerTreeModelBuilder {
                     }
                 }
                 current_ = child;
-                model_.nodeChanged(child);
+                if(model_ != null)
+                    model_.nodeChanged(child);
             }
         }
 

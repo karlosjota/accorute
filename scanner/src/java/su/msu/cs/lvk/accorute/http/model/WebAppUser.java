@@ -3,6 +3,7 @@ package su.msu.cs.lvk.accorute.http.model;
 import su.msu.cs.lvk.accorute.RBAC.Role;
 import su.msu.cs.lvk.accorute.RBAC.User;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,7 +14,7 @@ import java.util.Map;
  * Time: 14:10:01
  * To change this template use File | Settings | File Templates.
  */
-public class WebAppUser implements User {    
+public class WebAppUser implements User, Serializable {
     private EntityID userID =  EntityID.NOT_INITIALIZED;
     private Role role;
 

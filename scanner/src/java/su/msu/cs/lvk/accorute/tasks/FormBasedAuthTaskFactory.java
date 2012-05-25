@@ -17,6 +17,19 @@ public class FormBasedAuthTaskFactory implements ContextedTaskFactory {
     private final URL url;
     private final int formIndex;
     private final String submitXPath;
+
+    public int getFormIndex() {
+        return formIndex;
+    }
+
+    public String getSubmitXPath() {
+        return submitXPath;
+    }
+
+    public URL getUrl() {
+        return url;
+    }
+
     public FormBasedAuthTaskFactory(URL url, int formIndex,String submitXPath){
         this.url = url;
         this.formIndex = formIndex;
@@ -28,7 +41,7 @@ public class FormBasedAuthTaskFactory implements ContextedTaskFactory {
         this.submitXPath = null;
     }
     public Task genContextedTask(EntityID ctx,TaskManager t) {
-        if(submitXPath != null)
+        if(submitXPath != null && submitXPath.length() >0)
             return new FormBasedAuthTask(ctx,t, url, formIndex,submitXPath);
         else
             return new FormBasedAuthTask(ctx,t, url, formIndex);

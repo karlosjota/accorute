@@ -12,7 +12,7 @@ import java.util.List;
  * Time: 16:18:32
  * To change this template use File | Settings | File Templates.
  */
-public interface ContextService {
+public interface ContextService extends Listenable{
     /**
      * Adds new or modifies existing context.
      * @param ctx - context to be added or modified

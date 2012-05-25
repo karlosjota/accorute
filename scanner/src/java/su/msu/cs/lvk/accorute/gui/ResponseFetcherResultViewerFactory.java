@@ -23,26 +23,30 @@ public class ResponseFetcherResultViewerFactory implements TaskVisualiserFactory
         }
     }
     class ResponseFetcherResultViewer implements TaskVisualiser {
-        private final JSplitPane splitPane_;
-        private final JTextArea requestArea_, responseArea_;
+        private final Component theComponent;
+        private JTextArea requestArea_, responseArea_;
         ResponseFetcherResultViewer(ResponseFetcher fetcher) {
             Conversation conversation = (Conversation) fetcher.getResult();
-            requestArea_ = new JTextArea(conversation.getRequest().toString());
-            requestArea_.setEditable(false);
-            requestArea_.setLineWrap(true);
-            requestArea_.setBorder(BorderFactory.createTitledBorder("Request"));
-            responseArea_ = new JTextArea(conversation.getResponse().toString());
-            responseArea_.setEditable(false);
-            responseArea_.setLineWrap(true);
-            responseArea_.setBorder(BorderFactory.createTitledBorder("Response"));
-            splitPane_ = new JSplitPane(
-                    JSplitPane.VERTICAL_SPLIT,
-                    new JScrollPane(requestArea_), new JScrollPane(responseArea_)
-            );
+            if(conversation != null){
+                requestArea_ = new JTextArea(conversation.getRequest().toString());
+                requestArea_.setEditable(false);
+                requestArea_.setLineWrap(true);
+                requestArea_.setBorder(BorderFactory.createTitledBorder("Request"));
+                responseArea_ = new JTextArea(conversation.getResponse().toString());
+                responseArea_.setEditable(false);
+                responseArea_.setLineWrap(true);
+                responseArea_.setBorder(BorderFactory.createTitledBorder("Response"));
+                theComponent = new JSplitPane(
+                        JSplitPane.VERTICAL_SPLIT,
+                        new JScrollPane(requestArea_), new JScrollPane(responseArea_)
+                );
+            }else{
+                theComponent = new JPanel();
+            }
         }
 
         public Component getComponent() {
-            return splitPane_;  //To change body of implemented methods use File | Settings | File Templates.
+            return theComponent;  //To change body of implemented methods use File | Settings | File Templates.
         }
     }
 }

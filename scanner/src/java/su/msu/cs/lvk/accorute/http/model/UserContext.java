@@ -1,5 +1,7 @@
 package su.msu.cs.lvk.accorute.http.model;
 
+import su.msu.cs.lvk.accorute.WebAppProperties;
+
 /**
  * Created by IntelliJ IDEA.
  * User: george
@@ -8,6 +10,13 @@ package su.msu.cs.lvk.accorute.http.model;
  * To change this template use File | Settings | File Templates.
  */
 public class UserContext {
+    @Override
+    public String toString() {
+        if(userID == EntityID.NOT_INITIALIZED)
+            return "{" + contextID.toString()+"}";
+        return WebAppProperties.getInstance().getUserService().getUserByID(userID).toString() + " {" + contextID.toString()+"}";
+    }
+
     private EntityID userID = EntityID.NOT_INITIALIZED;
     private EntityID contextID = EntityID.NOT_INITIALIZED;
 

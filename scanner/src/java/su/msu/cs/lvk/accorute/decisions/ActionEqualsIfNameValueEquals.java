@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -88,10 +89,19 @@ public class ActionEqualsIfNameValueEquals implements ActionEqualityDecision{
                     }
                 }
                 if(!checkID){
-                    Matcher idNameMatcher = WebAppProperties.getInstance().getIdParamNameRegex().matcher(name);
-                    Matcher aValMatcher = WebAppProperties.getInstance().getIdParamValueRegex().matcher(aVal);
-                    Matcher bValMatcher = WebAppProperties.getInstance().getIdParamValueRegex().matcher(bVal);
-                    if(idNameMatcher.matches() && aValMatcher.matches() && bValMatcher.matches() )
+                    List<Pattern> idNamePatterns = WebAppProperties.getInstance().getIdParamNameRegexList();
+                    List<Pattern> idValuePatterns = WebAppProperties.getInstance().getIdParamValueRegexList();
+                    boolean foundMatch = false;
+                    for(int i = 0; i < idNamePatterns.size(); i++){
+                        Matcher idNameMatcher = idNamePatterns.get(i).matcher(name);
+                        Matcher aValMatcher = idValuePatterns.get(i).matcher(aVal);
+                        Matcher bValMatcher = idValuePatterns.get(i).matcher(bVal);
+                        if(idNameMatcher.matches() && aValMatcher.matches() && bValMatcher.matches() ){
+                            foundMatch = true;
+                            break;
+                        }
+                    }
+                    if(foundMatch)
                         continue;
                 }
                 if(!aVal.equals(bVal)){

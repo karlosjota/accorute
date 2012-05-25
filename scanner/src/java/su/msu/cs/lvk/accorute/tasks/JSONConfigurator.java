@@ -16,10 +16,7 @@ import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
 
 import java.io.*;
 import java.net.MalformedURLException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -52,9 +49,23 @@ public class JSONConfigurator extends Task {
                 if(action.equals("")){
                     action = event.getJSONObject("document").getString("location");
                 }
-                String cookies = event.getString("cookie");
-                List<ActionParameter> params = WebAppProperties.getInstance().getRcd().decomposeCookies(cookies);
-
+                JSONArray cookies = event.getJSONArray("cookies");
+                String cookieString = "";
+                for(int i=0; i < cookies.length(); i++){
+                    JSONObject cookie = cookies.getJSONObject(i);   
+                    String name = cookie.getString("name");
+                    String value = cookie.getString("value");
+                    //TODO: take these into account!!!
+                    //String host = cookie.getString("host");
+                    //String path = cookie.getString("path");
+                    //int expires = cookie.getInt("expires");
+                    //boolean isSecure =cookie.getBoolean("isSecure");
+                    //boolean isDomain =cookie.getBoolean("isDomain");
+                    if(cookieString.length()!=0)
+                        cookieString += ";" ;
+                    cookieString += name + " = " + value;
+                }
+                List<ActionParameter> params = WebAppProperties.getInstance().getRcd().decomposeCookies(cookieString);
                 JSONArray elements = event.getJSONArray("elements");
                 for(int i=0; i< elements.length();i++){
                     String name = elements.getJSONObject(i).getString("name");
@@ -135,8 +146,12 @@ public class JSONConfigurator extends Task {
                 WebAppProperties.getInstance().setUrlIncludeScope(Pattern.compile(urlIncludeScope));
                 WebAppProperties.getInstance().setUrlExcludeScope(Pattern.compile(urlExcludeScope));
                 WebAppProperties.getInstance().setResponceExcludeScope(Pattern.compile(responceExcludeScope));
-                WebAppProperties.getInstance().setIdParamNameRegex(Pattern.compile(idParamNameRegexp));
-                WebAppProperties.getInstance().setIdParamValueRegex(Pattern.compile(idParamValRegexp));
+                ArrayList<Pattern> nameList = new ArrayList<Pattern>();
+                nameList.add(Pattern.compile(idParamNameRegexp));
+                WebAppProperties.getInstance().setIdParamNameRegexList(nameList);
+                ArrayList<Pattern> valueList = new ArrayList<Pattern>();
+                valueList.add(Pattern.compile(idParamValRegexp));
+                WebAppProperties.getInstance().setIdParamValueRegexList(valueList);
                 JSONArray tokens = obj.getJSONArray("dynamicTokens");
                 for(int i=0;i < tokens.length();i++){
                     JSONObject token = tokens.getJSONObject(i);
@@ -255,7 +270,6 @@ public class JSONConfigurator extends Task {
                     UseCase cancelleeUC = nameUseCaseMap.get(cancellee);
                     WebAppProperties.getInstance().getUcGraph().addCancellation(cancellerUC, cancelleeUC);
                 }
-                WebAppProperties.getInstance().setTestChain(t);
                 setSuccessful(true);
             }finally{
                 if (in != null) {

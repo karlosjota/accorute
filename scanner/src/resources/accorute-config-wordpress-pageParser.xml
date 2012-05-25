@@ -29,21 +29,21 @@
 
     <bean id="simpleRCD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimpleRCD"/>
     <bean id="simplePVD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimplePVD"/>
-    <bean id="dummyChState" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.NeverChangeState"/>
+    <bean id="dummyChState" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.PostChangeStateDecision"/>
     <bean id="notFoundRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
-        <constructor-arg value=".*(ERROR:\s*The\s*page\s*you\s*requested\s*is\s*not\s*available|HTTP\s*Status\s*404).*" />
+        <constructor-arg value=".*404.*" />
         <constructor-arg type="int" value="40"/> <!-- MuLTILINE and DOTALL-->
     </bean>
     <bean id="prohibRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
-        <constructor-arg value="" />
+        <constructor-arg value=".*403.*" />
         <constructor-arg type="int" value="40"/>
     </bean>
     <bean id="expireRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
-        <constructor-arg value=".*(Please\s*login\s*so\s*that\s*you\s*can\s*start\s*viewing\s*and\s*posting\s*your\s*messages).*" />
+        <constructor-arg value=".*You're not logged in.*" />
         <constructor-arg type="int" value="40"/>
     </bean>
     <bean id="errorRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
-        <constructor-arg type="java.lang.String" value=".*(The\s*server\s*encountered\s*an\s*internal\s*error).*" />
+        <constructor-arg type="java.lang.String" value=".*500.*" />
         <constructor-arg type="int" value="40"/>
     </bean>
     <bean id="respClass" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.PatternResponceClassifier">
@@ -55,9 +55,9 @@
     <bean id="pageEqD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.LevensteinPageEqualityDecision"/>
     <bean id="acEqD" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.ActionEqualsIfNameValueEquals"/>
     <bean id="scopeRegex" scope="prototype" class="java.util.regex.Pattern" factory-method="compile">
-        <constructor-arg value="http:\/\/10\.0\.0\.13:8080\/easy_jsp_forum\/.*" />
+        <constructor-arg value=".*192\.168\.56\.254\/wordpress\/.*" />
     </bean>
-    <bean id="formFillerFactory" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.MultiStateFormFillFactory" >
+    <bean id="formFillerFactory" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.MultiStateFormFillFactory">
         <constructor-arg value="test" />
         <constructor-arg value="test" />
         <constructor-arg value="true" />
@@ -65,7 +65,7 @@
         <constructor-arg value="true" />
     </bean>
     <bean id="loginPageURL" scope="prototype" class="java.net.URL" >
-        <constructor-arg value="http://10.0.0.13:8080/easy_jsp_forum/"/>
+        <constructor-arg value="http://192.168.56.254/wordpress/wp-login.php"/>
     </bean>
     <bean id="authFactory" scope="prototype" class="su.msu.cs.lvk.accorute.tasks.FormBasedAuthTaskFactory">
         <constructor-arg ref="loginPageURL" />
@@ -78,10 +78,11 @@
     </bean>
     <bean id="httpcl" scope="prototype" class="su.msu.cs.lvk.accorute.utils.HttpClientProxyFactory" factory-method="create">
         <constructor-arg ref="proxy"/>
+        <!--<constructor-arg><null/></constructor-arg>-->
     </bean>
     <bean id="dynCredUp" scope="prototype" class="su.msu.cs.lvk.accorute.decisions.SimpleDynamicCredentialsUpdater" />
 
-    <bean id="properties" class="su.msu.cs.lvk.accorute.WebAppProperties" factory-method="getInstance">
+    <bean id="Properties" class="su.msu.cs.lvk.accorute.WebAppProperties" factory-method="getInstance">
         <property name="actionService" ref="actionService"/>
         <property name="contextService" ref="contextService"/>
         <property name="cookieService" ref="cookieService" />
@@ -102,11 +103,11 @@
         <property name="httpClient" ref="httpcl"/>
         <property name="proxy" ref="proxy" />
         <property name="dynCredUpd" ref="dynCredUp"/>
-        <property name="captureFileName" value="../mapper/captures/easy_jsp_forum_nostates-capture.txt" />
+        <property name="captureFileName" value="" />
         <property name="mainPage" ref="mainPage" />
     </bean>
     <bean id="mainPage" class="java.net.URL">
-        <constructor-arg value="http://10.0.0.13:8080/easy_jsp_forum/" />
+        <constructor-arg value="http://192.168.56.254/wordpress/" />
     </bean>
 
 </beans>

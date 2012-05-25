@@ -103,7 +103,7 @@ public class web2pyRCD extends SimpleRCD{
                 "host",
                 url.getHost(),
                 ActionParameterLocation.URL,
-                super.decideActionMeaning("host", ActionParameterLocation.URL, userControllable),
+                super.decideActionMeaning("host", url.getHost(), ActionParameterLocation.URL, userControllable),
                 ActionParameterDatatype.STRING)
         );
         int port = url.getPort();
@@ -113,7 +113,7 @@ public class web2pyRCD extends SimpleRCD{
                 "port",
                 Integer.toString(port),
                 ActionParameterLocation.URL,
-                super.decideActionMeaning("port", ActionParameterLocation.URL, userControllable),
+                super.decideActionMeaning("port", Integer.toString(port), ActionParameterLocation.URL, userControllable),
                 ActionParameterDatatype.NUMBER)
         );
         String query = url.getQuery();
@@ -125,7 +125,7 @@ public class web2pyRCD extends SimpleRCD{
                         URLDecoder.decode(nameValue[0]),
                         URLDecoder.decode( (nameValue.length>1)?nameValue[1]:""),
                         ActionParameterLocation.QUERY,
-                        super.decideActionMeaning(URLDecoder.decode(nameValue[0]), ActionParameterLocation.QUERY, userControllable),
+                        super.decideActionMeaning(URLDecoder.decode(nameValue[0]),URLDecoder.decode( (nameValue.length>1)?nameValue[1]:""),  ActionParameterLocation.QUERY, userControllable),
                         ActionParameterDatatype.STRING)
                 );
             }
@@ -138,21 +138,21 @@ public class web2pyRCD extends SimpleRCD{
                 "__web2py_application",
                 (ar.length >= 1)?ar[0]:"",
                 ActionParameterLocation.URL,
-                super.decideActionMeaning("__web2py_application",ActionParameterLocation.URL,userControllable),
+                super.decideActionMeaning("__web2py_application",(ar.length >= 1)?ar[0]:"",ActionParameterLocation.URL,userControllable),
                 ActionParameterDatatype.STRING)
         );
         params.add(new ActionParameter(
                 "__web2py_controller",
                 (ar.length >= 2)?ar[1]:"",
                 ActionParameterLocation.URL,
-                super.decideActionMeaning("__web2py_controller",ActionParameterLocation.URL,userControllable),
+                super.decideActionMeaning("__web2py_controller",(ar.length >= 2)?ar[1]:"",ActionParameterLocation.URL,userControllable),
                 ActionParameterDatatype.STRING)
         );
         params.add(new ActionParameter(
                 "__web2py_function",
                 (ar.length >= 3)?ar[2]:"",
                 ActionParameterLocation.URL,
-                super.decideActionMeaning("__web2py_function",ActionParameterLocation.URL,userControllable),
+                super.decideActionMeaning("__web2py_function",(ar.length >= 3)?ar[2]:"",ActionParameterLocation.URL,userControllable),
                 ActionParameterDatatype.STRING)
         );
         for(int i=3; i< ar.length; i++){
@@ -161,7 +161,7 @@ public class web2pyRCD extends SimpleRCD{
                     pname,
                     ar[i],
                     ActionParameterLocation.URL,
-                    super.decideActionMeaning(pname,ActionParameterLocation.URL,userControllable),
+                    super.decideActionMeaning(pname, ar[i], ActionParameterLocation.URL,userControllable),
                     ActionParameterDatatype.STRING)
             );
         }

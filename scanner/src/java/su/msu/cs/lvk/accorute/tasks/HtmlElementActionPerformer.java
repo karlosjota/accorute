@@ -37,7 +37,9 @@ public class HtmlElementActionPerformer extends Task {
         NOTHTML,
         NOREQUEST
     };
-    final private HtmlPage page;
+    final private HtmlPage originalPage;
+    private HtmlPage ownPage;
+    final private URL startingUrl;
     final private ArrayList<DomAction> actions;
     final private EntityID ctx;
     final private Callback3<ArrayList<Conversation>, ArrayList<HttpAction>, HtmlPage> callback;
@@ -53,8 +55,10 @@ public class HtmlElementActionPerformer extends Task {
     @Override
     public String toString() {
         String prefix = "{" + ctx.getId().toString() + "}: ";
-        if(page != null){
-            return prefix + actions + " on " + page.getUrl();
+        if(originalPage != null){
+            return prefix + actions + " on " + originalPage.getUrl();
+        }else if(startingUrl != null){
+            return prefix + " load " + startingUrl;
         }else{
             URL url = WebAppProperties.getInstance().getRcd().getURL(startHttpAct.getActionParameters());
             boolean isPost = false;
@@ -77,11 +81,27 @@ public class HtmlElementActionPerformer extends Task {
     ){
         super(t);
         actions = null;
-        page = null;
+        originalPage = null;
         ctx = ctxID;
         callback = cb;
         falseWebConn = initConn();
         startHttpAct = _startHttpAct;
+        startingUrl = null;
+    }
+    public HtmlElementActionPerformer(
+            TaskManager t,
+            URL _startingUrl,
+            EntityID ctxID,
+            Callback3<ArrayList<Conversation>, ArrayList<HttpAction>, HtmlPage> cb
+    ){
+        super(t);
+        actions = null;
+        originalPage = null;
+        ctx = ctxID;
+        callback = cb;
+        falseWebConn = initConn();
+        startHttpAct = null;
+        startingUrl = _startingUrl;
     }
     public HtmlElementActionPerformer(
             TaskManager t,
@@ -95,8 +115,14 @@ public class HtmlElementActionPerformer extends Task {
         ctx = ctxID;
         callback = cb;
         falseWebConn = initConn();
-        page = HtmlUnitUtils.clonePage(pg,webClient.getCurrentWindow(),ctx);
+        originalPage = pg;
         startHttpAct = null;
+        startingUrl = null;
+        PageCloner theCloner = new PageCloner(taskManager,originalPage,webClient.openWindow(null,"HtmlElementActionPerformer"));
+        waitForTask(theCloner);
+        if(!theCloner.isSuccessful())
+            throw  new RuntimeException("Clone unsuccessful");
+        ownPage =  (HtmlPage) theCloner.getResult();
     }
     private WebConnection initConn(){
         WebConnection falseWebC= new FalsifyingWebConnection(webClient){
@@ -133,7 +159,6 @@ public class HtmlElementActionPerformer extends Task {
 
     @Override
     protected void start() {
-        WebWindow w = webClient.openWindow(null,"tmpWindow");
         webClient.setThrowExceptionOnFailingStatusCode(false);
         webClient.setThrowExceptionOnScriptError(false);
         webClient.setConfirmHandler(
@@ -158,10 +183,9 @@ public class HtmlElementActionPerformer extends Task {
                 }
         );
         webClient.setAjaxController(new NicelyResynchronizingAjaxController());
-        if(page!=null){
-            HtmlPage ownPage = HtmlUnitUtils.clonePage(page,webClient.getCurrentWindow(),ctx);
+        if(originalPage !=null){
             DomAction last = actions.get(actions.size() - 1);
-            HtmlElement el = ownPage.getFirstByXPath(last.getXpathElString());              
+            HtmlElement el = ownPage.getFirstByXPath(last.getXpathElString());
             logger.trace("My webclient: " + webClient);
             logger.trace("Page's web client " + ownPage.getWebClient());
             switch (last.getType()){
@@ -204,6 +228,18 @@ public class HtmlElementActionPerformer extends Task {
                 default:
                     throw new NotImplementedException("Actions other than click are not yet supported!");
             }
+        }else if(startingUrl != null){
+            HtmlPage newPage;
+            try {
+                newPage = (HtmlPage) webClient.getPage(startingUrl);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            newPage.getEnclosingWindow().getJobManager().shutdown();
+            UserContext contx = WebAppProperties.getInstance().getContextService().getContextByID(ctx);
+            WebAppProperties.getInstance().getDynCredUpd().updateCredentials(contx.getUserID(),(HtmlPage)newPage);
+            callback.CallMeBack(convs,acts,newPage);
+
         }else if(startHttpAct != null){
             ResponseFetcher tsk = new ResponseFetcher(super.taskManager, startHttpAct, ctx);
             waitForTask(tsk);

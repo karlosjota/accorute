@@ -3,6 +3,7 @@ package su.msu.cs.lvk.accorute.RBAC;
 import com.truchsess.util.HashMapTree;
 import com.truchsess.util.MutableMapTreeCursor;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -11,9 +12,9 @@ import java.util.Set;
 /**
  * Default implementation of the {@link Role} interface.
  */
-public class SimpleRBACRole implements Role {
-    static HashMapTree<String, Role> _roleHierarchy = new HashMapTree<String, Role>();
-    private MutableMapTreeCursor<String, Role> _cursor;
+public class SimpleRBACRole implements Role, Serializable{
+    static transient  HashMapTree<String, Role> _roleHierarchy = new HashMapTree<String, Role>();
+    private transient MutableMapTreeCursor<String, Role> _cursor;
     private String _rolename;
 
     /**
@@ -166,7 +167,7 @@ public class SimpleRBACRole implements Role {
      * @return a string representing this role.
      */
     public String toString() {
-        return (isRootRole() ? _rolename : _rolename + " extends " + getParentRole().getRoleName());
+        return _rolename;
     }
 }
 

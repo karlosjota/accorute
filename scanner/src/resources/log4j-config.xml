@@ -18,7 +18,7 @@
     </logger>
 
     <logger name="com.gargoylesoftware">
-        <level value="warn"/>
+        <level value="info"/>
     </logger>
 
     <logger name="su.msu.cs.lvk.accorute.tasks">
@@ -33,8 +33,11 @@
     <logger name="su.msu.cs.lvk.accorute.tasks.SitemapCrawler">
         <level value="debug"/>
     </logger>
-    <logger name="com.gargoylesoftware.htmlunit.javascript.background.JavaScriptExecutor">
-        <level value="debug"/>
+    <logger name="com.gargoylesoftware.htmlunit.javascript">
+        <level value="info"/>
+    </logger>
+    <logger name="com.gargoylesoftware.htmlunit.corejs">
+        <level value="info"/>
     </logger>
 
     <logger name="su.msu.cs.lvk.accorute.http.model.Sitemap">

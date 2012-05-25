@@ -6,6 +6,8 @@ import su.msu.cs.lvk.accorute.http.constants.ActionParameterLocation;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterMeaning;
 import su.msu.cs.lvk.accorute.http.constants.ActionParameterRole;
 
+import java.io.Serializable;
+
 /**
  * Created by IntelliJ IDEA.
  * User: george
@@ -13,12 +15,14 @@ import su.msu.cs.lvk.accorute.http.constants.ActionParameterRole;
  * Time: 23:37:29
  * To change this template use File | Settings | File Templates.
  */
-public class ActionParameter extends NamedValue {
+public class ActionParameter implements Serializable {
     private static Logger logger = Logger.getLogger(NamedValue.class.getName());
     private final ActionParameterLocation location;
     private final ActionParameterMeaning meaning;
     private final ActionParameterDatatype datatype;
     private final ActionParameterRole role;
+    private final String name;
+    private final String value;
 
     @Override
     public String toString() {
@@ -41,11 +45,20 @@ public class ActionParameter extends NamedValue {
                            ActionParameterMeaning mean,
                            ActionParameterDatatype type
                            ){
-        super(pname,pvalue);
+        name = pname;
+        value = pvalue;
         location = loc;
         meaning = mean;
         datatype = type;
         role = ActionParameterRole.UNKNOWN;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getValue() {
+        return value;
     }
 
     public ActionParameter(String pname, String pvalue,
@@ -54,7 +67,9 @@ public class ActionParameter extends NamedValue {
                            ActionParameterDatatype type,
                            ActionParameterRole paramRole
                            ){
-        super(pname,pvalue);
+        name = pname;
+        value = pvalue;
+
         location = loc;
         meaning = mean;
         datatype = type;

@@ -330,7 +330,7 @@ public class MultiStateFormFillFactory implements FormFillerFactory {
         public boolean hasNext() {
             for(RewindingFormStateIterator it : currentState){
                 if(it.hasNext())
-                    return true;
+                    return currentSubmit != null || submitIter.hasNext();
             }
             return submitIter.hasNext();
         }

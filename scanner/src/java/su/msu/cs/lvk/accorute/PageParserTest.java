@@ -2,6 +2,10 @@ package su.msu.cs.lvk.accorute;
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.log4j.Logger;
+import org.jboss.netty.handler.codec.http.HttpRequest;
+import org.littleshoot.proxy.DefaultHttpProxyServer;
+import org.littleshoot.proxy.HttpProxyServer;
+import org.littleshoot.proxy.HttpRequestFilter;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -11,10 +15,7 @@ import su.msu.cs.lvk.accorute.gui.*;
 import su.msu.cs.lvk.accorute.http.model.*;
 import su.msu.cs.lvk.accorute.taskmanager.Task;
 import su.msu.cs.lvk.accorute.taskmanager.TaskManager;
-import su.msu.cs.lvk.accorute.tasks.HtmlElementActionPerformer;
-import su.msu.cs.lvk.accorute.tasks.HtmlPageParser;
-import su.msu.cs.lvk.accorute.tasks.JSONConfigurator;
-import su.msu.cs.lvk.accorute.tasks.SitemapCrawler;
+import su.msu.cs.lvk.accorute.tasks.*;
 import su.msu.cs.lvk.accorute.utils.Callback3;
 import su.msu.cs.lvk.accorute.utils.Callback4;
 
@@ -45,8 +46,32 @@ public class PageParserTest {
             System.err.println("Error loading evaluation contexts: " + ex.getMessage());
             return;
         }
+        HttpRequestFilter filter = new HttpRequestFilter() {
+            public void filter(HttpRequest httpRequest) {
+                System.out.println("Request: " + httpRequest.getMethod().toString() + " " + httpRequest.getUri());
+                EntityID proxyContext = WebAppProperties.getInstance().getProxyContext();
+                Request req = new Request(httpRequest);
+                WebAppProperties.getInstance().getConversationService().addConversationToContext(proxyContext,new Conversation(req));
+            }
+        };
+        final HttpProxyServer server = new DefaultHttpProxyServer(8088, filter);
+        server.start();
+
         final LogWatchComponent appender = new LogWatchComponent();
         Logger.getRootLogger().addAppender(appender);
+
+        final TaskManager taskman = WebAppProperties.getInstance().getTaskManager();
+        new Thread(taskman).start();
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                TaskManagerForm form = new TaskManagerForm(taskman);
+                form.addTaskResultViewerFactory(new HtmlPageParserResultViewerFactory());
+                form.addTaskResultViewerFactory(new ResponseFetcherResultViewerFactory());
+                form.addtaskOverviewFactory(new GenericTaskVisualizerFactory());
+                form.addLogAppender(appender);
+            }
+        });
+        /*
         URL pageToParse;
         try{
             pageToParse = new URL(args[1]);
@@ -64,26 +89,15 @@ public class PageParserTest {
         }
         List<Role> roles = new ArrayList<Role>();
         Role role = SimpleRBACRole.createRootRole("user");
-        roles.add(role);
-        WebAppProperties.getInstance().setRoles(roles);
+        WebAppProperties.getInstance().getRoles().add(role);
         WebAppUser u1 = new WebAppUser();
-        u1.getStaticCredentials().put("username",username);
+        u1.getStaticCredentials().put("log",username);
         u1.getStaticCredentials().put("password",password);
         u1.setRole(role);
         WebAppProperties.getInstance().getUserService().addOrModifyUser(u1);
         final UserContext u1Ctx = new UserContext();
         u1Ctx.setUserID(u1.getUserID());
         WebAppProperties.getInstance().getContextService().addOrUpdateContext(u1Ctx);
-        final TaskManager taskman = WebAppProperties.getInstance().getTaskManager();
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                TaskManagerForm form = new TaskManagerForm(taskman);
-                form.addTaskResultViewerFactory(new HtmlPageParserResultViewerFactory());
-                form.addTaskResultViewerFactory(new ResponseFetcherResultViewerFactory());
-                form.addtaskOverviewFactory(new GenericTaskVisualizerFactory());
-                form.addLogAppender(appender);
-            }
-        });
         HtmlPage parseRoot = null;
         if(needAuth){
             Task authTask = WebAppProperties.getInstance().getAuthTaskFactory().genContextedTask(u1Ctx.getContextID(), taskman);
@@ -141,7 +155,7 @@ public class PageParserTest {
             logger.info("=======ACTION======");
             logger.info(httpActs.get(0).toString());
             logger.info(domActs);
-            /*List<ActionParameter> prms = httpActs.get(0).getActionParameters();
+            List<ActionParameter> prms = httpActs.get(0).getActionParameters();
             for(ActionParameter param : prms){
                 if(param.getName().equals("host")){
                     if(param.getValue().contains("google-analytics"))
@@ -151,8 +165,10 @@ public class PageParserTest {
             }
             if(i_google != -1)
                 break;
-            */
+
         }
+        */
+        /*
         HtmlElementActionPerformer performer = new HtmlElementActionPerformer(
                 taskman,
                 pages.get(i_google),
@@ -173,5 +189,6 @@ public class PageParserTest {
         );
         taskman.addTask(performer);
         taskman.waitForFinish();
+        */
     }
 }

@@ -111,8 +111,10 @@ public class Response extends Message {
         }
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         HttpEntity ent = resp.getEntity();
-        ent.writeTo(os);
-        ent.consumeContent();
+        if(ent != null){
+            ent.writeTo(os);
+            ent.consumeContent();
+        }
         setVersion(resp.getProtocolVersion().toString());
         setContent(os.toByteArray());
         setStatusCode(Integer.toString(resp.getStatusLine().getStatusCode()));

@@ -20,6 +20,11 @@ public class CollectionUserService implements UserService {
     private final Map<EntityID, WebAppUser> database = new HashMap<EntityID, WebAppUser>();
     private Long nextId = 1l;
 
+    public void clear() {
+        database.clear();
+        nextId = 1l;
+    }
+
     public void addOrModifyUser(WebAppUser user){
         if(user.getUserID() == EntityID.NOT_INITIALIZED ){
             EntityID id = new EntityID(nextId++);

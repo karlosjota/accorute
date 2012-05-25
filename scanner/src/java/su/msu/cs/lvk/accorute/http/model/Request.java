@@ -51,16 +51,16 @@ import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.handler.codec.http.HttpRequest;
 import su.msu.cs.lvk.accorute.http.constants.HTTPHeader;
 import su.msu.cs.lvk.accorute.http.constants.HTTPMethod;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLDecoder;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class represents a request that can be sent to an HTTP server.
@@ -95,10 +95,36 @@ public class Request extends Message {
             setContent(req.getContent());
         }
     }
+    public Request(HttpRequest request){
+        method = request.getMethod().toString();
+        try {
+            url = new URL("http://" + request.getHeader("host") + request.getUri());
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        version = request.getProtocolVersion().toString();
+        List<Map.Entry<String,String>> headers = request.getHeaders();
+        NamedValue hdrs[] = new NamedValue[headers.size()];
+        for(Map.Entry<String,String> header : headers){
+            setHeader(header.getKey(), header.getValue());
+        }
+        ChannelBuffer buf = request.getContent();
+        if(buf.readableBytes() == 0){
+            setNoBody();
+        }else{
+            byte [] content = new byte[buf.readableBytes()];
+            buf.getBytes(0,content, 0, buf.readableBytes());
+            setContent(content);
+        }
+    }
 
     public Request(WebRequest req) {
         method = req.getHttpMethod().toString();
         url = req.getUrl();
+        for(Map.Entry<String, String> header: req.getAdditionalHeaders().entrySet()){
+            setHeader(header.getKey(), header.getValue());
+        }
+        setContent(req.getRequestBody().getBytes());
         //TODO: the rest is not copied!!!!
     }
     
@@ -232,6 +258,7 @@ public class Request extends Message {
             req.setHttpMethod(com.gargoylesoftware.htmlunit.HttpMethod.GET);
         }else if(getMethod().equalsIgnoreCase("POST")){
             req.setHttpMethod(com.gargoylesoftware.htmlunit.HttpMethod.POST);
+            req.setRequestBody(new String(this.getContent()));
         }
         //TODO: add more code here!
         return req;

@@ -6,6 +6,7 @@ import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.List;
 
@@ -16,7 +17,7 @@ import java.util.List;
  * Time: 12:19:25
  * To change this template use File | Settings | File Templates.
  */
-public class HttpAction {
+public class HttpAction implements Serializable {
     public String getName() {
         return name;
     }
@@ -80,7 +81,7 @@ public class HttpAction {
 
     private String name;
     private List<ActionParameter> actionParameters;
-    private EntityID actionID = EntityID.NOT_INITIALIZED;
+    private transient EntityID actionID = EntityID.NOT_INITIALIZED;
 
     public HttpAction(String name,List<ActionParameter> params ){
         this.name = name;

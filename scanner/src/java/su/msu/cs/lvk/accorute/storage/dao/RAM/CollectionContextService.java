@@ -3,6 +3,7 @@ package su.msu.cs.lvk.accorute.storage.dao.RAM;
 import su.msu.cs.lvk.accorute.http.model.EntityID;
 import su.msu.cs.lvk.accorute.http.model.UserContext;
 import su.msu.cs.lvk.accorute.storage.ContextService;
+import su.msu.cs.lvk.accorute.utils.CallbackContainer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +17,7 @@ import java.util.Map;
  * Time: 19:09:42
  * To change this template use File | Settings | File Templates.
  */
-public class CollectionContextService implements ContextService {
+public class CollectionContextService  extends CallbackContainer implements ContextService {
     private final Map<EntityID, UserContext> database = new HashMap<EntityID, UserContext>();
     private Long nextId = 1l;
 
@@ -33,7 +34,7 @@ public class CollectionContextService implements ContextService {
             }
             database.put(cid, ctx);
         }
-
+        notifyCallbacks();
     }
     public UserContext getContextByID(EntityID actID){
         UserContext dbUserContext = database.get(actID);

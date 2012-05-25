@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedMultigraph;
 import su.msu.cs.lvk.accorute.WebAppProperties;
+import su.msu.cs.lvk.accorute.utils.CallbackContainer;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -18,12 +19,29 @@ import java.util.*;
  * Time: 1:13:36
  * To change this template use File | Settings | File Templates.
  */
-public class UseCaseGraph implements Comparator<UseCase> {
+public class UseCaseGraph extends CallbackContainer implements Comparator<UseCase> {
     private Logger logger = Logger.getLogger(this.getClass().getName());
     public int compare(UseCase o1, UseCase o2) {
         return getCancelledByCount(o1) - getCancelledByCount(o2);
     }
 
+    public void fromGraph(UseCaseGraph other){
+        ucDepGraph.removeAllVertices(ucDepGraph.vertexSet());
+        ucCancelGraph.removeAllVertices(ucCancelGraph.vertexSet());
+        for(UseCase uc : other.getUseCases()){
+            ucDepGraph.addVertex(uc);
+            ucCancelGraph.addVertex(uc);
+        }
+        for(UseCase uc : other.getUseCases()){
+            for(UseCase dep: other.getPrerequisites(uc)){
+                ucDepGraph.addEdge(dep, uc);
+            }
+            for(UseCase canc: other.getCancelledBy(uc)){
+                ucCancelGraph.addEdge(canc, uc);
+            }
+        }
+        notifyCallbacks();
+    }
     public static class graphEdge extends DefaultEdge {
         public UseCase getSource(){
             return (UseCase) super.getSource();
@@ -81,10 +99,10 @@ public class UseCaseGraph implements Comparator<UseCase> {
     public Iterator<UseCase> dependencyRespectingIterator(){
         return new DependencyRespectingIterator(this);
     }
-    private Set<UseCase> getUseCases(){
+    public Set<UseCase> getUseCases(){
         return ucDepGraph.vertexSet();
     }
-    private int getUCCount(){
+    public int getUCCount(){
         return ucDepGraph.vertexSet().size();
     }
     public Set<UseCase> getPrerequisites(UseCase u){
@@ -178,6 +196,7 @@ public class UseCaseGraph implements Comparator<UseCase> {
     public void addUC(UseCase uc){
         ucDepGraph.addVertex(uc);
         ucCancelGraph.addVertex(uc);
+        notifyCallbacks();
     }
     private UseCase getNodeByUC(UseCase template){
         if(template == null){
@@ -196,9 +215,11 @@ public class UseCaseGraph implements Comparator<UseCase> {
     }
     public void addDependency(UseCase from, UseCase to){
         myAddEdge(from,to,ucDepGraph);
+        notifyCallbacks();
     }
     public void addCancellation(UseCase from, UseCase to){
         myAddEdge(from,to,ucCancelGraph);
+        notifyCallbacks();
     }
     private void myAddEdge(UseCase from, UseCase to,DirectedMultigraph d){
         UseCase fromNode = getNodeByUC(from);

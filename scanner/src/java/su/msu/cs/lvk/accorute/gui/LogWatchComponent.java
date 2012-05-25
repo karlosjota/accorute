@@ -33,7 +33,7 @@ public class LogWatchComponent extends AppenderSkeleton{
         sorter.setRowFilter(new RowFilter<DefaultTableModel, Object>(){
             @Override
             public boolean include(Entry<? extends DefaultTableModel, ? extends Object> entry) {
-                return followedThread_ == null || entry.getStringValue(2).equals(followedThread_);
+                return followedThread_ == null || entry.getStringValue(4).equals(followedThread_);
             }
         });
         if(followedThread_ == null)
@@ -58,11 +58,12 @@ public class LogWatchComponent extends AppenderSkeleton{
     public void append(LoggingEvent event){
         Date d = new Date(event.getTimeStamp());
         String data [] = {
+                Long.toString(d.getTime()),
                 d.toString(),
+                event.getRenderedMessage(),
                 event.getLevel().toString(),
                 event.getThreadName(),
-                event.getLocationInformation().getFileName()+": " + event.getLocationInformation().getLineNumber(),
-                event.getRenderedMessage()
+                event.getLocationInformation().getFileName()+": " + event.getLocationInformation().getLineNumber()
         };
         if(!threadNamesIndices_.containsKey(event.getThreadName())){
             threadNamesIndices_.put(event.getThreadName(),comboBoxModel_.getSize());
@@ -79,7 +80,7 @@ public class LogWatchComponent extends AppenderSkeleton{
         super(true);
         final LogWatchComponent thisWatcher = this;
         String data[][] = {};
-        String col[] = {"Time","Priority", "Thread", "File","Message"};
+        String col[] = {"Stamp","Time","Message","Priority", "Thread", "File"};
         dataModel_ = new DefaultTableModel(data, col);
         sorter = new TableRowSorter<DefaultTableModel>(dataModel_);
         table_ = new JTable(dataModel_);
