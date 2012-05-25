@@ -16,9 +16,10 @@ import com.gargoylesoftware.htmlunit.javascript.host.html.*;
 import net.sourceforge.htmlunit.corejs.javascript.*;
 import net.sourceforge.htmlunit.corejs.javascript.regexp.NativeRegExp;
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.w3c.dom.css.CSSImportRule;
-import su.msu.cs.lvk.accorute.http.model.*;
 
+import java.io.Serializable;
 import java.lang.reflect.*;
 import java.util.*;
 import org.apache.log4j.Logger;
@@ -33,6 +34,61 @@ import org.apache.log4j.Logger;
 public class HtmlUnitUtils {
 
     protected static Logger logger = Logger.getLogger(HtmlUnitUtils.class.getName());
+    private static String curIndent;
+
+    private static class HashMapWithFastValueSearch implements Map<Object, Object>{
+        final private HashMap<Object, Object> theMap = new HashMap<Object, Object>();
+        final private HashSet<Object> valueSet = new HashSet<Object>();
+        public int size() {
+            return theMap.size();
+        }
+
+        public boolean isEmpty() {
+            return theMap.isEmpty();
+        }
+
+        public boolean containsKey(Object key) {
+            return theMap.containsKey(key);
+        }
+
+        public boolean containsValue(Object value) {
+            return valueSet.contains(value);
+        }
+
+        public Object get(Object key) {
+            return theMap.get(key);
+        }
+
+        public Object put(Object key, Object value) {
+            valueSet.add(value);
+            return theMap.put(key, value);
+        }
+
+        public Object remove(Object key) {
+            return theMap.remove(key);
+        }
+
+        public void putAll(Map<? extends Object, ? extends Object> m) {
+            throw new NotImplementedException("Do not use putAll");
+        }
+
+        public void clear() {
+            valueSet.clear();
+            theMap.clear();
+        }
+
+        public Set<Object> keySet() {
+            return theMap.keySet();
+        }
+
+        public Collection<Object> values() {
+            return valueSet;
+        }
+
+        public Set<Entry<Object, Object>> entrySet() {
+            return theMap.entrySet();
+        }
+    }
     public static Collection<String> getUserControllableFormFields(HtmlForm form){
         Set<String> controllableFieldNames = new HashSet<String>();
         //1. input
@@ -108,10 +164,7 @@ public class HtmlUnitUtils {
             }
         }
     }
-    private static DomNode shallowCopyDomBeforeRecursion(DomNode original, HtmlPage enclosingPage, WebWindow enclosingWindow, HashMap<Object, Object> originalsToClonesMap) throws NoSuchFieldException,InvocationTargetException, NoSuchMethodException, IllegalAccessException, InstantiationException{
-        if(wasAlreadyCloned(original, originalsToClonesMap)){
-            return (DomNode)getAlreadyCloned(original, originalsToClonesMap);
-        }
+    private static DomNode shallowCopyDomBeforeRecursion(DomNode original, HtmlPage enclosingPage, WebWindow enclosingWindow, Map<Object, Object> originalsToClonesMap) throws NoSuchFieldException,InvocationTargetException, NoSuchMethodException, IllegalAccessException, InstantiationException{
         DomNode node = original.cloneNode(false);
         originalsToClonesMap.put(original, node);
 
@@ -125,7 +178,13 @@ public class HtmlUnitUtils {
             //b. scriptObject_ - now just copyed verbatim, will be set later
             SimpleScriptable originalScriptable = (SimpleScriptable) getField(original,original.getClass(), "scriptObject_");
             setField(node, node.getClass(), "scriptObject_", originalScriptable);
-        //TODO: DomElement
+            //c. domListeners_
+            setField(node, node.getClass(), "domListeners_", null);
+            //d. domListeners_lock
+            setField(node, node.getClass(), "domListeners_lock_",new Serializable() { });
+        if(node instanceof DomElement){
+            originalsToClonesMap.put(((DomElement)node).getAttributes(),((DomElement)node).getAttributes());
+        }
         //============================================
         //2.HtmlPage
         //============================================
@@ -169,7 +228,7 @@ public class HtmlUnitUtils {
 
         return node;
     }
-    private static void shallowCopyDomAfterRecursion(DomNode node, DomNode original, HtmlPage enclosingPage, WebWindow enclosingWindow, HashMap<Object, Object> originalsToClonesMap) throws NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException{
+    private static void shallowCopyDomAfterRecursion(DomNode node, DomNode original, HtmlPage enclosingPage, WebWindow enclosingWindow, Map<Object, Object> originalsToClonesMap) throws NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException{
         //============================================
         //1. HtmlPage
         if(node instanceof HtmlPage){
@@ -236,7 +295,7 @@ public class HtmlUnitUtils {
             
         }
     }
-    private static DomNode deepCopyDom(DomNode original, DomNode parent, WebWindow newWindow, HashMap<Object, Object> originalsToClonesMap) throws InstantiationException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException{
+    private static DomNode deepCopyDom(DomNode original, DomNode parent, WebWindow newWindow, Map<Object, Object> originalsToClonesMap) throws InstantiationException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException{
         //1. Do a shallow copy of a DOM Node
         DomNode node;
         if(parent == null){
@@ -269,11 +328,12 @@ public class HtmlUnitUtils {
         if(node instanceof  HtmlPage){
             HtmlPage newPage = (HtmlPage) node;
             //a. Set relationships between the window and the page
-            newWindow.setEnclosedPage(newPage);
+            setField(newWindow, newWindow.getClass(), "enclosedPage_", node);
+            //newWindow.setEnclosedPage(newPage);
         }
         return node;
     }
-    private static Object cloneObjectOrDie(Object original, HashMap<Object, Object> originalsToClonesMap, ContextFactory contextFactory)throws InstantiationException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException{
+    private static Object cloneObjectOrDie(Object original, Map<Object, Object> originalsToClonesMap, ContextFactory contextFactory)throws InstantiationException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException{
         if(wasAlreadyCloned(original, originalsToClonesMap))
             return getAlreadyCloned(original, originalsToClonesMap);
         if(original instanceof Scriptable){
@@ -336,9 +396,12 @@ public class HtmlUnitUtils {
         }catch(ClassNotFoundException ex){
             throw new RuntimeException("The API changed!");
         }
+        if(original.getClass() == Object.class){
+            return original;
+        }
         throw new RuntimeException("Alas, I couldn't clone this");
     }
-    private static void copyIdScriptableObjectContents(IdScriptableObject originalScriptableObject, IdScriptableObject newScriptableObject, HashMap<Object, Object> originalsToClonesMap, ContextFactory contextFactory) throws InstantiationException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException{
+    private static void copyIdScriptableObjectContents(IdScriptableObject originalScriptableObject, IdScriptableObject newScriptableObject, Map<Object, Object> originalsToClonesMap, ContextFactory contextFactory) throws InstantiationException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException{
         copyScriptableObjectContents(originalScriptableObject, newScriptableObject, originalsToClonesMap, contextFactory);
         //a.prototypeValues
         try {
@@ -389,7 +452,7 @@ public class HtmlUnitUtils {
             throw  new RuntimeException("Api changed");
         }
     }
-    private static void copyScriptableObjectContents(ScriptableObject originalScriptableObject, ScriptableObject newScriptableObject, HashMap<Object, Object> originalsToClonesMap, ContextFactory contextFactory) throws InstantiationException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException{
+    private static void copyScriptableObjectContents(ScriptableObject originalScriptableObject, ScriptableObject newScriptableObject, Map<Object, Object> originalsToClonesMap, ContextFactory contextFactory) throws InstantiationException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException{
         //a. prototypeObject
         Scriptable newPrototype = deepCopyScriptable(originalScriptableObject.getPrototype(), originalsToClonesMap, contextFactory);
         newScriptableObject.setPrototype(newPrototype);
@@ -399,7 +462,7 @@ public class HtmlUnitUtils {
             newScriptableObject.setParentScope((Scriptable)getAlreadyCloned(origParentScope, originalsToClonesMap));
         }else{
             if(originalScriptableObject instanceof Window){
-                newScriptableObject.setParentScope(newScriptableObject);
+                setField(newScriptableObject, newScriptableObject.getClass(), "parentScopeObject", newScriptableObject);
             }else{
                 ScriptableObject newParent = (ScriptableObject) deepCopyScriptable(origParentScope, originalsToClonesMap, contextFactory);
                 setField(newScriptableObject, newScriptableObject.getClass(), "parentScopeObject", newParent);
@@ -473,7 +536,7 @@ public class HtmlUnitUtils {
             for(int i = 0 ; i < originalSlots.length; i++){
                 Object originalSlot = originalSlots[i];
                 Object newSlot = Array.get(newSlots, i);
-                if(newSlot != null){
+                while(newSlot != null && originalSlot != null){ //TODO: sometimes originalSlot == null, need to investigate
                     Object originalOrderedNext = getField(originalSlot, originalSlot.getClass(), "orderedNext");
                     Object newOrderedNext = null;
                     if (originalOrderedNext != null) {
@@ -485,6 +548,8 @@ public class HtmlUnitUtils {
                         }
                     }
                     setField(newSlot, newSlot.getClass(), "orderedNext", newOrderedNext);
+                    originalSlot = getField(originalSlot, originalSlot.getClass(), "next");
+                    newSlot = getField(newSlot, newSlot.getClass(), "next");
                 }
             }
         }
@@ -539,7 +604,7 @@ public class HtmlUnitUtils {
         }
         setField(newScriptableObject, newScriptableObject.getClass(), "associatedValues", newAssociatedValues);
     }
-    private static EventListenersContainer deepCopyEventListenersContainer(EventListenersContainer origContainer, SimpleScriptable newNode, HashMap<Object, Object> originalsToClonesMap, ContextFactory contextFactory)throws InstantiationException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException{
+    private static EventListenersContainer deepCopyEventListenersContainer(EventListenersContainer origContainer, SimpleScriptable newNode, Map<Object, Object> originalsToClonesMap, ContextFactory contextFactory)throws InstantiationException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException{
         if(wasAlreadyCloned(origContainer, originalsToClonesMap))
             return (EventListenersContainer) getAlreadyCloned(origContainer, originalsToClonesMap);
         if(origContainer == null)
@@ -588,19 +653,35 @@ public class HtmlUnitUtils {
         setField(newContainer, newContainer.getClass(), "eventHandlers_", newEventHandlers);
         return newContainer;
     }
-    private static boolean wasAlreadyCloned(Object o, HashMap<Object, Object> originalsToClonesMap){
+    private static boolean wasAlreadyCloned(Object o, Map<Object, Object> originalsToClonesMap){
         return originalsToClonesMap.containsKey(o) ||originalsToClonesMap.containsValue(o);
     }
-    private static Object getAlreadyCloned(Object o, HashMap<Object, Object> originalsToClonesMap){
+    private static Object getAlreadyCloned(Object o, Map<Object, Object> originalsToClonesMap){
         if(originalsToClonesMap.containsKey(o))
             return originalsToClonesMap.get(o);
         if(originalsToClonesMap.containsValue(o))
             return o;
         throw new RuntimeException("The object that should have been cloned is not cloned!");
     }
-    private static Scriptable deepCopyScriptable(Scriptable originalScriptable, HashMap<Object, Object> originalsToClonesMap, ContextFactory contextFactory) throws InstantiationException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException{
+    private static Scriptable deepCopyScriptable(Scriptable originalScriptable, Map<Object, Object> originalsToClonesMap, ContextFactory contextFactory) throws InstantiationException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException{
+        if(originalScriptable == null)
+            return null;
+        /*System.out.println(curIndent+"<q class=\""+originalScriptable.getClass().getSimpleName()+"\" strval=\""+ StringEscapeUtils.escapeJava(StringEscapeUtils.escapeXml(originalScriptable.toString()))+"\">");
+        curIndent = curIndent + " ";
+        GregorianCalendar start = new GregorianCalendar();         */
+        Scriptable res = deepCopyScriptable(originalScriptable, originalsToClonesMap, contextFactory, null);
+        /*curIndent = curIndent.substring(0, curIndent.length() - 1);
+        GregorianCalendar stop = new GregorianCalendar();
+        System.out.println(curIndent + (stop.getTimeInMillis() - start.getTimeInMillis()) / 1000.0 + " seconds");
+        System.out.println(curIndent+"</q>");*/
+        return res;
+    }
+    private static Scriptable deepCopyScriptable(Scriptable originalScriptable, Map<Object, Object> originalsToClonesMap, ContextFactory contextFactory, Scriptable newSc) throws InstantiationException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException{
         if(wasAlreadyCloned(originalScriptable, originalsToClonesMap)){
             return (Scriptable)getAlreadyCloned(originalScriptable, originalsToClonesMap);
+        }
+        if(newSc == null && originalScriptable instanceof Window){
+            throw new RuntimeException("Unexpected Window!!!");
         }
         //================================================
         //I. SimpleScriptable and its descendants
@@ -609,22 +690,45 @@ public class HtmlUnitUtils {
             //Basic stuff
             //a. Clone SimpleScriptable
             SimpleScriptable origSimpleScriptable = (SimpleScriptable) originalScriptable;
-            SimpleScriptable newSimpleScriptable   = origSimpleScriptable.clone();
+            SimpleScriptable newSimpleScriptable  = null;
+            if(newSc == null){
+                newSimpleScriptable   = origSimpleScriptable.clone();
+            }else{
+                newSimpleScriptable = (SimpleScriptable) newSc;
+            }
             originalsToClonesMap.put(originalScriptable, newSimpleScriptable);
             //b. copy ScriptableObject contents
             copyScriptableObjectContents(origSimpleScriptable, newSimpleScriptable,originalsToClonesMap, contextFactory);
             //c. set domNode_
             DomNode origDomNode = origSimpleScriptable.getDomNodeOrNull();
             if(origDomNode != null){
-                if(wasAlreadyCloned(origDomNode, originalsToClonesMap)){
-                    setField(newSimpleScriptable, newSimpleScriptable.getClass(), "domNode_", getAlreadyCloned(origDomNode, originalsToClonesMap));
-                }else{
-                    if(!wasAlreadyCloned(origDomNode.getParentNode(), originalsToClonesMap) || !wasAlreadyCloned(origDomNode.getPage().getEnclosingWindow(), originalsToClonesMap)){
-                        throw new RuntimeException("Dome Node not cloned ???");
+                if(!wasAlreadyCloned(origDomNode, originalsToClonesMap)){
+                    /* TODO: */
+                    WebWindow theWindow = origDomNode.getPage().getEnclosingWindow();
+                    if(!wasAlreadyCloned(origDomNode.getPage().getEnclosingWindow(), originalsToClonesMap)){
+                        logger.error("Window not cloned ???");
+                    }else{
+                        theWindow= (WebWindow) getAlreadyCloned(origDomNode.getPage().getEnclosingWindow(),  originalsToClonesMap);
                     }
-                    DomNode theParent = (DomNode) getAlreadyCloned(origDomNode.getParentNode(), originalsToClonesMap);
-                    WebWindow theWindow = (WebWindow) getAlreadyCloned(origDomNode.getPage().getEnclosingWindow(),  originalsToClonesMap);
-                    newSimpleScriptable.setDomNode(deepCopyDom(origDomNode, theParent, theWindow, originalsToClonesMap));
+                    ArrayList<DomNode> chainToClone = new ArrayList<DomNode>();
+                    while(!wasAlreadyCloned(origDomNode, originalsToClonesMap)){
+                        chainToClone.add(origDomNode);
+                        origDomNode = origDomNode.getParentNode();
+                    }
+                    DomNode theCurrentClone = null;
+                    for(int i = chainToClone.size() - 1 ; i >= 0; i--){
+                        DomNode theNodeToClone = chainToClone.get(i);
+                        theCurrentClone = deepCopyDom(theNodeToClone, (DomNode) getAlreadyCloned(theNodeToClone.getParentNode(), originalsToClonesMap),theWindow, originalsToClonesMap);
+                        ScriptableObject theScriptableObject = (ScriptableObject) getField(theNodeToClone, theNodeToClone.getClass(), "scriptObject_");
+                        ScriptableObject newScriptObject = (ScriptableObject) deepCopyScriptable(theScriptableObject, originalsToClonesMap, contextFactory);
+                        setField(theCurrentClone, theCurrentClone.getClass(), "scriptObject_", newScriptObject);
+                    }
+                    setField(newSimpleScriptable, newSimpleScriptable.getClass(), "domNode_", getAlreadyCloned(origSimpleScriptable.getDomNodeOrNull(), originalsToClonesMap));
+                    //setField(newSimpleScriptable, newSimpleScriptable.getClass(), "domNode_",origDomNode);
+                }else{
+                    DomNode theNode = (DomNode) getAlreadyCloned(origDomNode, originalsToClonesMap);
+                    setField(newSimpleScriptable, newSimpleScriptable.getClass(), "domNode_", theNode);
+                    //setField(theNode, theNode.getClass(), "scriptObject_", newSimpleScriptable);
                 }
             }else{
                 setField(newSimpleScriptable, newSimpleScriptable.getClass(), "domNode_", null);
@@ -1016,15 +1120,19 @@ public class HtmlUnitUtils {
                 Document newDoc  = (Document) deepCopyScriptable(origDoc, originalsToClonesMap, contextFactory);
                 setField(newWindow, newWindow.getClass(), "document_", newDoc);
                 //b. webWindow_
-                Page newPage = (Page) newWindow.getDomNodeOrNull();
-                WebWindow newWebWindow = newPage.getEnclosingWindow();
+                WebWindow origWebWindow = (WebWindow) getField(origWindow, origWindow.getClass(), "webWindow_");
+                if(!wasAlreadyCloned(origWebWindow, originalsToClonesMap)){
+                    throw new RuntimeException("Window not already cloned!!!");
+                }
+                WebWindow newWebWindow = (WebWindow) getAlreadyCloned(origWebWindow, originalsToClonesMap);
                 setField(newWindow, newWindow.getClass(), "webWindow_", newWebWindow);
                 //c. navigator
                 Navigator origNav = (Navigator) getField(origWindow, origWindow.getClass(), "navigator_");
                 Navigator newNav  = (Navigator) deepCopyScriptable(origNav, originalsToClonesMap, contextFactory);
                 setField(newWindow, newWindow.getClass(), "navigator_", newNav);
                 //d. documentProxy_
-                DocumentProxy newProxy = new DocumentProxy(newWindow.getWebWindow());
+                DocumentProxy origProxy = (DocumentProxy) getField(origWindow, origWindow.getClass(), "documentProxy_");
+                DocumentProxy newProxy = (DocumentProxy) deepCopyScriptable(origProxy, originalsToClonesMap, contextFactory);
                 setField(newWindow,newWindow.getClass(), "documentProxy_", newProxy);
                 //e. screen_
                 Screen origScreen = (Screen) getField(origWindow, origWindow.getClass(), "screen_");
@@ -1101,11 +1209,7 @@ public class HtmlUnitUtils {
                 }
                 BaseFunction origFunction = (BaseFunction) originalScriptable;
                 BaseFunction newFunction = null;
-                if(origFunction instanceof FunctionObject){
-                    //TODO: not sure if this is legal...
-                    newFunction =  origFunction;
-                    originalsToClonesMap.put(origFunction, newFunction);
-                }else if(origFunction instanceof  EventHandler){
+                if(origFunction instanceof  EventHandler){
                     EventHandler origHandler = (EventHandler) origFunction;
                     DomNode origNode = (DomNode) getField(origHandler,origHandler.getClass(), "node_");
                     if(!wasAlreadyCloned(origNode, originalsToClonesMap)){
@@ -1164,7 +1268,7 @@ public class HtmlUnitUtils {
                     IdFunctionCall newCall  = (IdFunctionCall) cloneObjectOrDie(origCall, originalsToClonesMap, contextFactory);
                     //tag
                     Object origTag = getField(origFunction, origFunction.getClass(), "tag");
-                    Object newTag  = cloneObjectOrDie(origCall, originalsToClonesMap, contextFactory);
+                    Object newTag  = cloneObjectOrDie(origTag, originalsToClonesMap, contextFactory);
                     //methodId
                     Integer id = (Integer) getField(origFunction, origFunction.getClass(), "methodId");
                     //arity
@@ -1195,7 +1299,9 @@ public class HtmlUnitUtils {
                     newFunction = (BaseFunction) ctor.newInstance();
                     originalsToClonesMap.put(origFunction, newFunction);
                     copyIdScriptableObjectContents(origFunction, newFunction, originalsToClonesMap, contextFactory);
-                }else{
+                }else if(origFunction instanceof FunctionObject){
+                    throw new RuntimeException("FunctionObjects should be precloned!!! ");
+                }else {
                     throw new NotImplementedException("Cloning this subtype of BaseFunction is not yet supported");
                 }
                 //prototypeProperty
@@ -1507,7 +1613,7 @@ public class HtmlUnitUtils {
         throw new NotImplementedException("Cloning scriptables that are not SimpleScriptables is not yet supported");
 
     }
-    private static void recursiveChangeScriptObject(DomNode node, HashMap<Object, Object> originalsToClonesMap, ContextFactory contextFactory) throws InvocationTargetException, NoSuchMethodException, NoSuchFieldException, IllegalAccessException, InstantiationException {
+    private static void recursiveChangeScriptObject(DomNode node, Map<Object, Object> originalsToClonesMap, ContextFactory contextFactory) throws InvocationTargetException, NoSuchMethodException, NoSuchFieldException, IllegalAccessException, InstantiationException {
         ScriptableObject theScriptableObject = (ScriptableObject) getField(node, node.getClass(), "scriptObject_");
         ScriptableObject newScriptObject = (ScriptableObject) deepCopyScriptable(theScriptableObject, originalsToClonesMap, contextFactory);
         node.setScriptObject(newScriptObject);
@@ -1515,31 +1621,291 @@ public class HtmlUnitUtils {
             recursiveChangeScriptObject(child, originalsToClonesMap, contextFactory);
         }
     }
-    public static HtmlPage clonePage(final HtmlPage originalPage,final WebWindow window, final EntityID ctx){
-        try{
-            GregorianCalendar start = new GregorianCalendar();
+    private static final String browserObjectNamesToLeave [] = {
+            "window.HTMLWBRElement", "window.navigator", "window.stop",
 
-            HashMap<Object, Object> originalsToClonesMap = new HashMap<Object, Object>();
-            originalsToClonesMap.put(originalPage.getEnclosingWindow(), window);
-            originalsToClonesMap.put(null, null);
-            HtmlPage newPage = (HtmlPage) deepCopyDom(originalPage, null, window, originalsToClonesMap);
-            Scriptable newWindowScriptable = deepCopyScriptable(
-                    (Scriptable)originalPage.getEnclosingWindow().getScriptObject(),
-                    originalsToClonesMap,
-                    window.getWebClient().getJavaScriptEngine().getContextFactory()
-            );
-            window.setScriptObject(newWindowScriptable);
-            recursiveChangeScriptObject(
-                    newPage,
-                    originalsToClonesMap,
-                    window.getWebClient().getJavaScriptEngine().getContextFactory()
-            );
+            "String.prototype.trim", "String.prototype.trimLeft", "String.prototype.trimRight", "String.prototype.toUpperCase", "String.prototype.toLowerCase",
+            "String.prototype.toLocaleUpperCase", "String.prototype.toLocaleLowerCase", "String.prototype.substring", "String.prototype.substr",
+            "String.prototype.split", "String.prototype.splice", "String.prototype.search", "String.prototype.replace", "String.prototype.quote",
+            "String.prototype.match", "String.prototype.localeCompare", "String.prototype.lastIndexOf", "String.prototype.indexOf",  "String.prototype.concat",
+            "String.prototype.charCodeAt",  "String.prototype.charAt",
 
-            GregorianCalendar stop = new GregorianCalendar();
-            logger.info("Clone page took " + (stop.getTimeInMillis() - start.getTimeInMillis()) / 1000.0);
-            return newPage;
-        }catch(Exception ex){
-            throw new RuntimeException(ex);
+            "HTMLDocument.prototype.appendChild", "HTMLDocument.prototype.replaceChild", "HTMLDocument.prototype.addEventListener", "HTMLDocument.prototype.removeEventListener",
+            "HTMLDocument.prototype.appendChild", "HTMLDocument.prototype.cloneNode", "HTMLDocument.prototype.compareDocumentPosition", "HTMLDocument.prototype.hasChildNodes",
+            "HTMLDocument.prototype.isSameNode", "HTMLDocument.prototype.normalize", "HTMLDocument.prototype.removeChild",
+            "HTMLDocument.prototype.replaceChild",  "HTMLDocument.prototype.getElementsByName",  "HTMLDocument.prototype.dispatchEvent",
+            "HTMLDocument.prototype.insertBefore","HTMLDocument.prototype.createAttribute", "HTMLDocument.prototype.createElement",
+            "HTMLDocument.prototype.getElementsByTagName", "HTMLDocument.prototype.getElementsByTagNameNS", "HTMLDocument.prototype.createElementNS",
+            "HTMLDocument.prototype.createComment",  "HTMLDocument.prototype.importNode",   "HTMLDocument.prototype.createNSResolver",
+            "HTMLDocument.prototype.createDocumentFragment","HTMLDocument.prototype.createTextNode","HTMLDocument.prototype.getBoxObjectFor",
+            "HTMLDocument.prototype.evaluate", "HTMLDocument.prototype.captureEvents","HTMLDocument.prototype.querySelector",
+            "HTMLDocument.prototype.open", "HTMLDocument.prototype.queryCommandSupported", "HTMLDocument.prototype.clear",
+            "HTMLDocument.prototype.createTreeWalker","HTMLDocument.prototype.querySelectorAll", "HTMLDocument.prototype.queryCommandEnabled",
+            "HTMLDocument.prototype.getElementsByClassName", "HTMLDocument.prototype.write", "HTMLDocument.prototype.writeln",
+            "HTMLDocument.prototype.createRange","HTMLDocument.prototype.elementFromPoint","HTMLDocument.prototype.getElementById",
+            "HTMLDocument.prototype.close","HTMLDocument.prototype.execCommand","HTMLDocument.prototype.createEvent",
+
+            "document.implementation.createDocument",
+
+            "Element.prototype.getAttribute", "Element.prototype.getAttributeNS", "Element.prototype.getAttributeNode",
+            "Element.prototype.getAttributeNodeNS","Element.prototype.getElementsByTagName","Element.prototype.getElementsByTagNameNS",
+            "Element.prototype.hasAttribute", "Element.prototype.hasAttributeNS", "Element.prototype.removeAttribute",
+            "Element.prototype.removeAttributeNS","Element.prototype.removeAttributeNode","Element.prototype.setAttribute",
+            "Element.prototype.setAttributeNS","Element.prototype.setAttributeNode","Element.prototype.setAttributeNodeNS",
+            "Element.prototype.setIdAttribute","Element.prototype.setIdAttributeNS","Element.prototype.setIdAttributeNode",
+
+            "HTMLElement.prototype.dispatchEvent",  "HTMLElement.prototype.querySelector", "HTMLElement.prototype.querySelectorAll",
+            "HTMLElement.prototype.getAttributeNode", "HTMLElement.prototype.getElementsByClassName", "HTMLElement.prototype.blur",
+            "HTMLElement.prototype.mergeAttributes",
+            "HTMLElement.prototype.clearAttributes",
+            "HTMLElement.prototype.scrollIntoView", "HTMLElement.prototype.focus", "HTMLElement.prototype.click",
+            "HTMLElement.prototype.getAttribute", "HTMLElement.prototype.getAttributeNS", "HTMLElement.prototype.getAttributeNode",
+            "HTMLElement.prototype.getAttributeNodeNS","HTMLElement.prototype.getHTMLElementsByTagName","HTMLElement.prototype.getHTMLElementsByTagNameNS",
+            "HTMLElement.prototype.hasAttribute", "HTMLElement.prototype.hasAttributeNS", "HTMLElement.prototype.removeAttribute",
+            "HTMLElement.prototype.removeAttributeNS","HTMLElement.prototype.removeAttributeNode","HTMLElement.prototype.setAttribute",
+            "HTMLElement.prototype.setAttributeNS","HTMLElement.prototype.setAttributeNode","HTMLElement.prototype.setAttributeNodeNS",
+            "HTMLElement.prototype.setIdAttribute","HTMLElement.prototype.setIdAttributeNS","HTMLElement.prototype.setIdAttributeNode",
+
+            "StyleSheetList.prototype.item", "StaticNodeList.prototype.item",
+            "CSSStyleSheet.prototype.insertRule", "CSSStyleSheet.prototype.deleteRule",
+            "CSSRuleList.prototype.item",
+            "ComputedCSSStyleDeclaration.prototype.getPropertyCSSValue","ComputedCSSStyleDeclaration.prototype.getPropertyValue",
+            "CSSPrimitiveValue.prototype.getFloatValue",
+
+            "MediaList.prototype",
+            "PluginArray.prototype",
+            "Plugin.prototype",
+            "XMLDocument.prototype",
+            "KeyboardEvent.prototype",
+            "MouseEvent.prototype",
+            "HTMLHtmlElement.prototype", "HTMLHeadElement.prototype", "HTMLLinkElement.prototype", "HTMLTitleElement.prototype", "HTMLMetaElement.prototype", "HTMLBaseElement.prototype", "HTMLIsIndexElement.prototype", 
+            "HTMLStyleElement.prototype", "HTMLBodyElement.prototype", "HTMLFormElement.prototype", "HTMLSelectElement.prototype", "HTMLOptGroupElement.prototype", "HTMLOptionElement.prototype", "HTMLInputElement.prototype", 
+            "HTMLTextAreaElement.prototype", "HTMLButtonElement.prototype", "HTMLLabelElement.prototype", "HTMLFieldSetElement.prototype", "HTMLLegendElement.prototype", "HTMLUListElement.prototype", 
+            "HTMLOListElement.prototype", "HTMLDListElement.prototype", "HTMLDirectoryElement.prototype", "HTMLMenuElement.prototype", "HTMLLIElement.prototype", "HTMLDivElement.prototype", 
+            "HTMLParagraphElement.prototype", "HTMLHeadingElement.prototype", "HTMLQuoteElement.prototype", "HTMLPreElement.prototype", "HTMLBRElement.prototype", "HTMLBaseFontElement.prototype", 
+            "HTMLFontElement.prototype", "HTMLHRElement.prototype", "HTMLAnchorElement.prototype", "HTMLImageElement.prototype", "HTMLObjectElement.prototype",
+            "HTMLParamElement.prototype", "HTMLAppletElement.prototype", "HTMLMapElement.prototype", "HTMLAreaElement.prototype", "HTMLScriptElement.prototype", "HTMLTableElement.prototype", 
+            "HTMLTableCaptionElement.prototype", "HTMLTableColElement.prototype", "HTMLTableSectionElement.prototype", "HTMLTableRowElement.prototype", "HTMLTableCellElement.prototype", 
+            "HTMLFrameSetElement.prototype", "HTMLFrameElement.prototype", "HTMLIFrameElement.prototype",
+
+            "HTMLHtmlElement", "HTMLHeadElement", "HTMLLinkElement", "HTMLTitleElement", "HTMLMetaElement", "HTMLBaseElement", "HTMLIsIndexElement",
+            "HTMLStyleElement", "HTMLBodyElement", "HTMLFormElement", "HTMLSelectElement", "HTMLOptGroupElement", "HTMLOptionElement", "HTMLInputElement",
+            "HTMLTextAreaElement", "HTMLButtonElement", "HTMLLabelElement", "HTMLFieldSetElement", "HTMLLegendElement", "HTMLUListElement",
+            "HTMLOListElement", "HTMLDListElement", "HTMLDirectoryElement", "HTMLMenuElement", "HTMLLIElement", "HTMLDivElement",
+            "HTMLParagraphElement", "HTMLHeadingElement", "HTMLQuoteElement", "HTMLPreElement", "HTMLBRElement", "HTMLBaseFontElement",
+            "HTMLFontElement", "HTMLHRElement", "HTMLAnchorElement", "HTMLImageElement", "HTMLObjectElement",
+            "HTMLParamElement", "HTMLAppletElement", "HTMLMapElement", "HTMLAreaElement", "HTMLScriptElement", "HTMLTableElement",
+            "HTMLTableCaptionElement", "HTMLTableColElement", "HTMLTableSectionElement", "HTMLTableRowElement", "HTMLTableCellElement",
+            "HTMLFrameSetElement", "HTMLFrameElement", "HTMLIFrameElement",
+            
+
+            "Event.prototype.preventDefault", "Event.prototype.stopPropagation", "Event.prototype.initEvent",
+
+            "HTMLSelectElement.prototype.add", "HTMLSelectElement.prototype.item", "HTMLSelectElement.prototype.remove",
+            
+            "HTMLInputElement.prototype.click", "HTMLInputElement.prototype.setSelectionRange","HTMLInputElement.prototype.select",
+
+            "HTMLFormElement.prototype.submit", "HTMLFormElement.prototype.reset",
+
+            "UIEvent.prototype.initUIEvent",
+
+            "HTMLTableElement.prototype.createTFoot",  "HTMLTableElement.prototype.createTHead","HTMLTableElement.prototype.createCaption",
+            "HTMLTableElement.prototype.deleteTFoot",  "HTMLTableElement.prototype.deleteTHead","HTMLTableElement.prototype.deleteCaption",
+            "HTMLTableElement.prototype.refresh", "HTMLTableRowElement.prototype.insertCell","HTMLTableRowElement.prototype.deleteCell",
+
+            "HTMLTextAreaElement.prototype.setSelectionRange","HTMLTextAreaElement.prototype.select",
+
+            "HTMLButtonElement.prototype.click",
+
+            "NamedNodeMap.prototype.removeNamedItem","NamedNodeMap.prototype.setNamedItem","NamedNodeMap.prototype.item","NamedNodeMap.prototype.getNamedItem",
+
+            "HTMLCollection.prototype.item", "HTMLCollection.prototype.namedItem",
+
+            "HTMLOptionsCollection.prototype.add",  "HTMLOptionsCollection.prototype.item",
+
+            "XPathResult.prototype.iterateNext","XPathResult.prototype.snapshotItem",
+
+            "XPathNSResolver.prototype.createNSResolver","XPathNSResolver.prototype.lookupNamespaceURI",
+            "Text.prototype.NamedItem", "Text.prototype.insertData","Text.prototype.appendData", "Text.prototype.deleteData", "Text.prototype.substringData",
+            "Text.prototype.replaceData", "Text.prototype.splitText",
+
+            "History.prototype.item", "History.prototype.forward", "History.prototype.back",   "History.prototype.go",
+
+            "RowContainer.prototype.insertRow","RowContainer.prototype.moveRow","RowContainer.prototype.deleteRow",
+
+            "OfflineResourceList.prototype.add","OfflineResourceList.prototype.remove","OfflineResourceList.prototype.update",
+            "OfflineResourceList.prototype.hasItem","OfflineResourceList.prototype.swapCache","OfflineResourceList.prototype.item",
+
+            "DOMParser.prototype.parseFromString",
+
+            "TreeWalker.prototype.lastChild","TreeWalker.prototype.firstChild", "TreeWalker.prototype.previousSibling","TreeWalker.prototype.nextSibling",
+            "TreeWalker.prototype.parentNode","TreeWalker.prototype.nextNode","TreeWalker.prototype.previousNode",
+
+            "XMLHttpRequest.prototype.getResponseHeader","XMLHttpRequest.prototype.send","XMLHttpRequest.prototype.open","XMLHttpRequest.prototype.abort",
+            "XMLHttpRequest.prototype.getAllResponseHeaders", "XMLHttpRequest.prototype.setRequestHeader", "XMLHttpRequest.prototype.overrideMimeType",
+
+            "DOMImplementation.prototype.hasFeature",
+
+            "XSLTProcessor.prototype.transformToDocument","XSLTProcessor.prototype.importStylesheet","XSLTProcessor.prototype.getParameter",
+            "XSLTProcessor.prototype.setParameter","XSLTProcessor.prototype.transformToFragment",
+
+            "XMLSerializer.prototype.serializeToString",
+
+            "Range.prototype.setStart","Range.prototype.setEnd", "Range.prototype.setStartBefore", "Range.prototype.setStartAfter",
+            "Range.prototype.setEndBefore","Range.prototype.setEndAfter","Range.prototype.selectNode","Range.prototype.selectNodeContents",
+            "Range.prototype.collapse","Range.prototype.cloneContents","Range.prototype.deleteContents","Range.prototype.extractContents",
+            "Range.prototype.insertNode","Range.prototype.surroundContents","Range.prototype.compareBoundaryPoints","Range.prototype.cloneRange",
+            "Range.prototype.detach", "Range.prototype.toString","Range.prototype.createContextualFragment",
+
+            "Storage.prototype.setItem", "Storage.prototype.getItem","Storage.prototype.removeItem","Storage.prototype.clear","Storage.prototype.key",
+
+            "MouseEvent.prototype.initMouseEvent",
+            "CanvasRenderingContext2D.prototype",
+            "HTMLCanvasElement.prototype",
+            "MimeTypeArray.prototype",
+            "Selection.prototype",
+            "Navigator.prototype",
+            "HTMLElement.prototype",
+            "Element.prototype",
+            "Node.prototype",
+
+            "window.alert", "window.blur", "window.clearInterval", "window.clearTimeout", "window.close", "window.confirm",
+            "window.createPopup", "window.focus", "window.moveBy", "window.moveTo", "window.open", "window.print", "window.prompt",
+            "window.resizeBy", "window.resizeTo", "window.scroll", "window.scrollBy", "window.scrollTo", "window.setInterval",
+            "window.setTimeout", "window.XSLTProcessor",  "window.scrollByPages", "window.XMLDocument" ,"window.Navigator", "window.Comment",
+            "window.addEventListener", "window.attachEvent", "window.removeEventListener", "window.detachEvent", "window.Storage", "window.UIEvent",
+            "window.HTMLImageElement", "window.XMLHttpRequest", "window.MediaList", "window.HTMLCanvasElement", "window.CanvasRenderingContext2D",
+            "window.PluginArray",  "window.KeyboardEvent","window.MouseEvent", "window.getSelection", "window.HTMLOptionElement",
+            "window.XMLSerializer", "window.getComputedStyle", "window.CharacterDataImpl", "window.showModalDialog", "window.Range", "window.OfflineResourceList",
+            "window.atob","window.XPathNSResolver","window.MimeTypeArray","window.WATCH","window.Plugin","window.scrollByLines", "window.Selection",
+            "window.DOMImplementation","window.CSSPrimitiveValue","window.TreeWalker","window.btoa","window.DOMParser","window.captureEvents",
+            "window.eval","window.custom_eval"
+    };
+    private static final String browserObjectNamesToLeavePrototypes [] = {  "window.location" };
+    private static void prepopulateCorrespondenceTable(final Window oldWindow,final Window newWindow, Map<Object, Object> originalsToClonesMap) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        for(String expr : browserObjectNamesToLeave){
+            try{
+                Object oldObj = oldWindow.getWebWindow().getWebClient().getJavaScriptEngine().execute((HtmlPage) oldWindow.getWebWindow().getEnclosedPage(),expr, "",0);
+                Object newObj = newWindow.getWebWindow().getWebClient().getJavaScriptEngine().execute((HtmlPage) newWindow.getWebWindow().getEnclosedPage(),expr, "",0);
+                originalsToClonesMap.put(oldObj, newObj);
+            }catch (ScriptException ex){
+                throw new RuntimeException(ex);
+            }
         }
+        for(String expr : browserObjectNamesToLeavePrototypes){
+            try{
+                ScriptableObject oldObj = (ScriptableObject) oldWindow.getWebWindow().getWebClient().getJavaScriptEngine().execute((HtmlPage) oldWindow.getWebWindow().getEnclosedPage(),expr, "",0);
+                ScriptableObject newObj = (ScriptableObject) newWindow.getWebWindow().getWebClient().getJavaScriptEngine().execute((HtmlPage) newWindow.getWebWindow().getEnclosedPage(),expr, "",0);
+                originalsToClonesMap.put(oldObj.getPrototype(), newObj.getPrototype());
+            }catch (ScriptException ex){
+                throw new RuntimeException(ex);
+            }
+        }
+        Scriptable oldEval = (Scriptable) oldWindow.getAssociatedValue("custom_eval");
+        Scriptable newEval = (Scriptable) newWindow.getAssociatedValue("custom_eval");
+        originalsToClonesMap.put(oldEval, newEval);
+        /*final Method getSlotMethod = ScriptableObject.class.getDeclaredMethod("getSlot", String.class, Integer.TYPE, Integer.TYPE);
+        getSlotMethod.setAccessible(true);
+        final Class getterSlotClass = ScriptableObject.class.getDeclaredClasses()[0];
+        final Method getValueMethod = getterSlotClass.getDeclaredMethod("getValue", Scriptable.class);
+        getValueMethod.setAccessible(true);
+        Object [] originalSlots = (Object[]) getField(oldWindow, oldWindow.getClass(), "slots");
+        if(originalSlots != null){
+            for(int i = 0 ; i < originalSlots.length; i++){
+                Object originalSlot = originalSlots[i];
+                while(originalSlot != null){
+                    String name = (String) getField(originalSlot, originalSlot.getClass(), "name");
+                    Object originalValue = null;
+                    if(getterSlotClass.isInstance(originalSlot)){
+                        final Object orSlot = originalSlot;
+                        originalValue = oldWindow.getWebWindow().getWebClient().getJavaScriptEngine().getContextFactory().call(new ContextAction() {
+                            public Object run(Context cx) {
+                                try {
+                                    return getValueMethod.invoke(orSlot, oldWindow);
+                                } catch (Exception e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                        });
+                    }else{
+                        originalValue = getField(originalSlot, originalSlot.getClass(), "value");
+                    }
+                    final Object newSlot = getSlotMethod.invoke(newWindow, name, new Integer(0), new Integer(1)); // SLOT_QUERY
+                    if(newSlot != null){
+                        Object newValue = null;
+                        if(getterSlotClass.isInstance(newSlot)){
+                            newValue = newWindow.getWebWindow().getWebClient().getJavaScriptEngine().getContextFactory().call(new ContextAction() {
+                                public Object run(Context cx) {
+                                    try {
+                                        return getValueMethod.invoke(newSlot, newWindow);
+                                    } catch (Exception e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                }
+                            });
+                        }else{
+                            newValue = getField(newSlot, newSlot.getClass(), "value");
+                        }
+                        if(
+                                (originalValue instanceof FunctionObject)
+                              ||(browserObjectNamesToLeave.contains(name.intern()))
+                        ){
+                            originalsToClonesMap.put(originalValue, newValue);
+                        }
+                    }
+                    originalSlot = getField(originalSlot, originalSlot.getClass(), "next");
+                }
+            }
+        }
+        */
+    }
+    public static HtmlPage clonePage(final HtmlPage originalPage,final WebWindow window) throws InvocationTargetException, NoSuchMethodException, NoSuchFieldException, IllegalAccessException, InstantiationException {
+        curIndent = "";
+        Map<Object, Object> originalsToClonesMap = new HashMapWithFastValueSearch();
+        originalsToClonesMap.put(originalPage.getEnclosingWindow(), window);
+        originalsToClonesMap.put(null, null);
+        GregorianCalendar start = new GregorianCalendar();
+        HtmlPage newPage = (HtmlPage) deepCopyDom(originalPage, null, window, originalsToClonesMap);
+        if(window.getScriptObject() == null){
+            window.getWebClient().getJavaScriptEngine().initialize(window);
+        }
+        /*
+        Window oldWin = (Window) originalPage.getEnclosingWindow().getScriptObject();
+        Window newWin = (Window) window.getScriptObject();
+        if(window.getWebClient() == originalPage.getWebClient()){
+            for(WebWindow win: window.getWebClient().getWebWindows()){
+                Window scriptWin = (Window) win.getScriptObject();
+                if(scriptWin != oldWin && scriptWin != newWin){
+                    originalsToClonesMap.put(scriptWin, scriptWin);
+                    originalsToClonesMap.put(win, win);
+                }
+            }
+        }
+        */
+        prepopulateCorrespondenceTable((Window)originalPage.getEnclosingWindow().getScriptObject(), (Window)window.getScriptObject(), originalsToClonesMap);
+        GregorianCalendar domCopied = new GregorianCalendar();
+        System.out.println("deepCopyDom took " + (domCopied.getTimeInMillis() - start.getTimeInMillis()) / 1000.0 + " seconds");
+        logger.info("deepCopyDom took " + (domCopied.getTimeInMillis() - start.getTimeInMillis()) / 1000.0 + " seconds");
+        Scriptable newWindowScriptable = deepCopyScriptable(
+                (Scriptable)originalPage.getEnclosingWindow().getScriptObject(),
+                originalsToClonesMap,
+                window.getWebClient().getJavaScriptEngine().getContextFactory(),
+                (Scriptable) window.getScriptObject()
+        );
+        GregorianCalendar windowCopied = new GregorianCalendar();
+        System.out.println("deepCopyScriptable for Window took " + (windowCopied.getTimeInMillis() - domCopied.getTimeInMillis()) / 1000.0 + " seconds");
+        logger.info("deepCopyScriptable for Window took " + (windowCopied.getTimeInMillis() - domCopied.getTimeInMillis()) / 1000.0 + " seconds");
+        window.setScriptObject(newWindowScriptable);
+        recursiveChangeScriptObject(
+                newPage,
+                originalsToClonesMap,
+                window.getWebClient().getJavaScriptEngine().getContextFactory()
+        );
+        GregorianCalendar restCopied = new GregorianCalendar();
+        logger.info("deepCopyScriptable for others took " + (restCopied.getTimeInMillis() - windowCopied.getTimeInMillis()) / 1000.0 + " seconds");
+        System.out.println("deepCopyScriptable for others took " + (restCopied.getTimeInMillis() - windowCopied.getTimeInMillis()) / 1000.0 + " seconds");
+        System.out.println("HashMap size: " + originalsToClonesMap.size());
+        logger.info("HashMap size: " + originalsToClonesMap.size());
+        return newPage;
     }
 }
