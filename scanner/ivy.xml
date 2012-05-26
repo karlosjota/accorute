@@ -27,7 +27,7 @@
        <dependency org="html-cleaner" name="html-cleaner" rev="2.1" conf="*->default"/>
        <dependency org="net.sourceforge.jchardet" name="jchardet" rev="1.0" conf="*->default"/>
 
-       <dependency org="org.littleshoot" name="littleproxy" rev="0.5-SNAPSHOT" conf="*->default"/>
+       <dependency org="org.littleshoot" name="littleproxy" rev="0.5-SNAPSHOT" conf="*->default"/> 
 
        <dependency org="org.json" name="json" rev="20090211" conf="*->default"/>
   </dependencies>
