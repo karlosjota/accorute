@@ -193,7 +193,7 @@ public class TaskManagerForm{
                     public void actionPerformed(ActionEvent e) {
                         taskManager_.addTask(new HtmlPageParser(
                                 taskManager_,
-                               (HtmlPage)theTask.getResult(),
+                                (HtmlPage)theTask.getResult(),
                                 theTask.getCtx(),
                                 new Callback4<HtmlPage, ArrayList<DomAction>, HttpAction, Boolean>() {
                                     public void CallMeBack(HtmlPage param1, ArrayList<DomAction> param2, HttpAction param3, Boolean param4) {
@@ -779,9 +779,9 @@ public class TaskManagerForm{
             }
 
             public Object getValueAt(int rowIndex, int columnIndex) {
-                EntityID userID = ((UserContext)contextSelector.getSelectedItem()).getUserID(); 
+                EntityID userID = ((UserContext)contextSelector.getSelectedItem()).getUserID();
                 WebAppUser u = WebAppProperties.getInstance().getUserService().getUserByID(userID);
-                
+
                 EntityID contextID = ((UserContext)contextSelector.getSelectedItem()).getContextID();
                 List<Conversation> convs = WebAppProperties.getInstance().getConversationService().getContextConversations(contextID);
                 if (convs == null || rowIndex >= convs.size())
@@ -1078,8 +1078,8 @@ public class TaskManagerForm{
             }
         });
         JMenu analysisMenu = new JMenu("Analysis");
-        
-        JMenuItem checkConf = new JMenuItem("Check configuration"); 
+
+        JMenuItem checkConf = new JMenuItem("Check configuration");
         checkConf.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try{
@@ -1150,7 +1150,7 @@ public class TaskManagerForm{
                             public void CallMeBack(ArrayList<Conversation> param1, ArrayList<HttpAction> param2, HtmlPage param3) {
                                 //nothing
                             }
-                }));
+                        }));
             }
         });
         analysisMenu.add(loadPage);
@@ -1160,7 +1160,7 @@ public class TaskManagerForm{
                 List<WebAppUser> users = new ArrayList<WebAppUser>();
                 for(Role r: WebAppProperties.getInstance().getRoles()){
                     users.addAll(WebAppProperties.getInstance().getUserService().getUsersByRole(r.getRoleName()));
-                }    
+                }
                 if(users.size() == 0){
                     displayError("You must create at least one user!");
                 }
@@ -1392,9 +1392,18 @@ public class TaskManagerForm{
                 RoleGraphModelBuilder.makeGraph(roleGraph);
                 Object [] roles = WebAppProperties.getInstance().getRoles().toArray();
                 int i;
-                i = roleSelector.getSelectedIndex(); roleSelector.setModel(new DefaultComboBoxModel(roles));roleSelector.setSelectedIndex(i);
-                i = roleForUserSelector.getSelectedIndex(); roleForUserSelector.setModel(new DefaultComboBoxModel(roles));roleForUserSelector.setSelectedIndex(i);
-                i = usColeSelector.getSelectedIndex(); usColeSelector.setModel(new DefaultComboBoxModel(roles));usColeSelector.setSelectedIndex(i);
+                i = roleSelector.getSelectedIndex();
+                if(i == -1 && roles.length != 0)
+                    i = 0;
+                roleSelector.setModel(new DefaultComboBoxModel(roles));roleSelector.setSelectedIndex(i);
+                i = roleForUserSelector.getSelectedIndex();
+                if(i == -1 && roles.length != 0)
+                    i = 0;
+                roleForUserSelector.setModel(new DefaultComboBoxModel(roles));roleForUserSelector.setSelectedIndex(i);
+                i = usColeSelector.getSelectedIndex();
+                if(i == -1 && roles.length != 0)
+                    i = 0;
+                usColeSelector.setModel(new DefaultComboBoxModel(roles));usColeSelector.setSelectedIndex(i);
             }
         });
     }
